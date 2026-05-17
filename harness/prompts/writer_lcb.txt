@@ -1,0 +1,16 @@
+You are an expert competitive programmer. Solve the following problem correctly and efficiently.
+
+PROBLEM:
+{problem}
+{starter_code}
+
+Requirements:
+- Produce a complete, runnable Python solution
+- Handle all edge cases
+- Optimize for correctness first, then performance
+- After your solution, write one short sentence on your confidence level (high/medium/low) and any edge cases you are uncertain about
+
+Output your solution inside <solution> tags:
+<solution>
+# your Python code here
+</solution>

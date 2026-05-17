@@ -1,0 +1,28 @@
+# Model pricing (USD per 1M tokens) — update before running experiments.
+# Verify current rates at platform.openai.com and anthropic.com/pricing
+
+claude-opus-4-7:
+  input_per_1m: 5.0
+  output_per_1m: 25.0
+  cached_input_per_1m: 0.50
+  cache_creation_input_per_1m: 6.25
+
+gpt-5.5:
+  input_per_1m: 5.0
+  output_per_1m: 30.0
+  cached_input_per_1m: 0.50
+  long_context_threshold_tokens: 272000
+  long_context_input_multiplier: 2.0
+  long_context_output_multiplier: 1.5
+
+gpt-5.4:
+  input_per_1m: 2.5
+  output_per_1m: 15.0
+  cached_input_per_1m: 0.25
+
+# Aliases
+claude-opus-4-5:
+  input_per_1m: 5.0
+  output_per_1m: 25.0
+  cached_input_per_1m: 0.50
+  cache_creation_input_per_1m: 6.25

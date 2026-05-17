@@ -1,0 +1,165 @@
+{
+  "checkpoint_dir": "results/raw/lcb_hard_full",
+  "generated_at": "2026-05-17T19:17:21.183836+00:00",
+  "started_at": "2026-05-09T23:46:46.702665+00:00",
+  "updated_at": "2026-05-17T19:09:25.687481+00:00",
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/all_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/lcb_hard_100.txt",
+  "condition_settings": [
+    {
+      "id": "B1_claude_solo",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "B2_gpt55_solo",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "C1_claude_writes_gpt55_reviews",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C2_gpt55_writes_claude_reviews",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C3_claude_writes_claude_reviews",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C4_gpt55_writes_gpt55_reviews",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      }
+    }
+  ],
+  "preflight_checked_at": "2026-05-09T23:46:45.555257+00:00",
+  "records": 492,
+  "unique_tasks": 82,
+  "conditions": [
+    {
+      "condition": "B1_claude_solo",
+      "directory": "results/raw/lcb_hard_full/B1_claude_solo",
+      "completed": 68,
+      "attempted": 82,
+      "evaluated": 65,
+      "passed": 55,
+      "parse_failed": 12,
+      "cli_error": 12,
+      "timed_out": 11,
+      "total_cost_usd": 90.404916,
+      "avg_total_latency_s": 150.91
+    },
+    {
+      "condition": "B2_gpt55_solo",
+      "directory": "results/raw/lcb_hard_full/B2_gpt55_solo",
+      "completed": 80,
+      "attempted": 82,
+      "evaluated": 78,
+      "passed": 44,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 2,
+      "total_cost_usd": 35.192179,
+      "avg_total_latency_s": 99.18
+    },
+    {
+      "condition": "C1_claude_writes_gpt55_reviews",
+      "directory": "results/raw/lcb_hard_full/C1_claude_writes_gpt55_reviews",
+      "completed": 72,
+      "attempted": 82,
+      "evaluated": 67,
+      "passed": 48,
+      "parse_failed": 10,
+      "cli_error": 10,
+      "timed_out": 8,
+      "total_cost_usd": 89.470179,
+      "avg_total_latency_s": 150.87
+    },
+    {
+      "condition": "C2_gpt55_writes_claude_reviews",
+      "directory": "results/raw/lcb_hard_full/C2_gpt55_writes_claude_reviews",
+      "completed": 78,
+      "attempted": 82,
+      "evaluated": 76,
+      "passed": 62,
+      "parse_failed": 0,
+      "cli_error": 2,
+      "timed_out": 4,
+      "total_cost_usd": 121.415143,
+      "avg_total_latency_s": 246.5
+    },
+    {
+      "condition": "C3_claude_writes_claude_reviews",
+      "directory": "results/raw/lcb_hard_full/C3_claude_writes_claude_reviews",
+      "completed": 70,
+      "attempted": 82,
+      "evaluated": 67,
+      "passed": 60,
+      "parse_failed": 11,
+      "cli_error": 11,
+      "timed_out": 9,
+      "total_cost_usd": 125.951277,
+      "avg_total_latency_s": 192.88
+    },
+    {
+      "condition": "C4_gpt55_writes_gpt55_reviews",
+      "directory": "results/raw/lcb_hard_full/C4_gpt55_writes_gpt55_reviews",
+      "completed": 81,
+      "attempted": 82,
+      "evaluated": 80,
+      "passed": 60,
+      "parse_failed": 1,
+      "cli_error": 1,
+      "timed_out": 1,
+      "total_cost_usd": 44.119822,
+      "avg_total_latency_s": 136.89
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+condition,score_per_dollar,spd_ci_lo,spd_ci_hi
+B1_claude_solo,3.0842,2.5897,3.7748
+B2_gpt55_solo,2.4356,1.598,3.7857
+C1_claude_writes_gpt55_reviews,1.8659,1.5062,2.2849
+C2_gpt55_writes_claude_reviews,1.7512,1.3378,2.2741
+C3_claude_writes_claude_reviews,1.9238,1.6528,2.2718
+C4_gpt55_writes_gpt55_reviews,2.2811,1.8916,2.7489

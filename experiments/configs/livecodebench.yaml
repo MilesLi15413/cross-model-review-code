@@ -1,0 +1,6 @@
+benchmark_config:
+  dataset_path: external/livecodebench/data
+  release_version: release_latest
+  scenario: codegeneration
+  num_process_evaluate: 4
+  timeout: 30000

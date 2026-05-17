@@ -1,0 +1,7 @@
+condition,n_total,n_evaluated,passed,incomplete_evaluations,pass_rate,sid,avg_cost_usd,score_per_dollar,avg_writer_latency_s,avg_reviewer_latency_s,avg_total_latency_s,parse_rate,parse_failures,cli_errors,timed_out,regression_rate,regressions,writer_model,reviewer_model
+B1_claude_solo,61,61,53,0,0.8689,,0.2817,3.0842,108.51,0.0,108.51,1.0,0,0,0,,,claude-opus-4-7,
+B2_gpt55_solo,61,61,36,0,0.5902,,0.2423,2.4356,54.33,0.0,54.33,1.0,0,0,0,,,gpt-5.5,
+C1_claude_writes_gpt55_reviews,61,61,46,0,0.7541,-0.1148,0.4041,1.8659,101.7,25.28,126.98,1.0,0,0,0,0.1639,10,claude-opus-4-7,gpt-5.5
+C2_gpt55_writes_claude_reviews,61,61,53,0,0.8689,0.2787,0.4962,1.7512,65.97,79.72,145.69,1.0,0,0,0,0.0656,4,gpt-5.5,claude-opus-4-7
+C3_claude_writes_claude_reviews,61,61,55,0,0.9016,0.0327,0.4687,1.9238,104.84,62.88,167.72,1.0,0,0,0,0.0164,1,claude-opus-4-7,claude-opus-4-7
+C4_gpt55_writes_gpt55_reviews,61,61,49,0,0.8033,0.2131,0.3522,2.2811,67.6,24.04,91.64,1.0,0,0,0,0.082,5,gpt-5.5,gpt-5.5

@@ -1,0 +1,16 @@
+condition_a,condition_b,n_shared_tasks,a_only,b_only,mcnemar_chi2,p_value,p_adjusted_bh,significant_005
+B1_claude_solo,B2_gpt55_solo,61,18,1,13.4737,7.6e-05,0.00057,True
+B1_claude_solo,C1_claude_writes_gpt55_reviews,61,10,3,2.7692,0.092285,0.197448,False
+B1_claude_solo,C2_gpt55_writes_claude_reviews,61,4,4,0.125,1.0,1.0,False
+B1_claude_solo,C3_claude_writes_claude_reviews,61,1,3,0.25,0.625,0.721154,False
+B1_claude_solo,C4_gpt55_writes_gpt55_reviews,61,8,4,0.75,0.387695,0.528675,False
+B2_gpt55_solo,C1_claude_writes_gpt55_reviews,61,5,15,4.05,0.041389,0.103473,False
+B2_gpt55_solo,C2_gpt55_writes_claude_reviews,61,4,21,10.24,0.000911,0.004555,True
+B2_gpt55_solo,C3_claude_writes_claude_reviews,61,1,20,15.4286,2.1e-05,0.000315,True
+B2_gpt55_solo,C4_gpt55_writes_gpt55_reviews,61,5,18,6.2609,0.010622,0.035157,True
+C1_claude_writes_gpt55_reviews,C2_gpt55_writes_claude_reviews,61,4,11,2.4,0.118469,0.197448,False
+C1_claude_writes_gpt55_reviews,C3_claude_writes_claude_reviews,61,1,10,5.8182,0.011719,0.035157,True
+C1_claude_writes_gpt55_reviews,C4_gpt55_writes_gpt55_reviews,61,5,8,0.3077,0.581055,0.721154,False
+C2_gpt55_writes_claude_reviews,C3_claude_writes_claude_reviews,61,2,4,0.1667,0.6875,0.736607,False
+C2_gpt55_writes_claude_reviews,C4_gpt55_writes_gpt55_reviews,61,7,3,0.9,0.34375,0.515625,False
+C3_claude_writes_claude_reviews,C4_gpt55_writes_gpt55_reviews,61,8,2,2.5,0.109375,0.197448,False

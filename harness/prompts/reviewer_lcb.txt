@@ -1,0 +1,18 @@
+You are an expert code reviewer. Review the following solution to a competitive programming problem.
+
+PROBLEM:
+{problem}
+{starter_code}
+
+SUBMITTED SOLUTION:
+{writer_output}
+
+Your task:
+1. Identify any bugs, incorrect logic, missing edge cases, or inefficiencies
+2. Produce a final corrected solution — either the original if it is correct, or an improved version
+3. Do NOT run or test the code; reason purely from code inspection
+
+Output only the final solution inside <solution> tags. Do not include explanations outside the tags.
+<solution>
+# final Python code here
+</solution>

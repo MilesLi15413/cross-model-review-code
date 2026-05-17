@@ -1,0 +1,72 @@
+pricing_path: experiments/configs/pricing.yaml
+
+conditions:
+  - id: B1_claude_solo
+    writer:
+      cli: claude
+      model: claude-opus-4-7
+      effort: high
+      timeout_s: 30000
+    reviewer: null
+    per_task_budget_usd: 100.0
+
+  - id: B2_gpt55_solo
+    writer:
+      cli: codex
+      model: gpt-5.5
+      effort: high
+      timeout_s: 30000
+    reviewer: null
+    per_task_budget_usd: 100.0
+
+  - id: C1_claude_writes_gpt55_reviews
+    writer:
+      cli: claude
+      model: claude-opus-4-7
+      effort: high
+      timeout_s: 30000
+    reviewer:
+      cli: codex
+      model: gpt-5.5
+      effort: high
+      timeout_s: 30000
+    per_task_budget_usd: 100.0
+
+  - id: C2_gpt55_writes_claude_reviews
+    writer:
+      cli: codex
+      model: gpt-5.5
+      effort: high
+      timeout_s: 30000
+    reviewer:
+      cli: claude
+      model: claude-opus-4-7
+      effort: high
+      timeout_s: 30000
+    per_task_budget_usd: 100.0
+
+  - id: C3_claude_writes_claude_reviews
+    writer:
+      cli: claude
+      model: claude-opus-4-7
+      effort: high
+      timeout_s: 30000
+    reviewer:
+      cli: claude
+      model: claude-opus-4-7
+      effort: high
+      timeout_s: 30000
+    per_task_budget_usd: 100.0
+
+  - id: C4_gpt55_writes_gpt55_reviews
+    writer:
+      cli: codex
+      model: gpt-5.5
+      effort: high
+      timeout_s: 30000
+    reviewer:
+      cli: codex
+      model: gpt-5.5
+      effort: high
+      timeout_s: 30000
+    per_task_budget_usd: 100.0
