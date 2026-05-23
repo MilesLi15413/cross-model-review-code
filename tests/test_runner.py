@@ -142,7 +142,6 @@ class RunnerHelpersTest(unittest.TestCase):
     def test_infer_task_count_from_filename(self):
         self.assertEqual(100, infer_task_count("experiments/configs/lcb_100.txt", "livecodebench"))
         self.assertEqual(10, infer_task_count("experiments/configs/lcb_pilot_10.txt", "livecodebench"))
-        self.assertEqual(50, infer_task_count("experiments/configs/sweb_50.txt", "swebench"))
 
     def test_resolve_tasks_path_uses_benchmark_default(self):
         self.assertEqual(
@@ -197,29 +196,6 @@ class RunnerHelpersTest(unittest.TestCase):
                 total=9,
                 release_version="release_latest",
                 difficulty="hard",
-            )
-
-    def test_ensure_task_file_samples_swebench_with_dataset_fallback_args(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            output_path = Path(tmpdir) / "sweb_12.txt"
-            config = {
-                "dataset_path": "external/swebench/data/swe_bench_verified.json",
-                "dataset_name": "princeton-nlp/SWE-bench_Verified",
-                "split": "test",
-            }
-            with unittest.mock.patch(
-                "harness.benchmarks.swebench.task_sampler.sample_tasks",
-                return_value=["a", "b"],
-            ) as sample_mock:
-                resolved = ensure_task_file("swebench", config, str(output_path))
-
-            self.assertEqual(str(output_path), resolved)
-            sample_mock.assert_called_once_with(
-                "external/swebench/data/swe_bench_verified.json",
-                output_path=str(output_path),
-                total=12,
-                dataset_name="princeton-nlp/SWE-bench_Verified",
-                split="test",
             )
 
     def test_build_pipeline_passes_effort_to_writer_and_reviewer(self):

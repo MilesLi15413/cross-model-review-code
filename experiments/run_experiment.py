@@ -66,12 +66,10 @@ def load_task_ids(path: str) -> List[str]:
 
 DEFAULT_TASK_FILE_BY_BENCHMARK = {
     "livecodebench": "experiments/configs/lcb_100.txt",
-    "swebench": "experiments/configs/sweb_50.txt",
 }
 
 DEFAULT_TASK_COUNT_BY_BENCHMARK = {
     "livecodebench": 100,
-    "swebench": 50,
 }
 
 
@@ -131,19 +129,8 @@ def ensure_task_file(
         )
         return str(task_file)
 
-    if benchmark == "swebench":
-        from harness.benchmarks.swebench.task_sampler import sample_tasks
-
-        sample_tasks(
-            str(benchmark_config.get("dataset_path", "")),
-            output_path=str(task_file),
-            total=total,
-            dataset_name=str(benchmark_config.get("dataset_name", "princeton-nlp/SWE-bench_Verified")),
-            split=str(benchmark_config.get("split", "test")),
-        )
-        return str(task_file)
-
     raise SystemExit(f"Automatic task sampling is not supported for benchmark '{benchmark}'.")
+
 
 def build_pipeline(
     condition: Dict[str, object],
@@ -191,10 +178,6 @@ def get_adapter(benchmark: str, config: Dict[str, object]):
         from harness.benchmarks.livecodebench.adapter import LiveCodeBenchAdapter
 
         return LiveCodeBenchAdapter(**benchmark_config)
-    if benchmark == "swebench":
-        from harness.benchmarks.swebench.adapter import SWEBenchAdapter
-
-        return SWEBenchAdapter(**benchmark_config)
     raise ValueError(f"Unknown benchmark: {benchmark}")
 
 
@@ -648,7 +631,7 @@ def main():
     assert_supported_python()
 
     parser = argparse.ArgumentParser(description="LLM pair-programming benchmark runner")
-    parser.add_argument("--benchmark", choices=["livecodebench", "swebench"])
+    parser.add_argument("--benchmark", choices=["livecodebench"])
     parser.add_argument(
         "--config",
         default="experiments/configs/all_conditions.yaml",

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Setup script: install dependencies and clone benchmarks
+# Setup script: install dependencies and clone LiveCodeBench
 
 set -e
 
-echo "=== LLM Pair Benchmark Setup ==="
+echo "=== Cross-Model Review Artifact Setup ==="
 
 PYTHON_BIN=""
 for candidate in python3.13 python3.12 python3.11 python3.10 python3; do
@@ -36,34 +36,25 @@ else
   echo "external/livecodebench already exists, skipping."
 fi
 
-# Clone SWE-bench
-if [ ! -d "external/swebench" ]; then
-  echo "Cloning SWE-bench..."
-  git clone https://github.com/SWE-bench/SWE-bench external/swebench
-  "${PYTHON_BIN}" -m pip install -e external/swebench
-else
-  echo "external/swebench already exists, skipping."
-fi
-
 # Verify CLIs
 echo ""
 echo "Verifying CLIs..."
 if command -v claude &>/dev/null; then
-  echo "  ✓ claude CLI found: $(claude --version 2>/dev/null || echo 'version unknown')"
+  echo "  [ok] claude CLI found: $(claude --version 2>/dev/null || echo 'version unknown')"
 else
-  echo "  ✗ claude CLI not found. Install Claude Code: https://claude.ai/code"
+  echo "  [missing] claude CLI not found. Install Claude Code: https://claude.ai/code"
 fi
 
 if command -v codex &>/dev/null; then
-  echo "  ✓ codex CLI found: $(codex --version 2>/dev/null || echo 'version unknown')"
+  echo "  [ok] codex CLI found: $(codex --version 2>/dev/null || echo 'version unknown')"
 else
-  echo "  ✗ codex CLI not found. Install Codex CLI: https://github.com/openai/codex"
+  echo "  [missing] codex CLI not found. Install Codex CLI: https://github.com/openai/codex"
 fi
 
 echo ""
 echo "Test model access:"
 echo "  claude --model claude-opus-4-7 --print --output-format json --no-session-persistence 'Reply exactly with OK'"
-echo "  codex exec --model gpt-5.4 --skip-git-repo-check --json 'Reply exactly with OK'"
+echo "  codex exec --model gpt-5.5 --skip-git-repo-check --json 'Reply exactly with OK'"
 echo ""
 echo "Use ${PYTHON_BIN} for benchmark commands unless your shell's python3 already points to 3.10+."
 echo ""

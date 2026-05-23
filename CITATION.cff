@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this artifact, please cite the paper and repository."
+type: software
+title: "When Should Coding Agents Review Each Other? A Controlled Study of Cross-Model Static Code Review"
+authors:
+  - family-names: "Xiang"
+    given-names: "Shawn Z."
+repository-code: "https://github.com/shawnzxiang/cross-model-review-code"
+date-released: "2026-05-23"
+version: "0.1.0"
+abstract: "Code, prompts, raw outputs, and analysis scripts for a controlled LiveCodeBench study of cross-model static code review between Claude Opus 4.7 and Codex GPT-5.5."

@@ -1,229 +1,148 @@
-# LLM Pair-Programming Benchmark
+# When Should Coding Agents Review Each Other?
 
-Benchmark writer/reviewer pairings across Claude Opus 4.7 and GPT-5.5 using the Claude Code CLI and Codex CLI, with reasoning effort pinned explicitly to `high` for both models.
+This repository is the code and data artifact for the paper **"When Should Coding Agents Review Each Other? A Controlled Study of Cross-Model Static Code Review."**
 
-| Condition | Writer | Reviewer |
-|-----------|--------|----------|
-| B1 | Claude Opus 4.7 | — |
-| B2 | GPT-5.5 | — |
-| C1 | Claude Opus 4.7 | GPT-5.5 |
-| C2 | GPT-5.5 | Claude Opus 4.7 |
-| C3 | Claude Opus 4.7 | Claude Opus 4.7 |
-| C4 | GPT-5.5 | GPT-5.5 |
+The study evaluates a simple writer-reviewer workflow for AI coding agents on hard LiveCodeBench code-generation tasks. One agent writes a Python solution, an optional second agent reviews it without running tests, and LiveCodeBench evaluates only the final artifact. The main question is whether review helps, and whether the writer-reviewer direction matters.
 
-Benchmarks:
-- Phase 1: LiveCodeBench
-- Phase 2: SWE-bench Verified
+## Paper Scope
+
+The paper focuses on LiveCodeBench. Earlier exploratory repository-scale material is intentionally outside the public artifact. This repository includes the harness, fixed prompts, sampled LiveCodeBench task lists, raw run records, pricing assumptions, and analysis scripts needed to audit and reproduce the paper tables.
+
+## Key Result
+
+Cross-model review was directional. Claude review substantially improved Codex drafts, while Codex review regressed Claude drafts in the complete-case analysis.
+
+| Paper label | Repository condition | Writer | Reviewer | Complete-case pass rate | Delta vs writer solo |
+|-------------|----------------------|--------|----------|--------------------------|----------------------|
+| A | `B1_claude_solo` | Claude Opus 4.7 | -- | 86.9% | -- |
+| O | `B2_gpt55_solo` | Codex GPT-5.5 | -- | 59.0% | -- |
+| AO | `C1_claude_writes_gpt55_reviews` | Claude Opus 4.7 | Codex GPT-5.5 | 75.4% | -11.5 pp |
+| OA | `C2_gpt55_writes_claude_reviews` | Codex GPT-5.5 | Claude Opus 4.7 | 86.9% | +27.9 pp |
+| AA | `C3_claude_writes_claude_reviews` | Claude Opus 4.7 | Claude Opus 4.7 | 90.2% | +3.3 pp |
+| OO | `C4_gpt55_writes_gpt55_reviews` | Codex GPT-5.5 | Codex GPT-5.5 | 80.3% | +21.3 pp |
+
+See [docs/RESULTS.md](docs/RESULTS.md) for the full paper-facing tables and interpretation notes.
+
+## Repository Layout
+
+```text
+analysis/                  Metrics, statistical tests, plotting, and result browsing.
+experiments/configs/        Conditions, sampled task lists, benchmark config, and pricing.
+experiments/run_experiment.py
+                           Main experiment runner.
+harness/                    Prompting, parsing, CLI execution, tracking, and benchmark adapters.
+harness/prompts/            Fixed writer and reviewer prompt templates.
+results/raw/lcb_hard_full/  Frozen raw run records used by the paper.
+results/processed/          Paper-facing CSV and JSON tables.
+scripts/                    Reproduction helper scripts.
+tests/                      Unit tests for the harness and analysis code.
+```
+
+Detailed artifact contents are documented in [docs/ARTIFACT.md](docs/ARTIFACT.md).
 
 ## Requirements
 
-- Python `3.10+`
-- Claude Code CLI with `claude-opus-4-7` access
-- Codex CLI with `gpt-5.5` access
-- Docker for SWE-bench evaluation
+- Python 3.10 or newer
+- Claude Code CLI with access to `claude-opus-4-7`
+- Codex CLI with access to `gpt-5.5`
+- Network access for downloading LiveCodeBench shards when local task JSON files are absent
 
-The harness fails fast on older Python versions. Use `python3.10` (or any `3.10+` interpreter on your PATH) for all commands below.
+For analysis-only reproduction from the included raw records, the model CLIs are not needed.
 
-## Setup
+## Quick Start
+
+```bash
+python3.10 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+Run the test suite:
+
+```bash
+python -m pytest tests
+```
+
+Recompute the paper tables from the frozen LiveCodeBench run:
+
+```bash
+bash scripts/reproduce_paper_tables.sh
+```
+
+The script refreshes:
+
+- `results/processed/metrics_complete_case.csv`
+- `results/processed/metrics_complete_case.json`
+- `results/processed/metrics_all.csv`
+- `results/processed/metrics_all.json`
+- `results/processed/stats_complete_case.csv`
+- `results/processed/stats_all.csv`
+- `results/processed/spd_ci_complete_case.csv`
+- `results/processed/spd_ci_all.csv`
+
+See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for exact commands and full-run notes.
+
+## Running a New LiveCodeBench Experiment
+
+Run setup once to install dependencies, clone LiveCodeBench under `external/`, and check the model CLIs:
 
 ```bash
 ./setup.sh
 ```
 
-The setup script:
-- checks for Python `3.10+`
-- installs Python requirements with `python3 -m pip`
-- clones `external/livecodebench` and `external/swebench`
-- prints the CLI versions it finds
-
-Manual smoke tests:
-
-```bash
-claude --model claude-opus-4-7 --print --output-format json --no-session-persistence "Reply exactly with OK"
-codex exec --model gpt-5.5 --skip-git-repo-check --json "Reply exactly with OK"
-```
-
-For the commands below, replace `python3.10` with whichever 3.10+ interpreter you want to use.
-
-## Config Layout
-
-- Shared writer/reviewer conditions live in [experiments/configs/all_conditions.yaml](/Users/shawn/Documents/llm-claude-codex-pair-coding-benchmark/experiments/configs/all_conditions.yaml)
-- Benchmark-specific settings are auto-loaded from:
-  - [experiments/configs/livecodebench.yaml](/Users/shawn/Documents/llm-claude-codex-pair-coding-benchmark/experiments/configs/livecodebench.yaml)
-  - [experiments/configs/swebench.yaml](/Users/shawn/Documents/llm-claude-codex-pair-coding-benchmark/experiments/configs/swebench.yaml)
-
-`experiments/run_experiment.py` runs a live preflight once per checkpoint directory unless `--skip-preflight` is passed.
-
-All benchmark conditions pin `effort: high` explicitly for both writer and reviewer turns. Claude runs with `--effort high`, and Codex runs with `-c model_reasoning_effort="high"` so local CLI defaults do not leak into benchmark results.
-
-Claude Code subprocesses set `CLAUDE_CODE_MAX_OUTPUT_TOKENS` to at least `200000` so long hard-task responses are not rejected by the CLI's lower default output cap. If the variable is already set higher in your shell, the harness preserves your explicit value.
-
-## Phase 1: LiveCodeBench
-
-Run the 10-task pilot:
+Run the hard-task configuration used by the paper:
 
 ```bash
 python3.10 experiments/run_experiment.py \
   --benchmark livecodebench \
-  --tasks experiments/configs/lcb_pilot_10.txt \
-  --checkpoint results/raw/lcb_pilot/
+  --tasks experiments/configs/lcb_hard_100.txt \
+  --checkpoint results/raw/lcb_hard_full
 ```
 
-If `experiments/configs/lcb_pilot_10.txt` does not exist yet, `run_experiment.py` will auto-sample 10 tasks and create it before starting.
+The runner records raw stdout and stderr, final artifacts, prompt hashes, CLI versions, timestamps, retry metadata, token counts, costs, parsing status, and evaluation results.
 
-If local LiveCodeBench task JSON files are not present under `external/livecodebench/data`, the runner will fetch the requested task rows from Hugging Face and print which `test*.jsonl` shard files it is scanning during `Loading benchmark tasks...`.
+## Recomputing Metrics Manually
 
-Pilot gates:
-
-```bash
-python3.10 analysis/compute_metrics.py --input results/raw/lcb_pilot/ --report
-```
-
-Revisit pilot checkpoints and outputs:
-
-```bash
-python3.10 analysis/show_results.py --input results/raw/lcb_pilot/
-python3.10 analysis/show_results.py --input results/raw/lcb_pilot/ --task abc387_a
-python3.10 analysis/show_results.py --input results/raw/lcb_pilot/ --condition C1_claude_writes_gpt55_reviews --task abc387_a --artifact
-```
-
-This refreshes `results/raw/lcb_pilot/index.json` and writes a task-level table to `results/processed/lcb_pilot/tasks.csv`.
-
-Full run:
-
-```bash
-python3.10 experiments/run_experiment.py \
-  --benchmark livecodebench \
-  --tasks experiments/configs/lcb_100.txt \
-  --checkpoint results/raw/lcb_full/
-```
-
-If `--tasks` is omitted entirely, the runner defaults to `experiments/configs/lcb_100.txt` for LiveCodeBench and auto-generates it when missing.
-
-Hard-only run:
-
-```bash
-python3.10 experiments/run_experiment.py \
-  --benchmark livecodebench \
-  --lcb-difficulty hard \
-  --checkpoint results/raw/lcb_hard_100/
-```
-
-This defaults to `experiments/configs/lcb_hard_100.txt` and auto-generates a hard-only task list when missing.
-
-LiveCodeBench evaluation now uses the upstream custom-output format in a condition-level batch step.
-
-## Phase 2: SWE-bench Verified
-
-Collect model outputs only:
-
-```bash
-python3.10 experiments/run_experiment.py \
-  --benchmark swebench \
-  --tasks experiments/configs/sweb_pilot_10.txt \
-  --checkpoint results/raw/sweb_pilot/ \
-  --skip-eval
-```
-
-Missing SWE-bench task files are auto-generated the same way, based on the count encoded in the filename such as `sweb_pilot_10.txt` or `sweb_50.txt`.
-
-Run Docker evaluation separately:
-
-```bash
-python3.10 harness/benchmarks/swebench/batch_eval.py \
-  --inputs results/raw/sweb_pilot/ \
-  --output results/raw/sweb_pilot_eval/
-```
-
-The batch evaluator emits official prediction objects with `instance_id`, `model_name_or_path`, and `model_patch`, then writes evaluated record copies under `results/raw/.../records/`.
-
-## Resume Flow
-
-Usage and rate limits no longer pause the run. The runner waits indefinitely with capped exponential backoff:
-
-```text
-60s → 120s → 300s → 600s → 900s → 900s ...
-```
-
-The terminal prints the blocked CLI/model, next retry number, and wait duration. `PAUSED` is reserved for explicit future manual-pause flows, not normal usage-limit handling.
-
-If a run is interrupted for another reason and a `PAUSED` file exists, resume with confirmation:
-
-Resume with confirmation:
-
-```bash
-python3.10 experiments/run_experiment.py --resume results/raw/lcb_full/
-```
-
-Non-interactive resume:
-
-```bash
-python3.10 experiments/run_experiment.py --resume results/raw/lcb_full/ --confirm-resume
-```
-
-On resume, the runner now automatically reruns checkpoint records that previously ended in `cli_error=true` or `timed_out=true`. Successful inference records are still reused, even if a later batch-evaluation step has not populated `passed` yet.
-
-## Analysis
-
-Metrics:
+Complete-case metrics:
 
 ```bash
 python3.10 analysis/compute_metrics.py \
-  --input results/raw/lcb_full/ \
-  --output results/processed/lcb_metrics.csv \
-  --json-output results/processed/lcb_metrics.json \
+  --input results/raw/lcb_hard_full \
+  --analysis-set complete-case \
+  --recompute-costs \
+  --output results/processed/metrics_complete_case.csv \
+  --json-output results/processed/metrics_complete_case.json \
   --report
 ```
 
-Browse a raw run without opening JSON files manually:
+Reliability-inclusive metrics:
 
 ```bash
-python3.10 analysis/show_results.py --input results/raw/lcb_full/
-python3.10 analysis/show_results.py --input results/raw/lcb_full/ --task <task_id>
-python3.10 analysis/show_results.py --input results/raw/lcb_full/ --condition <condition_id> --task <task_id> --artifact
+python3.10 analysis/compute_metrics.py \
+  --input results/raw/lcb_hard_full \
+  --analysis-set all \
+  --recompute-costs \
+  --output results/processed/metrics_all.csv \
+  --json-output results/processed/metrics_all.json \
+  --report
 ```
 
-Pairwise tests and SPD bootstrap CIs:
+Pairwise tests and score-per-dollar bootstrap intervals:
 
 ```bash
 python3.10 analysis/statistical_tests.py \
-  --input results/raw/lcb_full/ \
-  --output results/processed/lcb_stats.csv \
-  --spd-output results/processed/lcb_spd_ci.csv
+  --input results/raw/lcb_hard_full \
+  --analysis-set complete-case \
+  --recompute-costs \
+  --output results/processed/stats_complete_case.csv \
+  --spd-output results/processed/spd_ci_complete_case.csv
 ```
 
-Asymmetry analysis:
+## Citation
 
-```bash
-python3.10 analysis/asymmetry_analysis.py \
-  --input results/raw/lcb_full/ \
-  --output results/processed/lcb_asymmetry.csv
-```
+Please cite the paper and this artifact if you use the code or data. Citation metadata is provided in [CITATION.cff](CITATION.cff).
 
-Plots:
+## License and Reuse
 
-```bash
-python3.10 analysis/plots.py \
-  --metrics results/processed/lcb_metrics.csv \
-  --output results/processed/figures/
-```
-
-## Tests
-
-Run the local unit suite:
-
-```bash
-python3.10 -m unittest discover -s tests -v
-```
-
-These tests cover:
-- CLI parsing and pause handling
-- `<solution>` parsing and confidence-note extraction
-- config merge and checkpoint idempotency helpers
-- LiveCodeBench and SWE-bench payload helpers
-
-## Repository Notes
-
-- Per-task result JSONs now include raw stdout/stderr, prompt hashes, CLI versions, timestamps, parse metadata, and writer confidence metadata.
-- `parse_rate` is measured from whether the evaluated turn actually returned `<solution>` tags, not whether fallback extraction succeeded.
-- `experiments/run_experiment.py` is the only entrypoint that enforces Python `3.10+`; the unit tests are intentionally lightweight enough to run on this machine’s older interpreter.
+No open-source license has been declared yet. Until a license is added, please contact the authors before reusing code or data beyond citation, review, or artifact evaluation.
