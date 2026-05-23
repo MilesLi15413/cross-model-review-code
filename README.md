@@ -145,4 +145,4 @@ Please cite the paper and this artifact if you use the code or data. Citation me
 
 ## License and Reuse
 
-No open-source license has been declared yet. Until a license is added, please contact the authors before reusing code or data beyond citation, review, or artifact evaluation.
+This repository is released under the MIT License. See [LICENSE](LICENSE).
