@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Setup script: install dependencies and clone LiveCodeBench
+# Setup script: install dependencies and clone benchmarks
 
 set -e
 
@@ -34,6 +34,15 @@ if [ ! -d "external/livecodebench" ]; then
   "${PYTHON_BIN}" -m pip install -e external/livecodebench
 else
   echo "external/livecodebench already exists, skipping."
+fi
+
+# Clone SWE-bench
+if [ ! -d "external/swebench" ]; then
+  echo "Cloning SWE-bench..."
+  git clone https://github.com/SWE-bench/SWE-bench external/swebench
+  "${PYTHON_BIN}" -m pip install -e external/swebench
+else
+  echo "external/swebench already exists, skipping."
 fi
 
 # Verify CLIs

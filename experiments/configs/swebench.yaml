@@ -1,0 +1,6 @@
+benchmark_config:
+  dataset_path: external/swebench/data/swe_bench_verified.json
+  dataset_name: princeton-nlp/SWE-bench_Verified
+  split: test
+  max_workers: 4
+  timeout: 30000
