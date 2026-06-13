@@ -75,8 +75,9 @@ class CLIRunnerTest(unittest.TestCase):
             stderr="",
         )
 
-        with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
-            result = runner.run("Reply exactly with OK")
+        with mock.patch.object(runner, "_resolve_executable", return_value="claude"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                result = runner.run("Reply exactly with OK")
 
         self.assertEqual("OK", result.response_text)
         self.assertEqual(10, result.input_tokens)
@@ -145,8 +146,9 @@ class CLIRunnerTest(unittest.TestCase):
         runner = CLIRunner("codex", "gpt-5.4", cli_version="codex 1.0")
         completed = CompletedProcess(args=[], returncode=0, stdout=stdout, stderr="")
 
-        with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
-            result = runner.run("Reply exactly with OK")
+        with mock.patch.object(runner, "_resolve_executable", return_value="codex"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                result = runner.run("Reply exactly with OK")
 
         self.assertEqual("OK", result.response_text)
         self.assertEqual(17, result.input_tokens)
@@ -163,9 +165,10 @@ class CLIRunnerTest(unittest.TestCase):
             stderr="unsupported model",
         )
 
-        with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
-            with self.assertRaises(UnsupportedModelError):
-                runner.run("prompt")
+        with mock.patch.object(runner, "_resolve_executable", return_value="codex"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(UnsupportedModelError):
+                    runner.run("prompt")
 
     def test_rate_limit_retries_until_success_without_pause(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -195,8 +198,9 @@ class CLIRunnerTest(unittest.TestCase):
                 "harness.core.cli_runner.subprocess.run",
                 side_effect=[completed, completed, success],
             ) as run_mock:
-                with mock.patch("harness.core.cli_runner.time.sleep", return_value=None) as sleep_mock:
-                    result = runner.run("prompt", task_id="task-1", condition_id="C1", turn="writer")
+                with mock.patch.object(runner, "_resolve_executable", return_value="claude"):
+                    with mock.patch("harness.core.cli_runner.time.sleep", return_value=None) as sleep_mock:
+                        result = runner.run("prompt", task_id="task-1", condition_id="C1", turn="writer")
 
             self.assertEqual("OK", result.response_text)
             self.assertFalse(sentinel.exists())
@@ -259,8 +263,9 @@ class CLIRunnerTest(unittest.TestCase):
             "harness.core.cli_runner.subprocess.run",
             side_effect=[limited, success],
         ) as run_mock:
-            with mock.patch("harness.core.cli_runner.time.sleep", return_value=None) as sleep_mock:
-                result = runner.run("prompt")
+            with mock.patch.object(runner, "_resolve_executable", return_value="claude"):
+                with mock.patch("harness.core.cli_runner.time.sleep", return_value=None) as sleep_mock:
+                    result = runner.run("prompt")
 
         self.assertEqual("OK", result.response_text)
         self.assertEqual(2, run_mock.call_count)
@@ -272,8 +277,9 @@ class CLIRunnerTest(unittest.TestCase):
             "harness.core.cli_runner.subprocess.run",
             side_effect=TimeoutExpired(cmd="claude", timeout=300),
         ):
-            with self.assertRaises(TimeoutError):
-                runner.run("prompt")
+            with mock.patch.object(runner, "_resolve_executable", return_value="claude"):
+                with self.assertRaises(TimeoutError):
+                    runner.run("prompt")
 
 
 if __name__ == "__main__":
