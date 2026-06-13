@@ -23,4 +23,4 @@ python -m pytest tests
 
 - Run `python -m pytest tests`.
 - Run `bash scripts/reproduce_paper_tables.sh` if analysis code, pricing, or result records changed.
-- Keep README and docs consistent with the LiveCodeBench-only paper scope.
+- Keep README and docs consistent with the LiveCodeBench-only artifact scope.

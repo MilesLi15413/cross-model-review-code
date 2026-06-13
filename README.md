@@ -4,25 +4,6 @@ This repository is the code and data artifact for the paper **"When Should Codin
 
 The study evaluates a simple writer-reviewer workflow for AI coding agents on hard LiveCodeBench code-generation tasks. One agent writes a Python solution, an optional second agent reviews it without running tests, and LiveCodeBench evaluates only the final artifact. The main question is whether review helps, and whether the writer-reviewer direction matters.
 
-## Paper Scope
-
-The paper focuses on LiveCodeBench. Earlier exploratory repository-scale material is intentionally outside the public artifact. This repository includes the harness, fixed prompts, sampled LiveCodeBench task lists, raw run records, pricing assumptions, and analysis scripts needed to audit and reproduce the paper tables.
-
-## Key Result
-
-Cross-model review was directional. Claude review substantially improved Codex drafts, while Codex review regressed Claude drafts in the complete-case analysis.
-
-| Paper label | Repository condition | Writer | Reviewer | Complete-case pass rate | Delta vs writer solo |
-|-------------|----------------------|--------|----------|--------------------------|----------------------|
-| A | `B1_claude_solo` | Claude Opus 4.7 | -- | 86.9% | -- |
-| O | `B2_gpt55_solo` | Codex GPT-5.5 | -- | 59.0% | -- |
-| AO | `C1_claude_writes_gpt55_reviews` | Claude Opus 4.7 | Codex GPT-5.5 | 75.4% | -11.5 pp |
-| OA | `C2_gpt55_writes_claude_reviews` | Codex GPT-5.5 | Claude Opus 4.7 | 86.9% | +27.9 pp |
-| AA | `C3_claude_writes_claude_reviews` | Claude Opus 4.7 | Claude Opus 4.7 | 90.2% | +3.3 pp |
-| OO | `C4_gpt55_writes_gpt55_reviews` | Codex GPT-5.5 | Codex GPT-5.5 | 80.3% | +21.3 pp |
-
-See [docs/RESULTS.md](docs/RESULTS.md) for the full paper-facing tables and interpretation notes.
-
 ## Repository Layout
 
 ```text

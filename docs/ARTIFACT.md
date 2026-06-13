@@ -17,7 +17,7 @@ Not included:
 
 - Local benchmark checkouts under `external/`.
 - Local paper source or Overleaf exports.
-- Python caches, temporary runs, and exploratory outputs outside the paper scope.
+- Python caches, temporary runs, and exploratory outputs outside the artifact scope.
 
 ## Condition Mapping
 
