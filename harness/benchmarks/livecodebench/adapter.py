@@ -6,11 +6,9 @@ import json
 import io
 from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional
-
-from lcb_runner.benchmarks.code_generation import CodeGenerationProblem
-from lcb_runner.evaluation import codegen_metrics, extract_instance_results
 
 from harness.benchmarks.livecodebench.dataset_loader import (
     iter_hf_lcb_rows_stream,
@@ -22,6 +20,22 @@ from harness.core.tracker import TaskRecord
 
 
 LCB_ROOT = Path(__file__).resolve().parents[3] / "external" / "livecodebench"
+
+
+@lru_cache(maxsize=1)
+def _load_lcb_runner():
+    try:
+        from lcb_runner.benchmarks.code_generation import CodeGenerationProblem
+        from lcb_runner.evaluation import codegen_metrics, extract_instance_results
+    except ModuleNotFoundError as exc:
+        if exc.name and exc.name.startswith("lcb_runner"):
+            raise ModuleNotFoundError(
+                "LiveCodeBench evaluator package is unavailable. Run setup.sh or install "
+                "external/livecodebench before calling LiveCodeBenchAdapter.evaluate_batch()."
+            ) from exc
+        raise
+
+    return CodeGenerationProblem, codegen_metrics, extract_instance_results
 
 
 def _load_prompts() -> tuple[str, str]:
@@ -273,7 +287,8 @@ class LiveCodeBenchAdapter:
             results[task_id] = passed
         return results
 
-    def _to_problem(self, task_id: str) -> CodeGenerationProblem:
+    def _to_problem(self, task_id: str):
+        CodeGenerationProblem, _, _ = _load_lcb_runner()
         task = self._load_task(task_id)
         row = dict(task.raw)
         row.pop("task_id", None)
@@ -293,6 +308,7 @@ class LiveCodeBenchAdapter:
     def evaluate_batch(self, records: List[TaskRecord]) -> Dict[str, bool]:
         """Evaluate only the selected records in-process using upstream metric code."""
 
+        _, codegen_metrics, extract_instance_results = _load_lcb_runner()
         selected_records = [
             record for record in sorted(records, key=lambda item: item.task_id)
             if not record.cli_error and not record.timed_out
