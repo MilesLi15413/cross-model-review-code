@@ -2,7 +2,20 @@
 
 This repository is the code and data artifact for the paper **"When Should Coding Agents Review Each Other? A Controlled Study of Cross-Model Static Code Review."**
 
-The study evaluates a simple writer-reviewer workflow for AI coding agents on hard LiveCodeBench code-generation tasks. One agent writes a Python solution, an optional second agent reviews it without running tests, and LiveCodeBench evaluates only the final artifact. The main question is whether review helps, and whether the writer-reviewer direction matters.
+The study evaluates a simple writer-reviewer workflow for AI coding agents on hard and medium LiveCodeBench code-generation tasks. One agent writes a Python solution, an optional second agent reviews it without running tests, and LiveCodeBench evaluates only the final artifact. The main question is whether review helps, and whether the writer-reviewer direction matters.
+
+## Scope and Interpretation
+
+The artifact deliberately keeps result claims out of this README. Before drawing
+conclusions from the tables, read [docs/SCOPE.md](docs/SCOPE.md): it states what the
+six conditions estimate (a contrast between whole stochastic pipelines, not the effect
+of review on a fixed draft), which contrasts survive multiplicity correction, and the
+boundary beyond which the measurement is not established — one model pair, fixed
+prompts, high reasoning effort, a single static review pass whose output replaces the
+draft, no reviewer tool use, no repository context, and self-contained single-file
+Python tasks scored only by hidden tests.
+
+[docs/RESULTS.md](docs/RESULTS.md) has the paper-facing tables and interpretation notes.
 
 ## Repository Layout
 
@@ -13,7 +26,8 @@ experiments/run_experiment.py
                            Main experiment runner.
 harness/                    Prompting, parsing, CLI execution, tracking, and benchmark adapters.
 harness/prompts/            Fixed writer and reviewer prompt templates.
-results/raw/lcb_hard_full/  Frozen raw run records used by the paper.
+results/raw/lcb_hard_full/  Frozen raw run records, hard slice (82 tasks).
+results/raw/lcb_medium_100/ Frozen raw run records, medium slice (55 tasks).
 results/processed/          Paper-facing CSV and JSON tables.
 scripts/                    Reproduction helper scripts.
 tests/                      Unit tests for the harness and analysis code.
@@ -45,22 +59,34 @@ Run the test suite:
 python -m pytest tests
 ```
 
-Recompute the paper tables from the frozen LiveCodeBench run:
+Recompute the paper tables from the frozen LiveCodeBench runs:
 
 ```bash
 bash scripts/reproduce_paper_tables.sh
 ```
 
-The script refreshes:
+The script refreshes the pooled tables the paper reports:
 
-- `results/processed/metrics_complete_case.csv`
-- `results/processed/metrics_complete_case.json`
-- `results/processed/metrics_all.csv`
-- `results/processed/metrics_all.json`
-- `results/processed/stats_complete_case.csv`
-- `results/processed/stats_all.csv`
-- `results/processed/spd_ci_complete_case.csv`
-- `results/processed/spd_ci_all.csv`
+- `results/processed/metrics_pooled_complete_case.csv` and `.json`
+- `results/processed/metrics_pooled_all.csv` and `.json`
+- `results/processed/stats_pooled_complete_case.csv`
+- `results/processed/spd_ci_pooled_complete_case.csv`
+- `results/processed/pooled_manifest.csv` (per task-condition audit trail)
+
+and the per-slice tables:
+
+- `results/processed/metrics_complete_case.csv` and `.json` (hard slice)
+- `results/processed/metrics_all.csv` and `.json` (hard slice)
+- `results/processed/stats_complete_case.csv`, `results/processed/stats_all.csv`
+- `results/processed/spd_ci_complete_case.csv`, `results/processed/spd_ci_all.csv`
+- `results/processed/metrics_medium_complete_case.csv` and `.json` (medium slice)
+
+Same-candidate reviewer transitions need the LiveCodeBench evaluator, so they have
+their own script:
+
+```bash
+bash scripts/reproduce_review_transitions.sh
+```
 
 See [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for exact commands and full-run notes.
 
@@ -72,7 +98,7 @@ Run setup once to install dependencies, clone LiveCodeBench under `external/`, a
 ./setup.sh
 ```
 
-Run the hard-task configuration used by the paper:
+Run the two task configurations used by the paper:
 
 ```bash
 python3.10 experiments/run_experiment.py \
@@ -81,21 +107,32 @@ python3.10 experiments/run_experiment.py \
   --checkpoint results/raw/lcb_hard_full
 ```
 
+```bash
+python3.10 experiments/run_experiment.py \
+  --benchmark livecodebench \
+  --tasks experiments/configs/lcb_medium_100.txt \
+  --checkpoint results/raw/lcb_medium_100
+```
+
 The runner records raw stdout and stderr, final artifacts, prompt hashes, CLI versions, timestamps, retry metadata, token counts, costs, parsing status, and evaluation results.
 
 ## Recomputing Metrics Manually
 
-Complete-case metrics:
+Pooled complete-case metrics (the paper's 116-task table):
 
 ```bash
 python3.10 analysis/compute_metrics.py \
-  --input results/raw/lcb_hard_full \
+  --input results/raw/lcb_hard_full results/raw/lcb_medium_100 \
+  --input-label hard --input-label medium \
   --analysis-set complete-case \
   --recompute-costs \
-  --output results/processed/metrics_complete_case.csv \
-  --json-output results/processed/metrics_complete_case.json \
+  --output results/processed/metrics_pooled_complete_case.csv \
+  --json-output results/processed/metrics_pooled_complete_case.json \
+  --manifest-output results/processed/pooled_manifest.csv \
   --report
 ```
+
+Passing a single `--input` analyses that slice on its own, unnamespaced.
 
 Reliability-inclusive metrics:
 

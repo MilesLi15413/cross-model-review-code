@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-05-17T23:34:19.678408+00:00",
+  "cli_versions": {
+    "claude": "2.1.50 (Claude Code)",
+    "codex": "codex-cli 0.130.0-alpha.5"
+  },
+  "checks": [
+    {
+      "cli": "claude",
+      "model": "claude-opus-4-7",
+      "effort": "high",
+      "cli_version": "2.1.50 (Claude Code)",
+      "ok": true,
+      "response_text": "OK",
+      "checked_at": "2026-05-17T23:34:11.894010+00:00"
+    },
+    {
+      "cli": "codex",
+      "model": "gpt-5.5",
+      "effort": "high",
+      "cli_version": "codex-cli 0.130.0-alpha.5",
+      "ok": true,
+      "response_text": "OK",
+      "checked_at": "2026-05-17T23:34:19.678370+00:00"
+    }
+  ]
+}

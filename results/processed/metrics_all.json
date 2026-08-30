@@ -18,6 +18,9 @@
     "timed_out": 4,
     "writer_model": "gpt-5.5",
     "reviewer_model": "claude-opus-4-7",
+    "cross_condition_regressions": 5,
+    "cross_condition_fixes": 25,
+    "cross_condition_regression_rate": 0.0676,
     "regressions": 5,
     "regression_rate": 0.0676
   },
@@ -40,6 +43,9 @@
     "timed_out": 8,
     "writer_model": "claude-opus-4-7",
     "reviewer_model": "gpt-5.5",
+    "cross_condition_regressions": 11,
+    "cross_condition_fixes": 3,
+    "cross_condition_regression_rate": 0.1746,
     "regressions": 11,
     "regression_rate": 0.1746
   },
@@ -82,6 +88,9 @@
     "timed_out": 9,
     "writer_model": "claude-opus-4-7",
     "reviewer_model": "claude-opus-4-7",
+    "cross_condition_regressions": 1,
+    "cross_condition_fixes": 4,
+    "cross_condition_regression_rate": 0.0159,
     "regressions": 1,
     "regression_rate": 0.0159
   },
@@ -124,6 +133,9 @@
     "timed_out": 1,
     "writer_model": "gpt-5.5",
     "reviewer_model": "gpt-5.5",
+    "cross_condition_regressions": 8,
+    "cross_condition_fixes": 22,
+    "cross_condition_regression_rate": 0.1026,
     "regressions": 8,
     "regression_rate": 0.1026
   }

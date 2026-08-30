@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import multiprocessing as mp
-import queue
 import sys
-import time
 from pathlib import Path
 from typing import Optional
 
@@ -14,27 +11,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from analysis.lcb_eval_runner import SKIP_NAMES, evaluate_record
 from analysis.result_index import write_run_index, write_tasks_csv
-from experiments.run_experiment import get_adapter, merge_configs
+from experiments.run_experiment import merge_configs
 from harness.core.parser import normalize_code_artifact
 from harness.core.tracker import CostTracker, TaskRecord
-
-
-SKIP_NAMES = {"run_meta.json", "preflight.json", "index.json", "report.json"}
-
-
-def _evaluate_one_worker(
-    config_path: str,
-    benchmark_config_path: str,
-    record: TaskRecord,
-    result_queue,
-) -> None:
-    config = merge_configs(config_path, "livecodebench", benchmark_config_path)
-    config["benchmark_config"]["num_process_evaluate"] = 1
-    adapter = get_adapter("livecodebench", config)
-    record.final_artifact = normalize_code_artifact(record.final_artifact or "")
-    result = adapter.evaluate_batch([record])
-    result_queue.put(result.get(record.task_id))
 
 
 def _evaluate_one(
@@ -43,37 +24,7 @@ def _evaluate_one(
     benchmark_config_path: str,
     wall_timeout_s: int,
 ) -> tuple[Optional[bool], Optional[str], float]:
-    started = time.monotonic()
-    ctx = mp.get_context("fork")
-    result_queue = ctx.Queue()
-    proc = ctx.Process(
-        target=_evaluate_one_worker,
-        args=(config_path, benchmark_config_path, record, result_queue),
-    )
-    proc.start()
-    timeout = wall_timeout_s if wall_timeout_s > 0 else None
-    proc.join(timeout)
-    elapsed = time.monotonic() - started
-
-    if proc.is_alive():
-        proc.terminate()
-        proc.join(5)
-        if proc.is_alive():
-            proc.kill()
-            proc.join()
-        return None, f"lcb_eval_wall_timeout_after_{wall_timeout_s}s", elapsed
-
-    if proc.exitcode != 0:
-        return None, f"lcb_eval_process_exit_{proc.exitcode}", elapsed
-
-    try:
-        passed = result_queue.get_nowait()
-    except queue.Empty:
-        return None, "lcb_eval_returned_no_result", elapsed
-
-    if passed is None:
-        return None, "lcb_eval_returned_none", elapsed
-    return bool(passed), None, elapsed
+    return evaluate_record(record, config_path, benchmark_config_path, wall_timeout_s)
 
 
 def _iter_condition_dirs(root: Path, condition: Optional[str]) -> list[Path]:

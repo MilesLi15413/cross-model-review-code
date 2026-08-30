@@ -55,6 +55,7 @@ class TaskRecord:
     cli_error: bool = False
     budget_exceeded: bool = False
     passed: Optional[bool] = None
+    writer_passed: Optional[bool] = None
     writer_stdout: str = ""
     writer_stderr: str = ""
     reviewer_stdout: str = ""

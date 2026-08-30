@@ -14,19 +14,20 @@ paper/
 cross-model-review-overleaf.zip
 
 # Historical/intermediate run outputs kept locally for analysis, not in the
-# published code artifact.
+# published code artifact. The two runs the paper pools (lcb_hard_full and
+# lcb_medium_100) are tracked.
 results/raw/archive/
 results/raw/lcb_full/
 results/raw/lcb_hard_10/
 results/raw/lcb_hard_full_eval_snapshot*/
-results/raw/lcb_medium_100/
+results/raw/lcb_hard_full_rerun_incomplete_*/
 results/raw/lcb_pilot/
 results/raw/sweb_pilot/
 results/raw/sweb_smoke_5*/
 results/processed/lcb_full/
 results/processed/lcb_hard_10/
 results/processed/lcb_hard_full_eval_snapshot*/
-results/processed/lcb_medium_100/
+results/processed/lcb_hard_full_rerun_incomplete_*/
 results/processed/lcb_pilot/
 results/processed/sweb_pilot/
 results/processed/sweb_smoke_5/

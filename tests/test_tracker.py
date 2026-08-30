@@ -4,7 +4,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from harness.core.tracker import CostTracker
+import json
+
+from harness.core.tracker import CostTracker, TaskRecord
 
 
 class CostTrackerTest(unittest.TestCase):
@@ -62,3 +64,40 @@ test-model:
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WriterPassedFieldTest(unittest.TestCase):
+    def test_writer_passed_round_trips_through_a_checkpoint(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker = CostTracker()
+            record = TaskRecord(
+                task_id="t1",
+                condition="C2",
+                benchmark="livecodebench",
+                writer_model="gpt-5.5",
+                reviewer_model="claude-opus-4-7",
+                passed=True,
+                writer_passed=False,
+                final_artifact="print(1)",
+            )
+            tracker.save(record, tmpdir)
+            loaded = tracker.load_one("t1", "C2", tmpdir)
+
+        self.assertFalse(loaded.writer_passed)
+        self.assertTrue(loaded.passed)
+
+    def test_records_written_before_the_field_existed_still_load(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            legacy = {
+                "task_id": "t1",
+                "condition": "B1",
+                "benchmark": "livecodebench",
+                "writer_model": "claude-opus-4-7",
+                "reviewer_model": None,
+                "passed": True,
+            }
+            Path(tmpdir, "t1__B1.json").write_text(json.dumps(legacy))
+            loaded = CostTracker().load_one("t1", "B1", tmpdir)
+
+        self.assertIsNone(loaded.writer_passed)
+        self.assertTrue(loaded.passed)

@@ -1,0 +1,81 @@
+{
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/all_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/lcb_medium_100.txt",
+  "skip_eval": false,
+  "skip_preflight": false,
+  "lcb_difficulty": "medium",
+  "conditions": [
+    {
+      "id": "B1_claude_solo",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "B2_gpt55_solo",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "C1_claude_writes_gpt55_reviews",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C2_gpt55_writes_claude_reviews",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C3_claude_writes_claude_reviews",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C4_gpt55_writes_gpt55_reviews",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      }
+    }
+  ]
+}

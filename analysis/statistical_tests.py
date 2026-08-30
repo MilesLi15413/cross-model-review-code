@@ -7,14 +7,19 @@ import csv
 import random
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 import sys
 
 from scipy.stats import binomtest, mstats
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from analysis.compute_metrics import compute_metrics, filter_records, load_records, recompute_costs
+from analysis.compute_metrics import (
+    compute_metrics,
+    filter_records,
+    load_pooled_records,
+    recompute_costs,
+)
 
 
 def mcnemar_test(pass_a: List[bool], pass_b: List[bool]) -> Tuple[int, int, float, float]:
@@ -64,12 +69,15 @@ def bootstrap_spd_ci(records: List[Dict[str, object]], resamples: int = 1000) ->
 
 
 def run_tests(
-    checkpoint_dir: str,
+    checkpoint_dirs: Union[str, List[str]],
     recompute_cost_fields: bool = False,
     pricing_path: str = "experiments/configs/pricing.yaml",
     analysis_set: str = "all",
+    labels: Optional[List[str]] = None,
 ):
-    records = load_records(checkpoint_dir)
+    if isinstance(checkpoint_dirs, str):
+        checkpoint_dirs = [checkpoint_dirs]
+    records = load_pooled_records(checkpoint_dirs, labels)
     if recompute_cost_fields:
         recompute_costs(records, pricing_path)
     records = filter_records(records, analysis_set)
@@ -139,7 +147,17 @@ def save_csv(rows: List[Dict[str, object]], path: str) -> None:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True)
+    parser.add_argument(
+        "--input",
+        required=True,
+        nargs="+",
+        help="One or more checkpoint dirs; several are pooled with slice-namespaced task ids",
+    )
+    parser.add_argument(
+        "--input-label",
+        action="append",
+        help="Slice label for each --input, in order. Defaults to the directory name.",
+    )
     parser.add_argument("--output", default="results/processed/stats.csv")
     parser.add_argument("--spd-output", default="results/processed/spd_ci.csv")
     parser.add_argument(
@@ -160,7 +178,13 @@ def main():
     )
     args = parser.parse_args()
 
-    pair_rows, spd_rows = run_tests(args.input, args.recompute_costs, args.pricing_path, args.analysis_set)
+    pair_rows, spd_rows = run_tests(
+        args.input,
+        args.recompute_costs,
+        args.pricing_path,
+        args.analysis_set,
+        labels=args.input_label,
+    )
     save_csv(pair_rows, args.output)
     save_csv(spd_rows, args.spd_output)
 
