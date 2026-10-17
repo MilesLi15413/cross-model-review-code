@@ -17,6 +17,12 @@ Python tasks scored only by hidden tests.
 
 [docs/RESULTS.md](docs/RESULTS.md) has the paper-facing tables and interpretation notes.
 
+## Follow-up Experiments
+
+- [docs/AUTHORSHIP_LABEL_STUDY.md](docs/AUTHORSHIP_LABEL_STUDY.md): planned study of
+  whether telling the reviewer who wrote the draft changes its review. Design only,
+  not yet run.
+
 ## Repository Layout
 
 ```text
