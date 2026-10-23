@@ -1,0 +1,20 @@
+{
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/test_one_condition.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/test_one.txt",
+  "skip_eval": false,
+  "skip_preflight": false,
+  "lcb_difficulty": null,
+  "conditions": [
+    {
+      "id": "B1_claude_solo",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": null
+    }
+  ]
+}

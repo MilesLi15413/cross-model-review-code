@@ -1,0 +1,12 @@
+pricing_path: experiments/configs/pricing.yaml
+
+# Single-condition config for a smoke test of the pipeline.
+conditions:
+  - id: B1_claude_solo
+    writer:
+      cli: claude
+      model: claude-opus-4-7
+      effort: high
+      timeout_s: 30000
+    reviewer: null
+    per_task_budget_usd: 100.0

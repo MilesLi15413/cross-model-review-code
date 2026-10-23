@@ -1,0 +1,2 @@
+condition,n_total,n_evaluated,passed,incomplete_evaluations,pass_rate,sid,avg_cost_usd,score_per_dollar,avg_writer_latency_s,avg_reviewer_latency_s,avg_total_latency_s,parse_rate,parse_failures,cli_errors,timed_out,cross_condition_regression_rate,cross_condition_regressions,cross_condition_fixes,regression_rate,regressions,writer_model,reviewer_model
+B1_claude_solo,1,1,0,0,0.0,,0.1566,0.0,27.3,0.0,27.3,1.0,0,0,0,,,,,,claude-opus-4-7,
