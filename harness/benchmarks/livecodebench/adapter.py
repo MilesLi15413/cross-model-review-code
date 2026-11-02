@@ -254,6 +254,16 @@ class LiveCodeBenchAdapter:
             )
         return tasks
 
+    def render_template(self, task_id: str, template: str) -> str:
+        """Fill the problem fields of a prompt template, leaving other placeholders."""
+
+        self._ensure_tasks_loaded([task_id])
+        task = self._load_task(task_id)
+        starter = ""
+        if task.starter_code:
+            starter = f"\n\nStarter code:\n```python\n{task.starter_code}\n```"
+        return template.replace("{problem}", task.problem_statement).replace("{starter_code}", starter)
+
     def _build_custom_outputs(self, records: List[TaskRecord]) -> List[Dict[str, object]]:
         selected = {
             record.task_id: record.final_artifact

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, List, Optional
 
 
 _SOLUTION_RE = re.compile(r"<solution>(.*?)</solution>", re.DOTALL | re.IGNORECASE)
@@ -15,6 +15,26 @@ _CONFIDENCE_SENTENCE_RE = re.compile(
 )
 _CONFIDENCE_LABEL_RE = re.compile(r"\b(high|medium|low)\b", re.IGNORECASE)
 _WRAPPED_CODE_BLOCK_RE = re.compile(r"^\s*```(?:\w+)?\s*\n(.*?)\n?```\s*$", re.DOTALL)
+_ISSUES_RE = re.compile(r"<issues>(.*?)</issues>", re.DOTALL | re.IGNORECASE)
+_HELP_REQUEST_RE = re.compile(
+    r"<help_request\b([^>]*)>(.*?)</help_request>",
+    re.DOTALL | re.IGNORECASE,
+)
+_HELP_TYPE_RE = re.compile(r"""type\s*=\s*["']([^"']*)["']""", re.IGNORECASE)
+_HELP_OPEN_RE = re.compile(r"<help_request\b", re.IGNORECASE)
+
+HELP_REQUEST_TYPES = ("unclear_instructions", "missing_information", "wants_execution", "other")
+
+UNTAGGED_HELP_PATTERNS = [
+    r"\b(?:could|can|would) you (?:please )?(?:clarify|confirm|provide|share|explain)\b",
+    r"\bplease (?:clarify|confirm|provide)\b",
+    r"\bneed(?:s)? (?:more |further |some )?(?:clarification|information|details)\b",
+    r"\bmissing (?:information|details)\b",
+    r"\bi (?:can't|cannot|can not|am unable to|am not able to|'m unable to|'m not able to) "
+    r"(?:run|execute|test|verify)\b",
+    r"\bi (?:would like|want|need) to (?:run|execute|test)\b",
+]
+_UNTAGGED_HELP_RES = [re.compile(pattern, re.IGNORECASE) for pattern in UNTAGGED_HELP_PATTERNS]
 
 
 @dataclass
@@ -93,3 +113,51 @@ def parse_model_response(text: str) -> ParseResult:
         confidence_note=confidence_note,
         confidence_label=confidence_label,
     )
+
+
+def parse_issues(text: str) -> Dict[str, object]:
+    """Read the reviewer's tagged issue list; `count` is None when the tag is missing."""
+
+    match = _ISSUES_RE.search(_SOLUTION_RE.sub(" ", text))
+    if not match:
+        return {"status": "missing", "count": None, "issues": []}
+
+    body = match.group(1).strip()
+    if body.lower() in {"", "none", "none."}:
+        return {"status": "none_reported", "count": 0, "issues": []}
+
+    lines = [line.strip() for line in body.splitlines() if line.strip()]
+    bullets = [line[1:].strip() for line in lines if line.startswith("-")]
+    issues = bullets or lines
+    return {"status": "tagged", "count": len(issues), "issues": issues}
+
+
+def parse_help_requests(text: str, parsed: ParseResult) -> Dict[str, object]:
+    """Count tagged and untagged help requests, and flag replies that contain no code."""
+
+    requests: List[Dict[str, str]] = []
+    for attributes, body in _HELP_REQUEST_RE.findall(text):
+        type_match = _HELP_TYPE_RE.search(attributes)
+        raw_type = type_match.group(1).strip() if type_match else ""
+        requests.append(
+            {
+                "type": raw_type if raw_type in HELP_REQUEST_TYPES else "other",
+                "raw_type": raw_type,
+                "text": " ".join(body.split()),
+            }
+        )
+
+    prose = _HELP_REQUEST_RE.sub(" ", _SOLUTION_RE.sub(" ", text))
+    untagged: List[str] = []
+    for pattern in _UNTAGGED_HELP_RES:
+        for match in pattern.finditer(prose):
+            untagged.append(match.group(0))
+
+    return {
+        "tagged_count": len(requests),
+        "tagged_requests": requests,
+        "malformed_tags": len(_HELP_OPEN_RE.findall(text)) - len(requests),
+        "untagged_count": len(untagged),
+        "untagged_matches": untagged,
+        "no_code": parsed.parse_method in {"empty", "full"},
+    }

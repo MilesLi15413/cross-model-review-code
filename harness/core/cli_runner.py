@@ -21,6 +21,9 @@ RATE_LIMIT_PATTERNS = [
     r"hit.?your.?limit",
     r"429",
     r"quota.?exceeded",
+    r"exceeded your current quota",
+    r"insufficient.?quota",
+    r"resource.?exhausted",
     r"try.?again",
     r"too.?many.?requests",
     r"overloaded",
@@ -31,6 +34,8 @@ UNSUPPORTED_MODEL_PATTERNS = [
     "invalid model",
     "model not found",
     "unsupported model",
+    "model_not_found",
+    "is not supported when using codex",
 ]
 
 AUTH_PATTERNS = [
@@ -43,6 +48,9 @@ AUTH_PATTERNS = [
 ]
 
 RATE_LIMIT_RETRY_DELAYS = [60, 120, 300, 600, 900]
+GEMINI_SETTINGS_ENV = "GEMINI_CLI_SYSTEM_SETTINGS_PATH"
+GEMINI_THINKING_LEVELS = {"low": "LOW", "medium": "MEDIUM", "high": "HIGH"}
+GEMINI_NO_MCP_SERVER = "__no_mcp_servers__"
 CLAUDE_CODE_MAX_OUTPUT_TOKENS_ENV = "CLAUDE_CODE_MAX_OUTPUT_TOKENS"
 DEFAULT_CLAUDE_CODE_MAX_OUTPUT_TOKENS = "200000"
 
@@ -106,6 +114,7 @@ class RunResult:
     cli_version: str = ""
     started_at: str = ""
     finished_at: str = ""
+    runtime_settings: Optional[Dict[str, object]] = None
 
 
 class CLIRunner:
@@ -120,6 +129,7 @@ class CLIRunner:
         paused_sentinel_path: Optional[str] = None,
         cli_version: str = "",
         status_callback: Optional[Callable[[Dict[str, object]], None]] = None,
+        stop_on_limit: bool = False,
     ):
         self.cli = cli
         self.model = model
@@ -129,6 +139,7 @@ class CLIRunner:
         self._cli_version = cli_version
         self._resolved_executable: Optional[str] = None
         self.status_callback = status_callback
+        self.stop_on_limit = stop_on_limit
 
     def _resolve_executable(self) -> str:
         if self._resolved_executable:
@@ -207,12 +218,6 @@ class CLIRunner:
             return cmd
 
         if self.cli == "gemini":
-            # Gemini CLI has no reasoning-effort flag; refuse rather than record an
-            # effort level that was never applied.
-            if self.effort:
-                raise ValueError(
-                    "Gemini CLI has no reasoning-effort flag; set effort: null for gemini runs"
-                )
             # --skip-trust: headless Gemini refuses to run in untrusted directories.
             return [
                 executable,
@@ -243,7 +248,42 @@ class CLIRunner:
         cmd.append(prompt)
         return cmd
 
-    def _subprocess_env(self) -> Optional[Dict[str, str]]:
+    def _gemini_settings(self) -> Dict[str, object]:
+        """System-level settings: outrank user settings and leave ~/.gemini untouched."""
+
+        settings: Dict[str, object] = {
+            "tools": {"core": []},
+            "mcp": {"allowed": [GEMINI_NO_MCP_SERVER]},
+            "skills": {"enabled": False},
+            "hooksConfig": {"enabled": False},
+            "ide": {"enabled": False},
+        }
+        if self.effort:
+            level = GEMINI_THINKING_LEVELS.get(self.effort.lower())
+            if level is None:
+                raise ValueError(
+                    f"Unsupported Gemini effort '{self.effort}'; "
+                    f"use one of {sorted(GEMINI_THINKING_LEVELS)}"
+                )
+            settings["modelConfigs"] = {
+                "customOverrides": [
+                    {
+                        "match": {"model": self.model},
+                        "modelConfig": {
+                            "generateContentConfig": {"thinkingConfig": {"thinkingLevel": level}}
+                        },
+                    }
+                ]
+            }
+        return settings
+
+    def _subprocess_env(self, gemini_settings_path: Optional[str] = None) -> Optional[Dict[str, str]]:
+        if self.cli == "gemini":
+            env = os.environ.copy()
+            if gemini_settings_path:
+                env[GEMINI_SETTINGS_ENV] = gemini_settings_path
+            return env
+
         if self.cli != "claude":
             return None
 
@@ -344,6 +384,11 @@ class CLIRunner:
         # "prompt" includes cached tokens, and thinking tokens are billed as output.
         input_tokens = output_tokens = cached_input_tokens = 0
         models = (payload.get("stats") or {}).get("models") or {}
+        answered = ((models.get(self.model) or {}).get("tokens") or {}).get("candidates", 0)
+        if models and not answered:
+            raise CLIError(
+                f"Gemini answered with {sorted(models)} instead of the requested model {self.model}"
+            )
         for model_stats in models.values():
             tokens = model_stats.get("tokens") or {}
             cached = int(tokens.get("cached", 0) or 0)
@@ -367,6 +412,11 @@ class CLIRunner:
             cli_version=self.get_version(),
             started_at=started_at,
             finished_at=finished_at,
+            runtime_settings={
+                "thinking_level": GEMINI_THINKING_LEVELS.get((self.effort or "").lower()),
+                "settings": self._gemini_settings(),
+                "models_used": sorted(models),
+            },
         )
 
     def _parse_codex_response(
@@ -446,10 +496,20 @@ class CLIRunner:
             started_at = _now_iso()
             start_monotonic = time.monotonic()
             codex_output_path = None
+            gemini_settings_path = None
+            workdir = None
 
             if self.cli == "codex":
                 tmpdir = tempfile.TemporaryDirectory(prefix="codex-cli-run-")
                 codex_output_path = str(Path(tmpdir.name) / "last_message.txt")
+            elif self.cli == "gemini":
+                tmpdir = tempfile.TemporaryDirectory(prefix="gemini-cli-run-")
+                settings_file = Path(tmpdir.name) / "settings.json"
+                settings_file.write_text(json.dumps(self._gemini_settings()))
+                gemini_settings_path = str(settings_file)
+                empty_dir = Path(tmpdir.name) / "workspace"
+                empty_dir.mkdir()
+                workdir = str(empty_dir)
             else:
                 tmpdir = None
 
@@ -462,7 +522,8 @@ class CLIRunner:
                     text=True,
                     timeout=self.timeout_s,
                     check=False,
-                    env=self._subprocess_env(),
+                    env=self._subprocess_env(gemini_settings_path),
+                    cwd=workdir,
                 )
             except subprocess.TimeoutExpired as exc:
                 if tmpdir is not None:
@@ -501,6 +562,14 @@ class CLIRunner:
                     )
 
                 if _matches_any(combined_output, RATE_LIMIT_PATTERNS):
+                    if self.stop_on_limit:
+                        pause_info = self._build_pause_info(attempt_index, task_id, condition_id, turn)
+                        self._write_pause_sentinel(pause_info)
+                        raise UsageLimitError(
+                            f"Usage limit reached for {self.cli}/{self.model}. "
+                            f"Output: {(completed.stderr or completed.stdout).strip()[:500]}",
+                            pause_info,
+                        )
                     delay = _rate_limit_retry_delay(attempt_index)
                     retry_number = attempt_index + 1
                     if self.status_callback:

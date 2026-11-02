@@ -15,12 +15,12 @@ gpt-5.5:
   long_context_input_multiplier: 2.0
   long_context_output_multiplier: 1.5
 
-# Gemini rates from ai.google.dev/gemini-api/docs/pricing (checked 2026-10-23).
-# Cached-input rates are not set, so cached tokens are billed at the input rate
-# (an overestimate). Output includes thinking tokens.
+# Gemini rates from ai.google.dev/gemini-api/docs/pricing (checked 2026-11-01).
+# Output includes thinking tokens.
 gemini-3.1-pro-preview:
   input_per_1m: 2.0
   output_per_1m: 12.0
+  cached_input_per_1m: 0.20
   long_context_threshold_tokens: 200000
   long_context_input_multiplier: 2.0
   long_context_output_multiplier: 1.5

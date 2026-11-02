@@ -7,7 +7,13 @@ from pathlib import Path
 from subprocess import CompletedProcess, TimeoutExpired
 from unittest import mock
 
-from harness.core.cli_runner import CLIRunner, UnsupportedModelError
+from harness.core.cli_runner import (
+    AuthenticationError,
+    CLIError,
+    CLIRunner,
+    UnsupportedModelError,
+    UsageLimitError,
+)
 
 
 class CLIRunnerTest(unittest.TestCase):
@@ -176,12 +182,127 @@ class CLIRunnerTest(unittest.TestCase):
             cmd,
         )
 
-    def test_gemini_rejects_effort(self):
-        runner = CLIRunner("gemini", "gemini-3.8-flash", effort="high", cli_version="0.65.0")
+    def test_gemini_rejects_unknown_effort(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", effort="max", cli_version="0.65.0")
+
+        with self.assertRaises(ValueError):
+            runner._gemini_settings()
+
+    def test_gemini_high_effort_sets_thinking_level_and_blocks_tools(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", effort="high", cli_version="0.65.0")
+
+        settings = runner._gemini_settings()
+
+        override = settings["modelConfigs"]["customOverrides"][0]
+        self.assertEqual({"model": "gemini-3.1-pro-preview"}, override["match"])
+        self.assertEqual(
+            "HIGH",
+            override["modelConfig"]["generateContentConfig"]["thinkingConfig"]["thinkingLevel"],
+        )
+        self.assertEqual([], settings["tools"]["core"])
+        self.assertEqual(1, len(settings["mcp"]["allowed"]))
+
+    def test_gemini_runs_in_empty_dir_with_system_settings(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", effort="high", cli_version="0.65.0")
+        payload = {
+            "response": "OK",
+            "stats": {"models": {"gemini-3.1-pro-preview": {"tokens": {"prompt": 10, "candidates": 1}}}},
+        }
+        seen = {}
+
+        def fake_run(cmd, **kwargs):
+            seen["cwd_files"] = list(Path(kwargs["cwd"]).iterdir())
+            settings_path = kwargs["env"]["GEMINI_CLI_SYSTEM_SETTINGS_PATH"]
+            seen["settings"] = json.loads(Path(settings_path).read_text())
+            return CompletedProcess(args=cmd, returncode=0, stdout=json.dumps(payload), stderr="")
 
         with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
-            with self.assertRaises(ValueError):
-                runner._build_cmd("prompt")
+            with mock.patch("harness.core.cli_runner.subprocess.run", side_effect=fake_run):
+                result = runner.run("prompt")
+
+        self.assertEqual([], seen["cwd_files"])
+        self.assertEqual([], seen["settings"]["tools"]["core"])
+        self.assertEqual("HIGH", result.runtime_settings["thinking_level"])
+        self.assertEqual(["gemini-3.1-pro-preview"], result.runtime_settings["models_used"])
+
+    def test_gemini_fallback_to_another_model_is_an_error(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", cli_version="0.65.0")
+        payload = {
+            "response": "OK",
+            "stats": {"models": {"gemini-3.8-flash": {"tokens": {"prompt": 10, "candidates": 1}}}},
+        }
+        completed = CompletedProcess(args=[], returncode=0, stdout=json.dumps(payload), stderr="")
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(CLIError):
+                    runner.run("prompt")
+
+    def test_gemini_error_payload_raises(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", cli_version="0.65.0")
+        completed = CompletedProcess(
+            args=[], returncode=0, stdout=json.dumps({"error": {"message": "bad"}}), stderr=""
+        )
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(CLIError):
+                    runner.run("prompt")
+
+    def test_gemini_auth_failure_raises(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", cli_version="0.65.0")
+        completed = CompletedProcess(args=[], returncode=1, stdout="", stderr="API key not valid")
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(AuthenticationError):
+                    runner.run("prompt")
+
+    def test_gemini_timeout_raises(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", timeout_s=1, cli_version="0.65.0")
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
+            with mock.patch(
+                "harness.core.cli_runner.subprocess.run",
+                side_effect=TimeoutExpired(cmd="gemini", timeout=1),
+            ):
+                with self.assertRaises(TimeoutError):
+                    runner.run("prompt")
+
+    def test_stop_on_limit_saves_and_raises_without_waiting(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            sentinel = Path(tmpdir) / "PAUSED"
+            runner = CLIRunner(
+                "gemini",
+                "gemini-3.1-pro-preview",
+                cli_version="0.65.0",
+                paused_sentinel_path=str(sentinel),
+                stop_on_limit=True,
+            )
+            failed = CompletedProcess(args=[], returncode=1, stdout="", stderr="RESOURCE_EXHAUSTED")
+
+            with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
+                with mock.patch("harness.core.cli_runner.subprocess.run", return_value=failed):
+                    with mock.patch("harness.core.cli_runner.time.sleep") as sleep_mock:
+                        with self.assertRaises(UsageLimitError):
+                            runner.run("prompt", task_id="t1", condition_id="c1", turn="writer")
+
+            sleep_mock.assert_not_called()
+            self.assertEqual("t1", json.loads(sentinel.read_text())["last_task_id"])
+
+    def test_codex_chatgpt_model_rejection_is_unsupported(self):
+        runner = CLIRunner("codex", "gpt-5.5", cli_version="codex 1.0")
+        completed = CompletedProcess(
+            args=[],
+            returncode=1,
+            stdout='{"message":"The model is not supported when using Codex with a ChatGPT account.","code":"model_not_found"}',
+            stderr="",
+        )
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="codex"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(UnsupportedModelError):
+                    runner.run("prompt")
 
     def test_gemini_json_output_is_parsed(self):
         payload = {

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional
 
 from harness.core.cli_runner import CLIRunner, UsageLimitError
-from harness.core.parser import ParseResult, parse_model_response
+from harness.core.parser import ParseResult, parse_help_requests, parse_model_response
 from harness.core.tracker import CostTracker, TaskRecord
 
 
@@ -45,6 +45,7 @@ class TwoPassPipeline:
         condition_id: str,
         per_task_budget_usd: float = 10.0,
         max_task_attempts: int = 4,
+        track_help_requests: bool = False,
     ):
         self.writer = writer
         self.reviewer = reviewer
@@ -52,6 +53,7 @@ class TwoPassPipeline:
         self.condition_id = condition_id
         self.per_task_budget_usd = per_task_budget_usd
         self.max_task_attempts = max(1, max_task_attempts)
+        self.track_help_requests = track_help_requests
 
     def _incomplete_reason(self, record: TaskRecord) -> str:
         if record.cli_error:
@@ -109,6 +111,7 @@ class TwoPassPipeline:
             paused_sentinel_path=runner.paused_sentinel_path,
             cli_version=runner.get_version(),
             status_callback=runner.status_callback,
+            stop_on_limit=runner.stop_on_limit,
         )
 
     def _apply_writer_result(
@@ -137,6 +140,8 @@ class TwoPassPipeline:
         record.writer_has_solution_tag = parsed.has_solution_tag
         record.writer_confidence_note = parsed.confidence_note
         record.writer_confidence_label = parsed.confidence_label
+        if run_result.runtime_settings:
+            record.extra["writer_runtime_settings"] = run_result.runtime_settings
 
     def _apply_reviewer_result(
         self,
@@ -165,6 +170,8 @@ class TwoPassPipeline:
         record.reviewer_artifact = parsed.artifact
         record.reviewer_parse_method = parsed.parse_method
         record.reviewer_has_solution_tag = parsed.has_solution_tag
+        if run_result.runtime_settings:
+            record.extra["reviewer_runtime_settings"] = run_result.runtime_settings
 
     def _finalize_record(
         self,
@@ -255,6 +262,8 @@ class TwoPassPipeline:
                     condition_id=self.condition_id,
                     turn="writer",
                 )
+            except UsageLimitError:
+                raise
             except Exception as exc:
                 record.cli_error = True
                 record.extra["writer_error"] = str(exc)
@@ -296,6 +305,8 @@ class TwoPassPipeline:
 
         writer_parsed = parse_model_response(writer_run.response_text)
         self._apply_writer_result(record, writer_prompt, writer_parsed, writer_run)
+        if self.track_help_requests:
+            record.extra["help_tracking"] = parse_help_requests(writer_run.response_text, writer_parsed)
         self.tracker.finalize(record)
 
         if record.total_cost_usd > self.per_task_budget_usd:
@@ -342,6 +353,8 @@ class TwoPassPipeline:
                     condition_id=self.condition_id,
                     turn="reviewer",
                 )
+            except UsageLimitError:
+                raise
             except Exception as exc:
                 record.cli_error = True
                 record.extra["reviewer_error"] = str(exc)

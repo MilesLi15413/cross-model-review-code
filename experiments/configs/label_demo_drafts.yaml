@@ -1,0 +1,7 @@
+drafts:
+  - record: results/raw/lcb_hard_full/B1_claude_solo/abc394_f__B1_claude_solo.json
+  - record: results/raw/lcb_hard_full/B1_claude_solo/3801__B1_claude_solo.json
+  - record: results/raw/lcb_hard_full/B2_gpt55_solo/abc394_f__B2_gpt55_solo.json
+  - record: results/raw/lcb_hard_full/B2_gpt55_solo/3801__B2_gpt55_solo.json
+  - record: results/raw/demo_gemini/B3_gemini_solo/abc392_f__B3_gemini_solo.json
+  - record: results/raw/demo_gemini_draft2/B3_gemini_solo/3801__B3_gemini_solo.json

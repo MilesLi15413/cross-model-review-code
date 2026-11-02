@@ -11,6 +11,7 @@ import re
 import threading
 import time
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from dataclasses import replace
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -137,6 +138,7 @@ def build_pipeline(
     tracker: CostTracker,
     checkpoint_dir: str,
     status_callback=None,
+    stop_on_limit: bool = False,
 ) -> TwoPassPipeline:
     cond_checkpoint = os.path.join(checkpoint_dir, condition["id"])
     paused_sentinel = os.path.join(cond_checkpoint, "PAUSED")
@@ -149,6 +151,7 @@ def build_pipeline(
         timeout_s=writer_cfg.get("timeout_s", 300),
         paused_sentinel_path=paused_sentinel,
         status_callback=status_callback,
+        stop_on_limit=stop_on_limit,
     )
 
     reviewer_cfg = condition.get("reviewer")
@@ -161,6 +164,7 @@ def build_pipeline(
             timeout_s=reviewer_cfg.get("timeout_s", 300),
             paused_sentinel_path=paused_sentinel,
             status_callback=status_callback,
+            stop_on_limit=stop_on_limit,
         )
 
     return TwoPassPipeline(
@@ -169,7 +173,31 @@ def build_pipeline(
         tracker=tracker,
         condition_id=condition["id"],
         per_task_budget_usd=condition.get("per_task_budget_usd", 10.0),
+        track_help_requests=bool(condition.get("track_help_requests")),
     )
+
+
+def task_for_condition(adapter, task, condition: Dict[str, object]):
+    """Swap in a condition-specific writer prompt when the condition names one."""
+
+    template_path = condition.get("writer_template")
+    if not template_path:
+        return task
+    writer_prompt = adapter.render_template(task.task_id, Path(str(template_path)).read_text())
+    return replace(task, writer_prompt=writer_prompt)
+
+
+def select_conditions(
+    conditions: List[Dict[str, object]],
+    selected_ids: Optional[List[str]],
+) -> List[Dict[str, object]]:
+    if not selected_ids:
+        return conditions
+    known = {condition["id"] for condition in conditions}
+    unknown = [condition_id for condition_id in selected_ids if condition_id not in known]
+    if unknown:
+        raise SystemExit(f"Unknown condition ids: {unknown}")
+    return [condition for condition in conditions if condition["id"] in selected_ids]
 
 
 def get_adapter(benchmark: str, config: Dict[str, object]):
@@ -244,6 +272,8 @@ def save_run_meta(
     skip_preflight: bool,
     lcb_difficulty: Optional[str] = None,
     conditions: Optional[List[Dict[str, object]]] = None,
+    stop_on_limit: bool = False,
+    selected_conditions: Optional[List[str]] = None,
 ) -> None:
     meta = {
         "benchmark": benchmark,
@@ -253,6 +283,8 @@ def save_run_meta(
         "skip_eval": skip_eval,
         "skip_preflight": skip_preflight,
         "lcb_difficulty": lcb_difficulty,
+        "stop_on_limit": stop_on_limit,
+        "selected_conditions": selected_conditions,
     }
     if conditions is not None:
         meta["conditions"] = [
@@ -349,7 +381,7 @@ def _compose_condition_status(restored: int, live_completed: int, detail: str = 
     return " | ".join(parts)
 
 
-def run_with_rich(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval, max_workers=None):
+def run_with_rich(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval, max_workers=None, stop_on_limit=False):
     from rich.console import Console
     from rich.progress import (
         BarColumn,
@@ -466,8 +498,9 @@ def run_with_rich(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_e
             tracker,
             checkpoint_dir,
             status_callback=make_status_callback(cond_id),
+            stop_on_limit=stop_on_limit,
         )
-        result = pipeline.run_task(task)
+        result = pipeline.run_task(task_for_condition(adapter, task, cond_by_id[cond_id]))
         if not skip_eval and not uses_batch_eval and not result.record.cli_error:
             result.record.passed = _per_task_evaluate(adapter, task, result.final_artifact)
         tracker.save(result.record, cond_checkpoints[cond_id])
@@ -576,7 +609,7 @@ def run_with_rich(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_e
         console.print(f"\n[bold green]Done.[/bold green] Total cost: ${cost_total:.3f}")
 
 
-def run_plain(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval):
+def run_plain(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval, stop_on_limit=False):
     uses_batch_eval = hasattr(adapter, "evaluate_batch")
     print("Loading benchmark tasks...")
     benchmark_tasks = adapter.load_tasks(task_ids)
@@ -593,7 +626,7 @@ def run_plain(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval)
     for cond in conditions:
         cond_checkpoint = os.path.join(checkpoint_dir, cond["id"])
         os.makedirs(cond_checkpoint, exist_ok=True)
-        pipeline = build_pipeline(cond, tracker, checkpoint_dir)
+        pipeline = build_pipeline(cond, tracker, checkpoint_dir, stop_on_limit=stop_on_limit)
         print(f"\n[{cond['id']}] Starting {len(task_ids)} tasks...")
 
         for index, task in enumerate(benchmark_tasks, start=1):
@@ -602,7 +635,7 @@ def run_plain(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval)
 
             print(f"  [{cond['id']}] {index}/{len(task_ids)} {task.task_id} ... ", end="", flush=True)
             try:
-                result = pipeline.run_task(task)
+                result = pipeline.run_task(task_for_condition(adapter, task, cond))
             except UsageLimitError:
                 print("\nManual pause requested.")
                 print(f"Resume with: python experiments/run_experiment.py --resume {checkpoint_dir}")
@@ -649,6 +682,15 @@ def main():
         choices=["easy", "medium", "hard"],
         help="LiveCodeBench-only task difficulty filter for auto-generated task files",
     )
+    parser.add_argument(
+        "--conditions",
+        help="Comma-separated condition ids to run (default: every condition in --config)",
+    )
+    parser.add_argument(
+        "--stop-on-limit",
+        action="store_true",
+        help="Save and exit at a usage limit instead of waiting and retrying",
+    )
     parser.add_argument("--workers", type=int, default=None, metavar="N", help="Max parallel conditions (default: all)")
     args = parser.parse_args()
 
@@ -670,6 +712,9 @@ def main():
         args.skip_eval = meta.get("skip_eval", False)
         args.skip_preflight = meta.get("skip_preflight", False)
         args.lcb_difficulty = meta.get("lcb_difficulty")
+        args.stop_on_limit = meta.get("stop_on_limit", False)
+        selected = meta.get("selected_conditions")
+        args.conditions = ",".join(selected) if selected else None
 
     if not all([args.benchmark, args.checkpoint]):
         parser.error("--benchmark and --checkpoint are required (or use --resume)")
@@ -679,6 +724,8 @@ def main():
     os.makedirs(args.checkpoint, exist_ok=True)
 
     config = merge_configs(args.config, args.benchmark, args.benchmark_config)
+    selected_ids = args.conditions.split(",") if args.conditions else None
+    config["conditions"] = select_conditions(config["conditions"], selected_ids)
     args.tasks = resolve_tasks_path(args.benchmark, args.tasks, args.lcb_difficulty)
     args.tasks = ensure_task_file(args.benchmark, config["benchmark_config"], args.tasks, args.lcb_difficulty)
     print(
@@ -695,6 +742,8 @@ def main():
         skip_preflight=args.skip_preflight,
         lcb_difficulty=args.lcb_difficulty,
         conditions=config["conditions"],
+        stop_on_limit=args.stop_on_limit,
+        selected_conditions=selected_ids,
     )
     write_run_index(args.checkpoint)
 
@@ -705,11 +754,27 @@ def main():
     maybe_run_preflight(args.checkpoint, conditions, args.skip_preflight)
 
     try:
-        import rich  # noqa: F401
+        try:
+            import rich  # noqa: F401
 
-        run_with_rich(task_ids, conditions, adapter, tracker, args.checkpoint, args.skip_eval, args.workers)
-    except ImportError:
-        run_plain(task_ids, conditions, adapter, tracker, args.checkpoint, args.skip_eval)
+            run_with_rich(
+                task_ids,
+                conditions,
+                adapter,
+                tracker,
+                args.checkpoint,
+                args.skip_eval,
+                args.workers,
+                args.stop_on_limit,
+            )
+        except ImportError:
+            run_plain(task_ids, conditions, adapter, tracker, args.checkpoint, args.skip_eval, args.stop_on_limit)
+    except UsageLimitError as exc:
+        write_run_index(args.checkpoint)
+        raise SystemExit(
+            f"{exc}\nFinished tasks are saved. After the limit resets, continue with:\n"
+            f"  python experiments/run_experiment.py --resume {args.checkpoint} --confirm-resume"
+        )
 
 
 if __name__ == "__main__":
