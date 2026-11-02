@@ -128,6 +128,24 @@ every model still gave code.
 ask for help, so in a full study help requests may be rare unless the problems are
 designed to need them.
 
+**Second version with uncertainty:** the prompt was revised (`writer_lcb_help_v2.txt`)
+to use three types: `missing_information`, `clarification`, and `uncertainty` ("you
+have what you need but are not confident your approach or code is correct"). The same 5
+problems were rerun, again 15 calls.
+
+- **Requests:** 0 tags of any type, including `uncertainty`, and 0 untagged requests.
+  Every reply contained code.
+- **Stated confidence:** every reply already ends with a high/medium/low confidence
+  sentence. 14 of 15 said "high", and 6 of those 14 failed.
+- **The one low-confidence answer:** GPT-5.5 said "low" on problem 3688, and that code
+  did fail. It still did not use the `uncertainty` tag.
+- **Pass rates:** Claude 3/5, GPT-5.5 2/5, Gemini 3/5.
+
+**How to read this:** even when told directly to flag uncertainty, the models almost
+never did, and their stated confidence was usually "high" whether or not the code
+worked. On 15 calls this is only a hint. If it holds at scale, models that do not report
+their own doubts would be a result in itself.
+
 ## Limitations and caveats
 
 - **Tiny samples:** results show that the tools work, not how the models behave.
@@ -156,7 +174,8 @@ designed to need them.
 | Authorship test | $4.73 | $2.13 | $0 |
 | Help-request sample | $0.71 | $0.51 | $0 |
 | Positive control | $0.03 | $0.74 | $0 |
-| **Total (about)** | **$6.95** | **$3.75** | **$0** |
+| Help requests, version 2 | $0.71 | $0.48 | $0 |
+| **Total (about)** | **$7.65** | **$4.25** | **$0** |
 
 The GPT total includes setup test calls.
 
@@ -202,6 +221,11 @@ so the cost grows quickly with the number of drafts.
 The benchmark problems are fully specified, so there was nothing to ask about. When we
 removed a key rule, all three models asked, and the tracker caught every request. So
 the tracker works; the problems just don't trigger requests.
+
+**"Did asking for uncertainty change anything?"**
+Not in 15 calls: there were still zero tags. The models nearly always said "high"
+confidence, even on code that failed. That mismatch is the interesting thing to test at
+scale.
 
 **"How do you know the label is the only thing that changes?"**
 The prompt template is the same for all three versions except for the one sentence
