@@ -3,6 +3,7 @@
 #   bash scripts/run_demo.sh gemini   # Gemini in the workflow (12 calls)
 #   bash scripts/run_demo.sh labels   # authorship labels (54 calls)
 #   bash scripts/run_demo.sh help     # help-request tracking (15 calls)
+#   bash scripts/run_demo.sh help2    # help requests with uncertainty types (15 calls)
 # After a usage limit stops a stage, rerun the same stage to continue.
 set -euo pipefail
 
@@ -51,8 +52,15 @@ case "${1:-}" in
     "${PYTHON_BIN}" analysis/help_requests.py --input results/raw/demo_help \
       --output-prefix results/processed/help_requests_demo
     ;;
+  help2)
+    run_or_resume results/raw/demo_help_v2 --config experiments/configs/help_request_conditions_v2.yaml \
+      --tasks experiments/configs/demo_help_5.txt
+    "${PYTHON_BIN}" analysis/evaluate_completed_lcb.py --input results/raw/demo_help_v2
+    "${PYTHON_BIN}" analysis/help_requests.py --input results/raw/demo_help_v2 \
+      --output-prefix results/processed/help_requests_v2_demo
+    ;;
   *)
-    echo "Usage: bash scripts/run_demo.sh {gemini|labels|help}" >&2
+    echo "Usage: bash scripts/run_demo.sh {gemini|labels|help|help2}" >&2
     exit 2
     ;;
 esac

@@ -28,6 +28,11 @@ def _pass_rate(records: List[Dict[str, object]]) -> Optional[float]:
     return _rate(sum(1 for record in graded if record["passed"]), len(graded))
 
 
+def _has_type(record: Dict[str, object], request_type: str) -> bool:
+    requests = record["extra"]["help_tracking"]["tagged_requests"]
+    return any(request["type"] == request_type for request in requests)
+
+
 def summarize_model(model: str, records: List[Dict[str, object]]) -> Dict[str, object]:
     tracked = [record for record in records if "help_tracking" in record.get("extra", {})]
     help_data = [record["extra"]["help_tracking"] for record in tracked]
@@ -60,7 +65,18 @@ def summarize_model(model: str, records: List[Dict[str, object]]) -> Dict[str, o
             "pct_tasks_with_untagged": _rate(
                 sum(1 for item in help_data if item["untagged_count"] > 0), len(tracked)
             ),
+            "pass_rate_with_uncertainty": _pass_rate([r for r in tracked if _has_type(r, "uncertainty")]),
+            "pass_rate_without_uncertainty": _pass_rate(
+                [r for r in tracked if not _has_type(r, "uncertainty")]
+            ),
         }
+    )
+    for label in ("high", "medium", "low"):
+        members = [r for r in tracked if r.get("writer_confidence_label") == label]
+        row[f"n_confidence_{label}"] = len(members)
+        row[f"pass_rate_confidence_{label}"] = _pass_rate(members)
+    row["n_confidence_missing"] = sum(
+        1 for r in tracked if r.get("writer_confidence_label") not in ("high", "medium", "low")
     )
     return row
 
@@ -74,6 +90,7 @@ def detail_rows(records: List[Dict[str, object]]) -> List[Dict[str, object]]:
                 "model": record["writer_model"],
                 "task_id": record["task_id"],
                 "passed": record.get("passed"),
+                "confidence_label": record.get("writer_confidence_label"),
                 "tagged_count": tracking["tagged_count"] if tracking else None,
                 "untagged_count": tracking["untagged_count"] if tracking else None,
                 "no_code": tracking["no_code"] if tracking else None,

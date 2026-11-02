@@ -23,7 +23,14 @@ _HELP_REQUEST_RE = re.compile(
 _HELP_TYPE_RE = re.compile(r"""type\s*=\s*["']([^"']*)["']""", re.IGNORECASE)
 _HELP_OPEN_RE = re.compile(r"<help_request\b", re.IGNORECASE)
 
-HELP_REQUEST_TYPES = ("unclear_instructions", "missing_information", "wants_execution", "other")
+HELP_REQUEST_TYPES = (
+    "unclear_instructions",
+    "missing_information",
+    "wants_execution",
+    "clarification",
+    "uncertainty",
+    "other",
+)
 
 UNTAGGED_HELP_PATTERNS = [
     r"\b(?:could|can|would) you (?:please )?(?:clarify|confirm|provide|share|explain)\b",
