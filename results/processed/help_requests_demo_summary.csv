@@ -1,0 +1,4 @@
+model,tasks,tasks_tracked,invalid_calls,tagged_requests,requests_per_task,pct_tasks_with_request,type_unclear_instructions,type_missing_information,type_wants_execution,type_other,pass_rate_with_requests,pass_rate_without_requests,tasks_no_code,malformed_tags,untagged_requests,pct_tasks_with_untagged
+claude-opus-4-7,5,5,0,0,0.0,0.0,0,0,0,0,,0.6,0,0,0,0.0
+gemini-3.1-pro-preview,5,5,0,0,0.0,0.0,0,0,0,0,,0.4,0,0,0,0.0
+gpt-5.5,5,5,0,0,0.0,0.0,0,0,0,0,,0.4,0,0,0,0.0

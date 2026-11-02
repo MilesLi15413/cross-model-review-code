@@ -1,0 +1,83 @@
+{
+  "checkpoint_dir": "results/raw/demo_help",
+  "generated_at": "2026-11-02T17:59:54.894425+00:00",
+  "started_at": "2026-11-02T17:48:47.039253+00:00",
+  "updated_at": "2026-11-02T17:59:54.892097+00:00",
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/help_request_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/demo_help_5.txt",
+  "condition_settings": [
+    {
+      "id": "H1_claude_help_solo",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "H2_gpt55_help_solo",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "H3_gemini_help_solo",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": null
+    }
+  ],
+  "preflight_checked_at": null,
+  "records": 15,
+  "unique_tasks": 5,
+  "conditions": [
+    {
+      "condition": "H1_claude_help_solo",
+      "directory": "results/raw/demo_help/H1_claude_help_solo",
+      "completed": 5,
+      "attempted": 5,
+      "evaluated": 5,
+      "passed": 3,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 1.186869,
+      "avg_total_latency_s": 43.66
+    },
+    {
+      "condition": "H2_gpt55_help_solo",
+      "directory": "results/raw/demo_help/H2_gpt55_help_solo",
+      "completed": 5,
+      "attempted": 5,
+      "evaluated": 5,
+      "passed": 2,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.505396,
+      "avg_total_latency_s": 16.13
+    },
+    {
+      "condition": "H3_gemini_help_solo",
+      "directory": "results/raw/demo_help/H3_gemini_help_solo",
+      "completed": 5,
+      "attempted": 5,
+      "evaluated": 5,
+      "passed": 2,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.71014,
+      "avg_total_latency_s": 68.28
+    }
+  ]
+}
