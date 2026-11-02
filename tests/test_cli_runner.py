@@ -206,12 +206,16 @@ class CLIRunnerTest(unittest.TestCase):
         runner = CLIRunner("gemini", "gemini-3.1-pro-preview", effort="high", cli_version="0.65.0")
         payload = {
             "response": "OK",
-            "stats": {"models": {"gemini-3.1-pro-preview": {"tokens": {"prompt": 10, "candidates": 1}}}},
+            "stats": {
+                "models": {"gemini-3.1-pro-preview": {"tokens": {"prompt": 10, "candidates": 1}}},
+                "tools": {"totalCalls": 0},
+            },
         }
         seen = {}
 
         def fake_run(cmd, **kwargs):
             seen["cwd_files"] = [path.name for path in Path(kwargs["cwd"]).iterdir()]
+            seen["trust"] = kwargs["env"]["GEMINI_CLI_TRUST_WORKSPACE"]
             seen["settings"] = json.loads((Path(kwargs["cwd"]) / ".gemini" / "settings.json").read_text())
             return CompletedProcess(args=cmd, returncode=0, stdout=json.dumps(payload), stderr="")
 
@@ -220,9 +224,11 @@ class CLIRunnerTest(unittest.TestCase):
                 result = runner.run("prompt")
 
         self.assertEqual([".gemini"], seen["cwd_files"])
+        self.assertEqual("true", seen["trust"])
         self.assertEqual([], seen["settings"]["tools"]["core"])
         self.assertEqual("HIGH", result.runtime_settings["thinking_level"])
         self.assertEqual(["gemini-3.1-pro-preview"], result.runtime_settings["models_used"])
+        self.assertEqual(0, result.runtime_settings["tool_calls"])
 
     def test_gemini_fallback_to_another_model_is_an_error(self):
         runner = CLIRunner("gemini", "gemini-3.1-pro-preview", cli_version="0.65.0")

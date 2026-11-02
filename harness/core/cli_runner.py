@@ -278,6 +278,12 @@ class CLIRunner:
         return settings
 
     def _subprocess_env(self) -> Optional[Dict[str, str]]:
+        if self.cli == "gemini":
+            env = os.environ.copy()
+            # --skip-trust applies too late: project settings load before it is parsed.
+            env["GEMINI_CLI_TRUST_WORKSPACE"] = "true"
+            return env
+
         if self.cli != "claude":
             return None
 
@@ -410,6 +416,7 @@ class CLIRunner:
                 "thinking_level": GEMINI_THINKING_LEVELS.get((self.effort or "").lower()),
                 "settings": self._gemini_settings(),
                 "models_used": sorted(models),
+                "tool_calls": ((payload.get("stats") or {}).get("tools") or {}).get("totalCalls", 0),
             },
         )
 
