@@ -1,0 +1,690 @@
+task_id,condition,benchmark,passed,writer_model,reviewer_model,writer_effort,reviewer_effort,total_cost_usd,total_latency_s,writer_latency_s,reviewer_latency_s,parse_failed,cli_error,timed_out,budget_exceeded,evaluated_turn,evaluated_parse_method,raw_file,final_artifact
+3688,H4_claude_help2_solo,livecodebench,True,claude-opus-4-7,,high,,0.4620785,172.78890204202617,172.78890204202617,0.0,False,False,False,False,writer,tag,H4_claude_help2_solo/3688__H4_claude_help2_solo.json,"from typing import List
+from collections import defaultdict
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        n = len(nums)
+        NEG = float('-inf')
+        
+        size = 1
+        while size < max(n, 1):
+            size *= 2
+        
+        sm = [0] * (2 * size)
+        pr = [NEG] * (2 * size)
+        sf = [NEG] * (2 * size)
+        bs = [NEG] * (2 * size)
+        hr = [False] * (2 * size)
+        
+        def update(i, a, real):
+            p = i + size
+            if real:
+                sm[p] = a; pr[p] = a; sf[p] = a; bs[p] = a; hr[p] = True
+            else:
+                sm[p] = 0; pr[p] = NEG; sf[p] = NEG; bs[p] = NEG; hr[p] = False
+            p //= 2
+            while p:
+                L, R = 2*p, 2*p+1
+                sm[p] = sm[L] + sm[R]
+                hr[p] = hr[L] or hr[R]
+                pv = NEG
+                if hr[L]: pv = pr[L]
+                if hr[R]:
+                    c = sm[L] + pr[R]
+                    if c > pv: pv = c
+                pr[p] = pv
+                sv = NEG
+                if hr[R]: sv = sf[R]
+                if hr[L]:
+                    c = sm[R] + sf[L]
+                    if c > sv: sv = c
+                sf[p] = sv
+                bv = NEG
+                if hr[L] and bs[L] > bv: bv = bs[L]
+                if hr[R] and bs[R] > bv: bv = bs[R]
+                if hr[L] and hr[R]:
+                    c = sf[L] + pr[R]
+                    if c > bv: bv = c
+                bs[p] = bv
+                p //= 2
+        
+        for i in range(n):
+            update(i, nums[i], True)
+        
+        ans = bs[1]
+        
+        pos = defaultdict(list)
+        for i, v in enumerate(nums):
+            if v < 0:
+                pos[v].append(i)
+        
+        for v, positions in pos.items():
+            if len(positions) == n:
+                continue
+            for i in positions:
+                update(i, 0, False)
+            if bs[1] > ans:
+                ans = bs[1]
+            for i in positions:
+                update(i, nums[i], True)
+        
+        return ans"
+3759,H4_claude_help2_solo,livecodebench,True,claude-opus-4-7,,high,,0.1164885,7.803513124992605,7.803513124992605,0.0,False,False,False,False,writer,tag,H4_claude_help2_solo/3759__H4_claude_help2_solo.json,"import heapq
+from typing import List
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        order = sorted(range(n), key=lambda i: nums1[i])
+        answer = [0] * n
+        heap = []
+        cur_sum = 0
+        i = 0
+        while i < n:
+            j = i
+            while j < n and nums1[order[j]] == nums1[order[i]]:
+                j += 1
+            # All indices order[i..j-1] share same nums1 value; their answer uses heap state before adding them
+            for t in range(i, j):
+                answer[order[t]] = cur_sum
+            for t in range(i, j):
+                idx = order[t]
+                v = nums2[idx]
+                if len(heap) < k:
+                    heapq.heappush(heap, v)
+                    cur_sum += v
+                else:
+                    if v > heap[0]:
+                        cur_sum += v - heap[0]
+                        heapq.heapreplace(heap, v)
+            i = j
+        return answer"
+abc388_e,H4_claude_help2_solo,livecodebench,True,claude-opus-4-7,,high,,0.333205,5.528033584007062,5.528033584007062,0.0,False,False,False,False,writer,tag,H4_claude_help2_solo/abc388_e__H4_claude_help2_solo.json,"import sys
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    n = int(data[0])
+    a = [int(x) for x in data[1:1+n]]
+    
+    lo, hi = 0, n // 2
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        # pair smallest mid with largest mid
+        ok = True
+        for i in range(mid):
+            if 2 * a[i] > a[n - mid + i]:
+                ok = False
+                break
+        if ok:
+            lo = mid
+        else:
+            hi = mid - 1
+    print(lo)
+
+main()"
+abc392_d,H4_claude_help2_solo,livecodebench,False,claude-opus-4-7,,high,,0.11239850000000001,5.547329165972769,5.547329165972769,0.0,False,False,False,False,writer,tag,H4_claude_help2_solo/abc392_d__H4_claude_help2_solo.json,"import sys
+from collections import Counter
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    idx = 0
+    n = int(data[idx]); idx += 1
+    dice = []
+    for _ in range(n):
+        k = int(data[idx]); idx += 1
+        faces = data[idx:idx+k]
+        idx += k
+        c = Counter(faces)
+        dice.append((k, c))
+    
+    best = 0.0
+    for i in range(n):
+        ki, ci = dice[i]
+        for j in range(i+1, n):
+            kj, cj = dice[j]
+            if len(ci) > len(cj):
+                a, b = cj, ci
+            else:
+                a, b = ci, cj
+            s = 0
+            for key, v in a.items():
+                if key in b:
+                    s += v * b[key]
+            p = s / (ki * kj)
+            if p > best:
+                best = p
+    print(f""{best:.15f}"")
+
+main()"
+abc392_f,H4_claude_help2_solo,livecodebench,False,claude-opus-4-7,,high,,0.37392000000000003,24.30050495796604,24.30050495796604,0.0,False,False,False,False,writer,tag,H4_claude_help2_solo/abc392_f__H4_claude_help2_solo.json,"import sys
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    N = int(data[0])
+    P = [int(x) for x in data[1:1+N]]
+
+    # Fenwick tree size, next power of two <= N for binary lifting
+    size = N
+    bit = [0] * (size + 1)
+    # Initialize: all positions 1..N have value 1. Use O(N) init.
+    for i in range(1, size + 1):
+        bit[i] += 1
+        j = i + (i & -i)
+        if j <= size:
+            bit[j] += bit[i]
+
+    LOG = 1
+    while (1 << LOG) <= size:
+        LOG += 1
+    LOG -= 1  # highest bit such that (1<<LOG) <= size
+
+    ans = [0] * (N + 1)
+
+    for i in range(N, 0, -1):
+        k = P[i - 1]
+        # find smallest index pos such that prefix sum >= k
+        pos = 0
+        cur = k
+        r = LOG
+        while r >= 0:
+            nxt = pos + (1 << r)
+            if nxt <= size and bit[nxt] < cur:
+                pos = nxt
+                cur -= bit[nxt]
+            r -= 1
+        pos += 1
+        ans[pos] = i
+        # update: subtract 1 at pos
+        j = pos
+        while j <= size:
+            bit[j] -= 1
+            j += j & -j
+
+    sys.stdout.write(' '.join(str(ans[i]) for i in range(1, N + 1)))
+
+main()"
+3688,H5_gpt55_help2_solo,livecodebench,False,gpt-5.5,,high,,0.09672,16.313590667035896,16.313590667035896,0.0,False,False,False,False,writer,tag,H5_gpt55_help2_solo/3688__H5_gpt55_help2_solo.json,"from typing import List
+from collections import defaultdict
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        NEG_INF = -10**30
+
+        best_no_delete = NEG_INF
+        cur_no_delete = NEG_INF
+
+        # dp[x] = best subarray sum ending here after deleting all x's,
+        # for negative values x that have appeared in the current useful state.
+        dp = {}
+        ans = NEG_INF
+
+        for a in nums:
+            if cur_no_delete == NEG_INF:
+                cur_no_delete = a
+            else:
+                cur_no_delete = max(a, cur_no_delete + a)
+            best_no_delete = max(best_no_delete, cur_no_delete)
+            ans = max(ans, best_no_delete)
+
+            if a < 0:
+                # Start using deletion value a here, deleting this element from an
+                # existing non-empty subarray ending before it.
+                prev = dp.get(a, NEG_INF)
+                dp[a] = max(prev, cur_no_delete - a)
+            else:
+                # Positive/zero values extend every deletion-state subarray.
+                remove = []
+                for x, s in dp.items():
+                    ns = s + a
+                    dp[x] = ns
+                    ans = max(ans, ns)
+                    # States with non-positive sum are never better than starting fresh
+                    # later from the normal Kadane state.
+                    if ns <= 0:
+                        remove.append(x)
+                for x in remove:
+                    del dp[x]
+
+            if a < 0 and a in dp:
+                ans = max(ans, dp[a])
+
+        return ans"
+3759,H5_gpt55_help2_solo,livecodebench,True,gpt-5.5,,high,,0.092116,8.50482941698283,8.50482941698283,0.0,False,False,False,False,writer,tag,H5_gpt55_help2_solo/3759__H5_gpt55_help2_solo.json,"from typing import List
+import heapq
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        items = sorted((nums1[i], nums2[i], i) for i in range(n))
+        ans = [0] * n
+
+        heap = []
+        top_sum = 0
+        i = 0
+
+        while i < n:
+            value = items[i][0]
+            j = i
+
+            while j < n and items[j][0] == value:
+                ans[items[j][2]] = top_sum
+                j += 1
+
+            for p in range(i, j):
+                v = items[p][1]
+                heapq.heappush(heap, v)
+                top_sum += v
+                if len(heap) > k:
+                    top_sum -= heapq.heappop(heap)
+
+            i = j
+
+        return ans"
+abc388_e,H5_gpt55_help2_solo,livecodebench,True,gpt-5.5,,high,,0.088291,6.468255750020035,6.468255750020035,0.0,False,False,False,False,writer,tag,H5_gpt55_help2_solo/abc388_e__H5_gpt55_help2_solo.json,"import sys
+
+def main():
+    input = sys.stdin.readline
+    N = int(input())
+    A = list(map(int, input().split()))
+
+    i = 0
+    j = N // 2
+    ans = 0
+
+    while i < N // 2 and j < N:
+        if A[i] * 2 <= A[j]:
+            ans += 1
+            i += 1
+            j += 1
+        else:
+            j += 1
+
+    print(ans)
+
+if __name__ == ""__main__"":
+    main()"
+abc392_d,H5_gpt55_help2_solo,livecodebench,False,gpt-5.5,,high,,0.100388,11.08696766605135,11.08696766605135,0.0,False,False,False,False,writer,tag,H5_gpt55_help2_solo/abc392_d__H5_gpt55_help2_solo.json,"import sys
+
+def main():
+    data = list(map(int, sys.stdin.buffer.read().split()))
+    idx = 0
+    n = data[idx]
+    idx += 1
+
+    dice = []
+    for _ in range(n):
+        k = data[idx]
+        idx += 1
+        freq = {}
+        for _ in range(k):
+            a = data[idx]
+            idx += 1
+            freq[a] = freq.get(a, 0) + 1
+        dice.append((k, freq))
+
+    ans = 0.0
+
+    for i in range(n):
+        ki, fi = dice[i]
+        for j in range(i + 1, n):
+            kj, fj = dice[j]
+
+            if len(fi) <= len(fj):
+                small, large = fi, fj
+            else:
+                small, large = fj, fi
+
+            same = 0
+            for value, count in small.items():
+                same += count * large.get(value, 0)
+
+            ans = max(ans, same / (ki * kj))
+
+    print(f""{ans:.15f}"")
+
+if __name__ == ""__main__"":
+    main()"
+abc392_f,H5_gpt55_help2_solo,livecodebench,False,gpt-5.5,,high,,0.099071,13.03350041602971,13.03350041602971,0.0,False,False,False,False,writer,tag,H5_gpt55_help2_solo/abc392_f__H5_gpt55_help2_solo.json,"import sys
+
+def main():
+    input = sys.stdin.readline
+    N = int(input())
+    P = list(map(int, input().split()))
+
+    bit = [0] * (N + 1)
+
+    def add(i, x):
+        while i <= N:
+            bit[i] += x
+            i += i & -i
+
+    def kth(k):
+        idx = 0
+        step = 1 << (N.bit_length() - 1)
+        while step:
+            nxt = idx + step
+            if nxt <= N and bit[nxt] < k:
+                idx = nxt
+                k -= bit[nxt]
+            step >>= 1
+        return idx + 1
+
+    for i in range(1, N + 1):
+        add(i, 1)
+
+    ans = [0] * N
+
+    for value in range(N, 0, -1):
+        pos = kth(P[value - 1])
+        ans[pos - 1] = value
+        add(pos, -1)
+
+    print(*ans)
+
+if __name__ == ""__main__"":
+    main()"
+3688,H6_gemini_help2_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.414644,220.62925312499283,220.62925312499283,0.0,False,False,False,False,writer,tag,H6_gemini_help2_solo/3688__H6_gemini_help2_solo.json,"from typing import List
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        max_num = max(nums)
+        # If all elements are <= 0, the maximum valid subarray sum is just the maximum element.
+        # Removing any elements will not help us form a sum strictly greater than max_num.
+        if max_num <= 0:
+            return max_num
+            
+        N = len(nums)
+        P = [0] * (N + 1)
+        for i in range(N):
+            P[i+1] = P[i] + nums[i]
+            
+        # Build Sparse Table for Range Minimum/Maximum Queries in O(N log N)
+        st_min = [P[:]]
+        st_max = [P[:]]
+        
+        j = 1
+        while True:
+            offset = 1 << (j - 1)
+            prev_min = st_min[-1]
+            prev_max = st_max[-1]
+            length = len(prev_min) - offset
+            
+            if length <= 0:
+                break
+                
+            # List comprehensions execute in C, making this extremely fast in Python
+            curr_min = [min(prev_min[i], prev_min[i + offset]) for i in range(length)]
+            curr_max = [max(prev_max[i], prev_max[i + offset]) for i in range(length)]
+            
+            st_min.append(curr_min)
+            st_max.append(curr_max)
+            j += 1
+            
+        def query_min(L: int, R: int) -> int:
+            if L == R:
+                return P[L]
+            j = (R - L + 1).bit_length() - 1
+            return min(st_min[j][L], st_min[j][R - (1 << j) + 1])
+            
+        def query_max(L: int, R: int) -> int:
+            if L == R:
+                return P[L]
+            j = (R - L + 1).bit_length() - 1
+            return max(st_max[j][L], st_max[j][R - (1 << j) + 1])
+            
+        # Get baseline max subarray sum without any removals (Kadane's algorithm)
+        ans = -float('inf')
+        curr = 0
+        for x in nums:
+            curr += x
+            if curr > ans:
+                ans = curr
+            if curr < 0:
+                curr = 0
+                
+        # Group indices of negative numbers
+        from collections import defaultdict
+        neg_indices = defaultdict(list)
+        for i, x in enumerate(nums):
+            if x < 0:
+                neg_indices[x].append(i)
+                
+        # Check max difference for each negative number across segments separated by it
+        for x, indices in neg_indices.items():
+            m = len(indices)
+            
+            # Segment 0: Before the first occurrence of x
+            L = 0
+            R = indices[0]
+            # Since c=0, -c*x = 0, V_min is just min_P
+            min_V_so_far = query_min(L, R) 
+            
+            for c in range(1, m + 1):
+                if c < m:
+                    L = indices[c-1] + 1
+                    R = indices[c]
+                else:
+                    L = indices[c-1] + 1
+                    R = N
+                    
+                min_P = query_min(L, R)
+                max_P = query_max(L, R)
+                
+                # Adjust prefix sums for 'c' replacements of x with 0
+                V_max = max_P - c * x
+                V_min = min_P - c * x
+                
+                # We strictly enforce c1 < c2 which ensures our chosen subarray will
+                # span across at least one occurrence of x. Subarrays entirely within a segment 
+                # lack x completely and have already been accounted for in the baseline global ans.
+                if V_max - min_V_so_far > ans:
+                    ans = V_max - min_V_so_far
+                    
+                if V_min < min_V_so_far:
+                    min_V_so_far = V_min
+                    
+        return ans"
+3759,H6_gemini_help2_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.038706199999999996,21.396745833044406,21.396745833044406,0.0,False,False,False,False,writer,tag,H6_gemini_help2_solo/3759__H6_gemini_help2_solo.json,"from typing import List
+import heapq
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        # Create a list of tuples containing (nums1[i], nums2[i], original_index)
+        arr = [(nums1[i], nums2[i], i) for i in range(n)]
+        
+        # Sort the array by nums1 values in ascending order
+        arr.sort(key=lambda x: x[0])
+        
+        ans = [0] * n
+        heap = []
+        curr_sum = 0
+        
+        i = 0
+        while i < n:
+            j = i
+            # Group all elements with the same nums1 value
+            while j < n and arr[j][0] == arr[i][0]:
+                j += 1
+            
+            # The answer for all elements in the current group is the current sum
+            for idx in range(i, j):
+                original_index = arr[idx][2]
+                ans[original_index] = curr_sum
+                
+            # After answering for the group, we can add their nums2 values to the heap
+            for idx in range(i, j):
+                val = arr[idx][1]
+                heapq.heappush(heap, val)
+                curr_sum += val
+                # Maintain the size of the min-heap to be at most k
+                if len(heap) > k:
+                    popped = heapq.heappop(heap)
+                    curr_sum -= popped
+                    
+            i = j
+            
+        return ans"
+abc388_e,H6_gemini_help2_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.073956,32.96883249998791,32.96883249998791,0.0,False,False,False,False,writer,tag,H6_gemini_help2_solo/abc388_e__H6_gemini_help2_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    # The sizes of mochi are already guaranteed to be in ascending order
+    A = [int(x) for x in input_data[1:]]
+    
+    def check(K):
+        """"""
+        Check if we can form K kagamimochi.
+        To maximize our chances, we pair the smallest K mochi with the largest K mochi.
+        Specifically, the i-th smallest mochi pairs with the i-th largest among the selected.
+        """"""
+        offset = N - K
+        for i in range(K):
+            if A[i] * 2 > A[offset + i]:
+                return False
+        return True
+    
+    # Binary search for the maximum possible number of kagamimochi
+    low = 0
+    high = N // 2
+    ans = 0
+    
+    while low <= high:
+        mid = (low + high) // 2
+        if check(mid):
+            ans = mid      # mid is possible, try to find a larger K
+            low = mid + 1
+        else:
+            high = mid - 1 # mid is not possible, search for a smaller K
+            
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc392_d,H6_gemini_help2_solo,livecodebench,False,gemini-3.1-pro-preview,,high,,0.094484,39.262589458958246,39.262589458958246,0.0,False,False,False,False,writer,tag,H6_gemini_help2_solo/abc392_d__H6_gemini_help2_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    idx = 1
+    
+    dice = []
+    # Parse the input for each die
+    for _ in range(N):
+        K = int(input_data[idx])
+        idx += 1
+        freq = {}
+        for _ in range(K):
+            val = int(input_data[idx])
+            if val in freq:
+                freq[val] += 1
+            else:
+                freq[val] = 1
+            idx += 1
+        dice.append((K, freq))
+        
+    max_num = 0
+    max_den = 1
+    
+    # Compare all pairs of dice
+    for i in range(N):
+        K_i, freq_i = dice[i]
+        for j in range(i + 1, N):
+            K_j, freq_j = dice[j]
+            
+            # To optimize the inner loop, iterate over the die with fewer unique faces
+            if len(freq_i) > len(freq_j):
+                freq_a, freq_b = freq_j, freq_i
+            else:
+                freq_a, freq_b = freq_i, freq_j
+                
+            match_ways = 0
+            for val, count in freq_a.items():
+                if val in freq_b:
+                    match_ways += count * freq_b[val]
+                    
+            den = K_i * K_j
+            num = match_ways
+            
+            # Compare fractions exactly using cross-multiplication to avoid float precision issues
+            if num * max_den > max_num * den:
+                max_num = num
+                max_den = den
+                
+    # Python's float division provides sufficient precision for the maximum fraction
+    print(f""{max_num / max_den:.15f}"")
+
+if __name__ == '__main__':
+    solve()"
+abc392_f,H6_gemini_help2_solo,livecodebench,False,gemini-3.1-pro-preview,,high,,0.092824,41.794808082981035,41.794808082981035,0.0,False,False,False,False,writer,tag,H6_gemini_help2_solo/abc392_f__H6_gemini_help2_solo.json,"import sys
+
+def main():
+    # Read all input from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+        
+    N = int(input_data[0])
+    
+    # Early exit for N=0 if constraints somehow allow it (though 1 <= N)
+    if N == 0:
+        return
+
+    # Extract positions P
+    P = [int(x) for x in input_data[1:N+1]]
+    
+    # Initialize the Fenwick tree (Binary Indexed Tree) in O(N) time.
+    # tree[i] initially represents that the i-th position is available (value = 1).
+    tree = [1] * (N + 1)
+    tree[0] = 0
+    for i in range(1, N + 1):
+        nxt = i + (i & -i)
+        if nxt <= N:
+            tree[nxt] += tree[i]
+            
+    # Find the largest power of 2 that is <= N for binary lifting
+    max_pow2 = 1
+    while max_pow2 * 2 <= N:
+        max_pow2 *= 2
+        
+    ans = [0] * N
+    
+    # Process operations in reverse
+    for i in range(N, 0, -1):
+        k = P[i - 1]
+        
+        idx = 0
+        bit_mask = max_pow2
+        
+        # Binary lifting on the Fenwick tree to find the k-th available position
+        while bit_mask > 0:
+            next_idx = idx + bit_mask
+            if next_idx <= N and tree[next_idx] < k:
+                idx = next_idx
+                k -= tree[idx]
+            bit_mask //= 2
+            
+        # The 1-based position is idx + 1
+        pos = idx + 1
+        ans[pos - 1] = i
+        
+        # Remove this position from available slots by adding -1 to the Fenwick tree
+        curr = pos
+        while curr <= N:
+            tree[curr] -= 1
+            curr += curr & (-curr)
+            
+    # Print the final array, space-separated
+    sys.stdout.write("" "".join(map(str, ans)) + ""\n"")
+
+if __name__ == '__main__':
+    main()"
