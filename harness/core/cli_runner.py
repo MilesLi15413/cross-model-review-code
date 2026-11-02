@@ -1,4 +1,4 @@
-"""Subprocess wrappers for Claude Code and Codex CLIs."""
+"""Subprocess wrappers for Claude Code, Codex, and Gemini CLIs."""
 
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ class RunResult:
 
 
 class CLIRunner:
-    """Thin runner around the Claude Code and Codex CLIs."""
+    """Thin runner around the Claude Code, Codex, and Gemini CLIs."""
 
     def __init__(
         self,
@@ -150,6 +150,14 @@ class CLIRunner:
                     str(Path.home() / ".local" / "bin" / "claude"),
                     "/opt/homebrew/bin/claude",
                     "/usr/local/bin/claude",
+                ]
+            )
+        elif self.cli == "gemini":
+            candidates.extend(
+                [
+                    str(Path.home() / ".local" / "bin" / "gemini"),
+                    "/opt/homebrew/bin/gemini",
+                    "/usr/local/bin/gemini",
                 ]
             )
 
@@ -197,6 +205,25 @@ class CLIRunner:
                 cmd.extend(["--effort", self.effort])
             cmd.append(prompt)
             return cmd
+
+        if self.cli == "gemini":
+            # Gemini CLI has no reasoning-effort flag; refuse rather than record an
+            # effort level that was never applied.
+            if self.effort:
+                raise ValueError(
+                    "Gemini CLI has no reasoning-effort flag; set effort: null for gemini runs"
+                )
+            # --skip-trust: headless Gemini refuses to run in untrusted directories.
+            return [
+                executable,
+                "--model",
+                self.model,
+                "--output-format",
+                "json",
+                "--skip-trust",
+                "--prompt",
+                prompt,
+            ]
 
         if codex_output_path is None:
             raise ValueError("codex_output_path is required for Codex runs")
@@ -287,6 +314,56 @@ class CLIRunner:
                 usage.get("cache_creation_input_tokens", 0) or 0
             ),
             cost_usd=payload.get("total_cost_usd"),
+            cli_version=self.get_version(),
+            started_at=started_at,
+            finished_at=finished_at,
+        )
+
+    def _parse_gemini_response(
+        self,
+        stdout: str,
+        stderr: str,
+        exit_code: int,
+        duration_s: float,
+        started_at: str,
+        finished_at: str,
+    ) -> RunResult:
+        json_start = stdout.find("{")
+        try:
+            payload = json.loads(stdout[json_start:] if json_start >= 0 else stdout)
+        except json.JSONDecodeError as exc:
+            raise CLIError(f"Failed to parse Gemini JSON output: {exc}") from exc
+
+        if payload.get("error"):
+            raise CLIError(f"Gemini returned an error: {payload['error']}")
+        response_text = payload.get("response")
+        if not isinstance(response_text, str) or not response_text:
+            raise CLIError("Gemini JSON output has no 'response' text")
+
+        # Gemini may route parts of a turn through several models; sum them all.
+        # "prompt" includes cached tokens, and thinking tokens are billed as output.
+        input_tokens = output_tokens = cached_input_tokens = 0
+        models = (payload.get("stats") or {}).get("models") or {}
+        for model_stats in models.values():
+            tokens = model_stats.get("tokens") or {}
+            cached = int(tokens.get("cached", 0) or 0)
+            prompt_tokens = int(tokens.get("prompt", 0) or 0)
+            input_tokens += int(tokens.get("input", max(prompt_tokens - cached, 0)) or 0)
+            cached_input_tokens += cached
+            output_tokens += int(tokens.get("candidates", 0) or 0)
+            output_tokens += int(tokens.get("thoughts", 0) or 0)
+
+        return RunResult(
+            response_text=response_text,
+            raw_stdout=stdout,
+            raw_stderr=stderr,
+            exit_code=exit_code,
+            duration_s=duration_s,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cached_input_tokens=cached_input_tokens,
+            cache_creation_input_tokens=0,
+            cost_usd=None,
             cli_version=self.get_version(),
             started_at=started_at,
             finished_at=finished_at,
@@ -399,6 +476,18 @@ class CLIRunner:
             combined_output = f"{completed.stdout}\n{completed.stderr}"
 
             try:
+                # Gemini logs its own internal retries (e.g. 503 "try again later") to
+                # stderr even when the call succeeds, so only pattern-match failures.
+                if self.cli == "gemini" and completed.returncode == 0:
+                    return self._parse_gemini_response(
+                        stdout=completed.stdout,
+                        stderr=completed.stderr,
+                        exit_code=completed.returncode,
+                        duration_s=duration_s,
+                        started_at=started_at,
+                        finished_at=finished_at,
+                    )
+
                 if _matches_any(combined_output, UNSUPPORTED_MODEL_PATTERNS):
                     raise UnsupportedModelError(
                         f"Unsupported model '{self.model}' on {self.cli}. "
