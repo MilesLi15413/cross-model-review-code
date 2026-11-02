@@ -202,7 +202,7 @@ class CLIRunnerTest(unittest.TestCase):
         self.assertEqual([], settings["tools"]["core"])
         self.assertEqual(1, len(settings["mcp"]["allowed"]))
 
-    def test_gemini_runs_in_empty_dir_with_system_settings(self):
+    def test_gemini_runs_in_empty_dir_with_project_settings(self):
         runner = CLIRunner("gemini", "gemini-3.1-pro-preview", effort="high", cli_version="0.65.0")
         payload = {
             "response": "OK",
@@ -211,16 +211,15 @@ class CLIRunnerTest(unittest.TestCase):
         seen = {}
 
         def fake_run(cmd, **kwargs):
-            seen["cwd_files"] = list(Path(kwargs["cwd"]).iterdir())
-            settings_path = kwargs["env"]["GEMINI_CLI_SYSTEM_SETTINGS_PATH"]
-            seen["settings"] = json.loads(Path(settings_path).read_text())
+            seen["cwd_files"] = [path.name for path in Path(kwargs["cwd"]).iterdir()]
+            seen["settings"] = json.loads((Path(kwargs["cwd"]) / ".gemini" / "settings.json").read_text())
             return CompletedProcess(args=cmd, returncode=0, stdout=json.dumps(payload), stderr="")
 
         with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
             with mock.patch("harness.core.cli_runner.subprocess.run", side_effect=fake_run):
                 result = runner.run("prompt")
 
-        self.assertEqual([], seen["cwd_files"])
+        self.assertEqual([".gemini"], seen["cwd_files"])
         self.assertEqual([], seen["settings"]["tools"]["core"])
         self.assertEqual("HIGH", result.runtime_settings["thinking_level"])
         self.assertEqual(["gemini-3.1-pro-preview"], result.runtime_settings["models_used"])
@@ -252,6 +251,20 @@ class CLIRunnerTest(unittest.TestCase):
     def test_gemini_auth_failure_raises(self):
         runner = CLIRunner("gemini", "gemini-3.1-pro-preview", cli_version="0.65.0")
         completed = CompletedProcess(args=[], returncode=1, stdout="", stderr="API key not valid")
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(AuthenticationError):
+                    runner.run("prompt")
+
+    def test_gemini_missing_key_is_an_auth_error_not_a_limit(self):
+        runner = CLIRunner("gemini", "gemini-3.1-pro-preview", cli_version="0.65.0")
+        completed = CompletedProcess(
+            args=[],
+            returncode=41,
+            stdout="",
+            stderr="you must specify the GEMINI_API_KEY environment variable. Update it and try again",
+        )
 
         with mock.patch.object(runner, "_resolve_executable", return_value="gemini"):
             with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):

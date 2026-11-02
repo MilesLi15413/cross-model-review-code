@@ -45,10 +45,10 @@ AUTH_PATTERNS = [
     "forbidden",
     "api key",
     "login required",
+    "gemini_api_key",
 ]
 
 RATE_LIMIT_RETRY_DELAYS = [60, 120, 300, 600, 900]
-GEMINI_SETTINGS_ENV = "GEMINI_CLI_SYSTEM_SETTINGS_PATH"
 GEMINI_THINKING_LEVELS = {"low": "LOW", "medium": "MEDIUM", "high": "HIGH"}
 GEMINI_NO_MCP_SERVER = "__no_mcp_servers__"
 CLAUDE_CODE_MAX_OUTPUT_TOKENS_ENV = "CLAUDE_CODE_MAX_OUTPUT_TOKENS"
@@ -249,7 +249,7 @@ class CLIRunner:
         return cmd
 
     def _gemini_settings(self) -> Dict[str, object]:
-        """System-level settings: outrank user settings and leave ~/.gemini untouched."""
+        """Project-level settings for the empty run folder; ~/.gemini stays untouched."""
 
         settings: Dict[str, object] = {
             "tools": {"core": []},
@@ -277,13 +277,7 @@ class CLIRunner:
             }
         return settings
 
-    def _subprocess_env(self, gemini_settings_path: Optional[str] = None) -> Optional[Dict[str, str]]:
-        if self.cli == "gemini":
-            env = os.environ.copy()
-            if gemini_settings_path:
-                env[GEMINI_SETTINGS_ENV] = gemini_settings_path
-            return env
-
+    def _subprocess_env(self) -> Optional[Dict[str, str]]:
         if self.cli != "claude":
             return None
 
@@ -496,7 +490,6 @@ class CLIRunner:
             started_at = _now_iso()
             start_monotonic = time.monotonic()
             codex_output_path = None
-            gemini_settings_path = None
             workdir = None
 
             if self.cli == "codex":
@@ -504,12 +497,10 @@ class CLIRunner:
                 codex_output_path = str(Path(tmpdir.name) / "last_message.txt")
             elif self.cli == "gemini":
                 tmpdir = tempfile.TemporaryDirectory(prefix="gemini-cli-run-")
-                settings_file = Path(tmpdir.name) / "settings.json"
-                settings_file.write_text(json.dumps(self._gemini_settings()))
-                gemini_settings_path = str(settings_file)
-                empty_dir = Path(tmpdir.name) / "workspace"
-                empty_dir.mkdir()
-                workdir = str(empty_dir)
+                settings_dir = Path(tmpdir.name) / ".gemini"
+                settings_dir.mkdir()
+                (settings_dir / "settings.json").write_text(json.dumps(self._gemini_settings()))
+                workdir = tmpdir.name
             else:
                 tmpdir = None
 
@@ -522,7 +513,7 @@ class CLIRunner:
                     text=True,
                     timeout=self.timeout_s,
                     check=False,
-                    env=self._subprocess_env(gemini_settings_path),
+                    env=self._subprocess_env(),
                     cwd=workdir,
                 )
             except subprocess.TimeoutExpired as exc:
