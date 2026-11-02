@@ -1,0 +1,676 @@
+task_id,condition,benchmark,passed,writer_model,reviewer_model,writer_effort,reviewer_effort,total_cost_usd,total_latency_s,writer_latency_s,reviewer_latency_s,parse_failed,cli_error,timed_out,budget_exceeded,evaluated_turn,evaluated_parse_method,raw_file,final_artifact
+3688,H1_claude_help_solo,livecodebench,True,claude-opus-4-7,,high,,0.4336785000000001,157.04423741600476,157.04423741600476,0.0,False,False,False,False,writer,tag,H1_claude_help_solo/3688__H1_claude_help_solo.json,"from typing import List
+from collections import defaultdict
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n == 1:
+            return nums[0]
+        
+        mx = max(nums)
+        if mx <= 0:
+            # All non-positive: removing anything can't give a positive sum,
+            # and best non-empty subarray is just the max element (which survives
+            # as long as we don't remove it; not removing is always an option).
+            return mx
+        
+        NEG_INF = float('-inf')
+        size = 1
+        while size < n:
+            size *= 2
+        
+        sum_ = [0] * (2 * size)
+        pref = [NEG_INF] * (2 * size)
+        suff = [NEG_INF] * (2 * size)
+        best = [NEG_INF] * (2 * size)
+        
+        for i in range(n):
+            v = nums[i]
+            sum_[size + i] = v
+            pref[size + i] = v
+            suff[size + i] = v
+            best[size + i] = v
+        
+        def pull(idx):
+            L = 2 * idx
+            R = L + 1
+            sL = sum_[L]; sR = sum_[R]
+            pL = pref[L]; pR = pref[R]
+            fL = suff[L]; fR = suff[R]
+            bL = best[L]; bR = best[R]
+            sum_[idx] = sL + sR
+            cand = sL + pR
+            pref[idx] = pL if pL >= cand else cand
+            cand = sR + fL
+            suff[idx] = fR if fR >= cand else cand
+            b = bL if bL >= bR else bR
+            c = fL + pR
+            best[idx] = b if b >= c else c
+        
+        for i in range(size - 1, 0, -1):
+            pull(i)
+        
+        def point_update(pos, val):
+            i = pos + size
+            sum_[i] = val
+            pref[i] = val
+            suff[i] = val
+            best[i] = val
+            i >>= 1
+            while i:
+                pull(i)
+                i >>= 1
+        
+        ans = best[1]
+        
+        pos_by_val = defaultdict(list)
+        for i, v in enumerate(nums):
+            if v < 0:
+                pos_by_val[v].append(i)
+        
+        for v, positions in pos_by_val.items():
+            if len(positions) == n:
+                continue
+            for p in positions:
+                point_update(p, 0)
+            cur = best[1]
+            if cur > ans:
+                ans = cur
+            for p in positions:
+                point_update(p, v)
+        
+        return ans"
+3759,H1_claude_help_solo,livecodebench,True,claude-opus-4-7,,high,,0.11466350000000002,6.1361574169714,6.1361574169714,0.0,False,False,False,False,writer,tag,H1_claude_help_solo/3759__H1_claude_help_solo.json,"import heapq
+from typing import List
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        order = sorted(range(n), key=lambda i: nums1[i])
+        answer = [0] * n
+        heap = []
+        cur_sum = 0
+        i = 0
+        while i < n:
+            j = i
+            # group indices with equal nums1 value
+            while j < n and nums1[order[j]] == nums1[order[i]]:
+                j += 1
+            # all indices in [i, j) see the same prefix (strictly less)
+            for idx in range(i, j):
+                answer[order[idx]] = cur_sum
+            # now add these indices to the heap
+            for idx in range(i, j):
+                val = nums2[order[idx]]
+                if len(heap) < k:
+                    heapq.heappush(heap, val)
+                    cur_sum += val
+                else:
+                    if val > heap[0]:
+                        cur_sum += val - heap[0]
+                        heapq.heapreplace(heap, val)
+            i = j
+        return answer"
+abc388_e,H1_claude_help_solo,livecodebench,True,claude-opus-4-7,,high,,0.1126035,7.420746250019874,7.420746250019874,0.0,False,False,False,False,writer,tag,H1_claude_help_solo/abc388_e__H1_claude_help_solo.json,"import sys
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    n = int(data[0])
+    a = list(map(int, data[1:1+n]))
+    
+    lo, hi = 0, n // 2
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        ok = True
+        for i in range(mid):
+            if 2 * a[i] > a[n - mid + i]:
+                ok = False
+                break
+        if ok:
+            lo = mid
+        else:
+            hi = mid - 1
+    print(lo)
+
+main()"
+abc392_d,H1_claude_help_solo,livecodebench,False,claude-opus-4-7,,high,,0.1127485,5.735107208020054,5.735107208020054,0.0,False,False,False,False,writer,tag,H1_claude_help_solo/abc392_d__H1_claude_help_solo.json,"import sys
+from collections import Counter
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    idx = 0
+    n = int(data[idx]); idx += 1
+    counters = []
+    ks = []
+    for _ in range(n):
+        k = int(data[idx]); idx += 1
+        faces = data[idx:idx+k]
+        idx += k
+        c = Counter(faces)
+        counters.append(c)
+        ks.append(k)
+    
+    best = 0.0
+    for i in range(n):
+        for j in range(i+1, n):
+            ci, cj = counters[i], counters[j]
+            if len(ci) > len(cj):
+                ci, cj = cj, ci
+            s = 0
+            for v, cnt in ci.items():
+                if v in cj:
+                    s += cnt * cj[v]
+            prob = s / (ks[i] * ks[j])
+            if prob > best:
+                best = prob
+    
+    print(f""{best:.15f}"")
+
+main()"
+abc392_f,H1_claude_help_solo,livecodebench,False,claude-opus-4-7,,high,,0.41317500000000007,41.95560916600516,41.95560916600516,0.0,False,False,False,False,writer,tag,H1_claude_help_solo/abc392_f__H1_claude_help_solo.json,"import sys
+
+def solve():
+    data = sys.stdin.buffer.read().split()
+    N = int(data[0])
+    P = list(map(int, data[1:1+N]))
+    
+    size = N
+    bit = [0] * (size + 2)
+    # Initialize all ones in O(N)
+    for i in range(1, size + 1):
+        bit[i] += 1
+        j = i + (i & -i)
+        if j <= size:
+            bit[j] += bit[i]
+    
+    LOG = 0
+    while (1 << (LOG + 1)) <= size:
+        LOG += 1
+    
+    result = [0] * (N + 1)
+    
+    for i in range(N, 0, -1):
+        k = P[i - 1]
+        pos = 0
+        for r in range(LOG, -1, -1):
+            nxt = pos + (1 << r)
+            if nxt <= size and bit[nxt] < k:
+                pos = nxt
+                k -= bit[pos]
+        pos += 1
+        result[pos] = i
+        j = pos
+        while j <= size:
+            bit[j] -= 1
+            j += j & -j
+    
+    sys.stdout.write(' '.join(map(str, result[1:])))
+
+solve()"
+3688,H2_gpt55_help_solo,livecodebench,True,gpt-5.5,,high,,0.105366,14.296709749964066,14.296709749964066,0.0,False,False,False,False,writer,tag,H2_gpt55_help_solo/3688__H2_gpt55_help_solo.json,"from typing import List
+from collections import defaultdict
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        n = len(nums)
+        NEG_INF = -10**30
+
+        def make_node(v: int):
+            return [v, v, v, v]  # sum, max_prefix, max_suffix, max_subarray
+
+        EMPTY = [0, NEG_INF, NEG_INF, NEG_INF]
+
+        def merge(a, b):
+            return [
+                a[0] + b[0],
+                max(a[1], a[0] + b[1]),
+                max(b[2], b[0] + a[2]),
+                max(a[3], b[3], a[2] + b[1]),
+            ]
+
+        size = 1
+        while size < n:
+            size *= 2
+
+        seg = [EMPTY[:] for _ in range(2 * size)]
+        for i, v in enumerate(nums):
+            seg[size + i] = make_node(v)
+
+        for i in range(size - 1, 0, -1):
+            seg[i] = merge(seg[2 * i], seg[2 * i + 1])
+
+        def update(pos: int, node):
+            idx = size + pos
+            seg[idx] = node[:]
+            idx //= 2
+            while idx:
+                seg[idx] = merge(seg[2 * idx], seg[2 * idx + 1])
+                idx //= 2
+
+        ans = seg[1][3]
+
+        positions = defaultdict(list)
+        for i, v in enumerate(nums):
+            if v < 0:
+                positions[v].append(i)
+
+        for v, inds in positions.items():
+            if len(inds) == n:
+                continue
+
+            for i in inds:
+                update(i, EMPTY)
+
+            ans = max(ans, seg[1][3])
+
+            for i in inds:
+                update(i, make_node(v))
+
+        return ans"
+3759,H2_gpt55_help_solo,livecodebench,True,gpt-5.5,,high,,0.08515,8.08089454198489,8.08089454198489,0.0,False,False,False,False,writer,tag,H2_gpt55_help_solo/3759__H2_gpt55_help_solo.json,"from typing import List
+import heapq
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        order = sorted(range(n), key=lambda i: nums1[i])
+        ans = [0] * n
+
+        heap = []
+        top_sum = 0
+
+        i = 0
+        while i < n:
+            value = nums1[order[i]]
+            j = i
+
+            while j < n and nums1[order[j]] == value:
+                ans[order[j]] = top_sum
+                j += 1
+
+            for p in range(i, j):
+                x = nums2[order[p]]
+                heapq.heappush(heap, x)
+                top_sum += x
+
+                if len(heap) > k:
+                    top_sum -= heapq.heappop(heap)
+
+            i = j
+
+        return ans"
+abc388_e,H2_gpt55_help_solo,livecodebench,False,gpt-5.5,,high,,0.130975,32.61391391698271,32.61391391698271,0.0,False,False,False,False,writer,tag,H2_gpt55_help_solo/abc388_e__H2_gpt55_help_solo.json,"import sys
+
+def main():
+    input = sys.stdin.buffer.readline
+
+    n = int(input())
+    a = list(map(int, input().split()))
+
+    top_limit = n // 2
+    top = 0
+
+    for bottom in range(top_limit, n):
+        if top < top_limit and a[top] * 2 <= a[bottom]:
+            top += 1
+
+    print(top)
+
+if __name__ == ""__main__"":
+    main()"
+abc392_d,H2_gpt55_help_solo,livecodebench,False,gpt-5.5,,high,,0.09072,11.117003374965861,11.117003374965861,0.0,False,False,False,False,writer,tag,H2_gpt55_help_solo/abc392_d__H2_gpt55_help_solo.json,"import sys
+from collections import Counter
+
+def main():
+    data = list(map(int, sys.stdin.buffer.read().split()))
+    n = data[0]
+    idx = 1
+
+    dice = []
+    sizes = []
+
+    for _ in range(n):
+        k = data[idx]
+        idx += 1
+        faces = data[idx:idx + k]
+        idx += k
+        counts = Counter(faces)
+        dice.append(counts)
+        sizes.append(k)
+
+    ans = 0.0
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            a, b = dice[i], dice[j]
+            if len(a) > len(b):
+                a, b = b, a
+
+            same = 0
+            for value, cnt in a.items():
+                same += cnt * b.get(value, 0)
+
+            prob = same / (sizes[i] * sizes[j])
+            if prob > ans:
+                ans = prob
+
+    print(f""{ans:.15f}"")
+
+if __name__ == ""__main__"":
+    main()"
+abc392_f,H2_gpt55_help_solo,livecodebench,False,gpt-5.5,,high,,0.093185,14.547905917046592,14.547905917046592,0.0,False,False,False,False,writer,tag,H2_gpt55_help_solo/abc392_f__H2_gpt55_help_solo.json,"import sys
+
+def main():
+    input = sys.stdin.readline
+    N = int(input())
+    P = list(map(int, input().split()))
+
+    bit = [0] * (N + 1)
+
+    def add(i, x):
+        while i <= N:
+            bit[i] += x
+            i += i & -i
+
+    def kth(k):
+        idx = 0
+        step = 1 << (N.bit_length() - 1)
+        while step:
+            nxt = idx + step
+            if nxt <= N and bit[nxt] < k:
+                idx = nxt
+                k -= bit[nxt]
+            step >>= 1
+        return idx + 1
+
+    for i in range(1, N + 1):
+        add(i, 1)
+
+    ans = [0] * N
+
+    for value in range(N, 0, -1):
+        pos = kth(P[value - 1])
+        ans[pos - 1] = value
+        add(pos, -1)
+
+    print(*ans)
+
+if __name__ == ""__main__"":
+    main()"
+3688,H3_gemini_help_solo,livecodebench,False,gemini-3.1-pro-preview,,high,,0.364922,188.79167866695207,188.79167866695207,0.0,False,False,False,False,writer,tag,H3_gemini_help_solo/3688__H3_gemini_help_solo.json,"class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        from collections import defaultdict
+        
+        max_elem = max(nums)
+        # If all elements are non-positive, we can't do better than the max element itself.
+        if max_elem <= 0:
+            return max_elem
+            
+        n = len(nums)
+        # Segment tree nodes store: (sum, max_prefix, max_suffix, max_subarray)
+        tree = [(0, 0, 0, 0)] * (2 * n)
+        
+        def combine(L, R):
+            sum_L, pref_L, suff_L, max_L = L
+            sum_R, pref_R, suff_R, max_R = R
+            
+            new_sum = sum_L + sum_R
+            
+            new_pref = sum_L + pref_R
+            if pref_L > new_pref: new_pref = pref_L
+            
+            new_suff = sum_R + suff_L
+            if suff_R > new_suff: new_suff = suff_R
+            
+            cross = suff_L + pref_R
+            new_max = max_L
+            if max_R > new_max: new_max = max_R
+            if cross > new_max: new_max = cross
+            
+            return (new_sum, new_pref, new_suff, new_max)
+
+        # Build iterative segment tree
+        for i in range(n):
+            v = nums[i]
+            if v > 0:
+                tree[n + i] = (v, v, v, v)
+            else:
+                tree[n + i] = (v, 0, 0, 0)
+                
+        for i in range(n - 1, 0, -1):
+            tree[i] = combine(tree[2 * i], tree[2 * i + 1])
+            
+        def query(l, r):
+            l += n
+            r += n + 1
+            res_L = (0, 0, 0, 0)
+            res_R = (0, 0, 0, 0)
+            while l < r:
+                if l % 2 == 1:
+                    res_L = combine(res_L, tree[l])
+                    l += 1
+                if r % 2 == 1:
+                    r -= 1
+                    res_R = combine(tree[r], res_R)
+                l //= 2
+                r //= 2
+            return combine(res_L, res_R)
+            
+        # The base answer doing absolutely nothing (just standard max subarray)
+        ans = tree[1][3] 
+        
+        # Track positions of all negative elements
+        positions = defaultdict(list)
+        for i in range(n):
+            if nums[i] < 0:
+                positions[nums[i]].append(i)
+                
+        # Try removing each distinct negative element x
+        for x, pos_list in positions.items():
+            res = (0, 0, 0, 0)
+            prev_idx = -1
+            
+            for p in pos_list:
+                # If there's a valid gap block between occurrences of x
+                if p - 1 >= prev_idx + 1:
+                    res = combine(res, query(prev_idx + 1, p - 1))
+                prev_idx = p
+                
+            # Connect the trailing segment after the last occurrence of x
+            if n - 1 >= prev_idx + 1:
+                res = combine(res, query(prev_idx + 1, n - 1))
+                
+            if res[3] > ans:
+                ans = res[3]
+                
+        return ans"
+3759,H3_gemini_help_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.077826,32.78791195800295,32.78791195800295,0.0,False,False,False,False,writer,tag,H3_gemini_help_solo/3759__H3_gemini_help_solo.json,"import heapq
+from typing import List
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        
+        # Create an array of indices and sort it based on the values in nums1
+        indices = list(range(n))
+        indices.sort(key=lambda x: nums1[x])
+        
+        answer = [0] * n
+        heap = []
+        current_sum = 0
+        
+        i = 0
+        while i < n:
+            j = i
+            # Group all indices that have the same value in nums1
+            while j < n and nums1[indices[j]] == nums1[indices[i]]:
+                j += 1
+            
+            # The answer for all elements in the current group is the sum of the top k elements seen so far
+            for idx in range(i, j):
+                answer[indices[idx]] = current_sum
+                
+            # After answering the current group, add their nums2 values to the min-heap
+            for idx in range(i, j):
+                val = nums2[indices[idx]]
+                if len(heap) < k:
+                    heapq.heappush(heap, val)
+                    current_sum += val
+                elif val > heap[0]:
+                    # Replace the smallest element in the heap if the new value is larger
+                    current_sum += val - heapq.heapreplace(heap, val)
+                    
+            # Move to the next group
+            i = j
+            
+        return answer"
+abc388_e,H3_gemini_help_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.068744,29.226233957975637,29.226233957975637,0.0,False,False,False,False,writer,tag,H3_gemini_help_solo/abc388_e__H3_gemini_help_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    A = [int(x) for x in input_data[1:]]
+    
+    # Binary search for the maximum number of pairs
+    low = 0
+    high = N // 2
+    ans = 0
+    
+    while low <= high:
+        mid = (low + high) // 2
+        possible = True
+        
+        # To maximize the chance of pairing, we greedily pair the `mid` smallest elements
+        # with the `mid` largest elements in the same relative order.
+        for i in range(mid):
+            if A[i] * 2 > A[N - mid + i]:
+                possible = False
+                break
+        
+        if possible:
+            ans = mid
+            low = mid + 1
+        else:
+            high = mid - 1
+            
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc392_d,H3_gemini_help_solo,livecodebench,False,gemini-3.1-pro-preview,,high,,0.092252,41.30136587499874,41.30136587499874,0.0,False,False,False,False,writer,tag,H3_gemini_help_solo/abc392_d__H3_gemini_help_solo.json,"import sys
+
+def solve():
+    # Read all input from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    idx = 1
+    
+    dice_counts = []
+    dice_k = []
+    
+    # Parse the input and build frequency dictionaries for each die
+    for _ in range(N):
+        K = int(input_data[idx])
+        dice_k.append(K)
+        counts = {}
+        for i in range(1, K + 1):
+            val = int(input_data[idx + i])
+            counts[val] = counts.get(val, 0) + 1
+        dice_counts.append(counts)
+        idx += K + 1
+        
+    # Variables to track the maximum probability using cross-multiplication
+    # This completely avoids any floating-point precision issues during comparison.
+    max_num = 0
+    max_den = 1
+    
+    # Iterate over all unique pairs of dice
+    for i in range(N):
+        c_i = dice_counts[i]
+        k_i = dice_k[i]
+        for j in range(i + 1, N):
+            c_j = dice_counts[j]
+            k_j = dice_k[j]
+            
+            matches = 0
+            # Always iterate over the smaller dictionary to minimize lookups
+            if len(c_i) < len(c_j):
+                for val, count in c_i.items():
+                    if val in c_j:
+                        matches += count * c_j[val]
+            else:
+                for val, count in c_j.items():
+                    if val in c_i:
+                        matches += count * c_i[val]
+                        
+            den = k_i * k_j
+            
+            # Compare using cross-multiplication: matches / den > max_num / max_den
+            if matches * max_den > max_num * den:
+                max_num = matches
+                max_den = den
+                
+    # Output the exact maximum probability found to 15 decimal places
+    print(f""{max_num / max_den:.15f}"")
+
+if __name__ == '__main__':
+    solve()"
+abc392_f,H3_gemini_help_solo,livecodebench,False,gemini-3.1-pro-preview,,high,,0.106396,49.30079383403063,49.30079383403063,0.0,False,False,False,False,writer,tag,H3_gemini_help_solo/abc392_f__H3_gemini_help_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    P = [int(x) for x in input_data[1:N+1]]
+    
+    # Initialize the Fenwick tree (Binary Indexed Tree)
+    # bit[i] stores the count of available positions in its segment.
+    # Initially, all positions 1 to N are available.
+    bit = [0] * (N + 1)
+    for i in range(1, N + 1):
+        bit[i] = i & -i
+        
+    ans = [0] * (N + 1)
+    
+    # Determine the maximum power of 2 that is <= N
+    max_power = 0
+    while (1 << (max_power + 1)) <= N:
+        max_power += 1
+        
+    # Process the elements in reverse order
+    # When we insert the i-th element, it lands on the P[i-1]-th available empty spot
+    for i in range(N, 0, -1):
+        k = P[i-1]
+        idx = 0
+        
+        # Binary lifting on the Fenwick tree to find the k-th available position
+        for p in range(max_power, -1, -1):
+            nxt = idx + (1 << p)
+            if nxt <= N and bit[nxt] < k:
+                idx = nxt
+                k -= bit[nxt]
+                
+        pos = idx + 1
+        ans[pos] = i
+        
+        # We found the position, so it's no longer available; update the BIT
+        j = pos
+        while j <= N:
+            bit[j] -= 1
+            j += j & -j
+            
+    # Write the output efficiently
+    sys.stdout.write("" "".join(map(str, ans[1:])) + ""\n"")
+
+if __name__ == '__main__':
+    solve()"
