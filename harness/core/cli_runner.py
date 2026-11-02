@@ -29,6 +29,8 @@ RATE_LIMIT_PATTERNS = [
     r"overloaded",
 ]
 
+IS_ERROR_RE = re.compile(r'"is_error"\s*:\s*true')
+
 UNSUPPORTED_MODEL_PATTERNS = [
     "unknown model",
     "invalid model",
@@ -559,7 +561,12 @@ class CLIRunner:
                         f"Output: {(completed.stderr or completed.stdout).strip()}"
                     )
 
-                if _matches_any(combined_output, RATE_LIMIT_PATTERNS):
+                # stop_on_limit runs never treat a successful reply as a limit: token
+                # counts, ids and the model's own text can contain "429" or "try again".
+                failed = completed.returncode != 0 or IS_ERROR_RE.search(completed.stdout)
+                if _matches_any(combined_output, RATE_LIMIT_PATTERNS) and (
+                    failed or not self.stop_on_limit
+                ):
                     if self.stop_on_limit:
                         pause_info = self._build_pause_info(attempt_index, task_id, condition_id, turn)
                         self._write_pause_sentinel(pause_info)

@@ -309,6 +309,34 @@ class CLIRunnerTest(unittest.TestCase):
             sleep_mock.assert_not_called()
             self.assertEqual("t1", json.loads(sentinel.read_text())["last_task_id"])
 
+    def test_stop_on_limit_ignores_limit_text_in_successful_reply(self):
+        runner = CLIRunner("codex", "gpt-5.5", cli_version="codex 1.0", stop_on_limit=True)
+        completed = CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout='{"usage":{"input_tokens":14298}}',
+            stderr="Reading additional input from stdin...",
+        )
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="codex"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with mock.patch.object(runner, "_parse_codex_response", return_value="parsed"):
+                    self.assertEqual("parsed", runner.run("prompt"))
+
+    def test_stop_on_limit_still_catches_claude_error_with_exit_zero(self):
+        runner = CLIRunner("claude", "claude-opus-4-7", cli_version="2.0", stop_on_limit=True)
+        completed = CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout='{"is_error":true,"result":"You have hit your limit"}',
+            stderr="",
+        )
+
+        with mock.patch.object(runner, "_resolve_executable", return_value="claude"):
+            with mock.patch("harness.core.cli_runner.subprocess.run", return_value=completed):
+                with self.assertRaises(UsageLimitError):
+                    runner.run("prompt")
+
     def test_codex_chatgpt_model_rejection_is_unsupported(self):
         runner = CLIRunner("codex", "gpt-5.5", cli_version="codex 1.0")
         completed = CompletedProcess(
