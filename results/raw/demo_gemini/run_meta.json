@@ -1,0 +1,94 @@
+{
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/three_model_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/test_one.txt",
+  "skip_eval": true,
+  "skip_preflight": true,
+  "lcb_difficulty": null,
+  "stop_on_limit": true,
+  "selected_conditions": [
+    "B3_gemini_solo",
+    "C5_claude_writes_gemini_reviews",
+    "C6_gemini_writes_claude_reviews",
+    "C7_gpt55_writes_gemini_reviews",
+    "C8_gemini_writes_gpt55_reviews",
+    "C9_gemini_writes_gemini_reviews"
+  ],
+  "conditions": [
+    {
+      "id": "B3_gemini_solo",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "C5_claude_writes_gemini_reviews",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C6_gemini_writes_claude_reviews",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C7_gpt55_writes_gemini_reviews",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C8_gemini_writes_gpt55_reviews",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C9_gemini_writes_gemini_reviews",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      }
+    }
+  ]
+}

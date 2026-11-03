@@ -1,0 +1,4 @@
+model,tagged_requests,types,untagged_requests,malformed_tags,no_code,cost_usd
+claude-opus-4-7,1,missing_information,0,0,False,0.1421
+gpt-5.5,1,missing_information,0,0,False,0.7379
+gemini-3.1-pro-preview,1,missing_information,0,0,False,0.0329

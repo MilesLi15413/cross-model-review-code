@@ -1,0 +1,33 @@
+{
+  "manifest": "experiments/configs/label_demo_drafts.yaml",
+  "config": "experiments/configs/label_study.yaml",
+  "benchmark_config": "experiments/configs/livecodebench.yaml",
+  "evidence": "none",
+  "stop_on_limit": true,
+  "label_seed": 20261101,
+  "reviewers": [
+    {
+      "family": "claude",
+      "cli": "claude",
+      "model": "claude-opus-4-7",
+      "effort": "high",
+      "timeout_s": 30000
+    },
+    {
+      "family": "gpt",
+      "cli": "codex",
+      "model": "gpt-5.5",
+      "effort": "high",
+      "timeout_s": 30000
+    },
+    {
+      "family": "gemini",
+      "cli": "gemini",
+      "model": "gemini-3.1-pro-preview",
+      "effort": "high",
+      "timeout_s": 30000
+    }
+  ],
+  "template": "harness/prompts/reviewer_lcb_label_study.txt",
+  "template_sha256": "6c7c3dc1befd0a193b3bc62622ba31f7c25792c719f484f2b3355f10ae9a63dc"
+}

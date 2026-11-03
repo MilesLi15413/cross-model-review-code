@@ -6,7 +6,7 @@ import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Optional
 
 from harness.core.cli_runner import CLIRunner, cli_model_key
 
@@ -24,6 +24,7 @@ class PreflightCheck:
     ok: bool
     response_text: str
     checked_at: str
+    runtime_settings: Optional[Dict[str, object]] = None
 
 
 def build_preflight_runners(conditions: Iterable[dict], paused_sentinel_path: str = "") -> List[CLIRunner]:
@@ -88,6 +89,7 @@ def run_preflight(runners: Iterable[CLIRunner], output_path: str) -> Dict[str, o
                 ok=ok,
                 response_text=result.response_text.strip(),
                 checked_at=_now_iso(),
+                runtime_settings=result.runtime_settings,
             )
         )
 

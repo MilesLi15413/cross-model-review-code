@@ -1,0 +1,7 @@
+condition,n_total,n_evaluated,passed,incomplete_evaluations,pass_rate,sid,avg_cost_usd,score_per_dollar,avg_writer_latency_s,avg_reviewer_latency_s,avg_total_latency_s,parse_rate,parse_failures,cli_errors,timed_out,cross_condition_regression_rate,cross_condition_regressions,cross_condition_fixes,regression_rate,regressions,writer_model,reviewer_model
+B3_gemini_solo,1,1,0,0,0.0,,0.1297,0.0,64.36,0.0,64.36,1.0,0,0,0,,,,,,gemini-3.1-pro-preview,
+C5_claude_writes_gemini_reviews,1,1,0,0,0.0,,0.6392,0.0,17.91,141.6,159.51,1.0,0,0,0,,,,,,claude-opus-4-7,gemini-3.1-pro-preview
+C6_gemini_writes_claude_reviews,1,1,0,0,0.0,0.0,0.2454,0.0,48.59,17.87,66.46,1.0,0,0,0,0.0,0,0,0.0,0,gemini-3.1-pro-preview,claude-opus-4-7
+C7_gpt55_writes_gemini_reviews,1,1,0,0,0.0,,0.2219,0.0,12.82,64.28,77.1,1.0,0,0,0,,,,,,gpt-5.5,gemini-3.1-pro-preview
+C8_gemini_writes_gpt55_reviews,1,1,0,0,0.0,0.0,0.2172,0.0,60.14,11.55,71.69,1.0,0,0,0,0.0,0,0,0.0,0,gemini-3.1-pro-preview,gpt-5.5
+C9_gemini_writes_gemini_reviews,1,1,0,0,0.0,0.0,0.2322,0.0,58.0,51.75,109.76,1.0,0,0,0,0.0,0,0,0.0,0,gemini-3.1-pro-preview,gemini-3.1-pro-preview

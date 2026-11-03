@@ -1,0 +1,21 @@
+You are given a sequence of N integers A_1, A_2, ..., A_N.
+
+A pair of indices (i, j) with 1 <= i < j <= N is called good if it satisfies the condition described in the attached figure.
+
+Print the number of good pairs.
+
+Input
+
+The input is given from Standard Input in the following format:
+N
+A_1 A_2 ... A_N
+
+Output
+
+Print the number of good pairs.
+
+Constraints
+
+- 2 <= N <= 2 * 10^5
+- 1 <= A_i <= 10^9
+- All input values are integers.

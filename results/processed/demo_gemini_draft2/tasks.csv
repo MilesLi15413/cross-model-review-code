@@ -1,0 +1,105 @@
+task_id,condition,benchmark,passed,writer_model,reviewer_model,writer_effort,reviewer_effort,total_cost_usd,total_latency_s,writer_latency_s,reviewer_latency_s,parse_failed,cli_error,timed_out,budget_exceeded,evaluated_turn,evaluated_parse_method,raw_file,final_artifact
+3801,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.35871,194.61952574999304,194.61952574999304,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3801__B3_gemini_solo.json,"import math
+
+class Solution:
+    # Class-level caches and structures to ensure precomputation runs exactly once
+    FACT = [math.factorial(i) for i in range(12)]
+    beautiful_multisets_of_length = [[] for _ in range(10)]
+    beautiful_perms_by_length = [0] * 10
+    _precomputed = False
+
+    @classmethod
+    def _precompute(cls):
+        if cls._precomputed:
+            return
+        cls._precomputed = True
+        
+        def generate_multisets(current_digit, current_len, current_sum, current_prod, current_counts):
+            if current_len > 0:
+                if current_prod % current_sum == 0:
+                    ans = cls.FACT[current_len]
+                    for c in current_counts:
+                        if c > 1:
+                            ans //= cls.FACT[c]
+                    cls.beautiful_multisets_of_length[current_len].append(list(current_counts))
+                    cls.beautiful_perms_by_length[current_len] += ans
+                    
+            if current_len == 9:
+                return
+                
+            # Generates combinations with replacement natively avoiding duplicate multisets
+            for d in range(current_digit, 10):
+                current_counts[d] += 1
+                generate_multisets(d, current_len + 1, current_sum + d, current_prod * d, current_counts)
+                current_counts[d] -= 1
+
+        generate_multisets(1, 0, 0, 1, [0] * 10)
+
+    def beautifulNumbers(self, l: int, r: int) -> int:
+        self._precompute()
+        return self.solve(r) - self.solve(l - 1)
+
+    def count_perms_le_same_length(self, counts, N_str, L):
+        ans = 0
+        current_counts = list(counts)
+        
+        # Initial combinations count for the full multiset lengths
+        perms = self.FACT[L]
+        for c in current_counts:
+            if c > 1:
+                perms //= self.FACT[c]
+                
+        for i in range(L):
+            limit = int(N_str[i])
+            # Add up valid permutations for placed digits smaller than the limit
+            for d in range(1, limit):
+                if current_counts[d] > 0:
+                    ans += perms * current_counts[d] // (L - i)
+            
+            # Commit processing tracking to the exact digit (to process the prefix correctly moving forward)
+            if limit >= 1 and current_counts[limit] > 0:
+                perms = perms * current_counts[limit] // (L - i)
+                current_counts[limit] -= 1
+            else:
+                break
+        else:
+            ans += 1
+        return ans
+
+    def solve(self, N):
+        if N == 0:
+            return 0
+        
+        N_str = str(N)
+        L = len(N_str)
+        
+        # 1. Count ALL positive integers <= N having NO '0'
+        no_zero_count = 0
+        for k in range(1, L):
+            no_zero_count += 9 ** k
+            
+        match = True
+        for i, char in enumerate(N_str):
+            d = int(char)
+            choices = max(0, d - 1)
+            no_zero_count += choices * (9 ** (L - 1 - i))
+            if d == 0:
+                match = False
+                break
+        if match:
+            no_zero_count += 1
+            
+        # 2. Count numbers <= N containing AT LEAST ONE '0'
+        with_zero_count = N - no_zero_count
+        
+        # 3. Count Beautiful numbers <= N having NO '0' 
+        beautiful_no_zero_count = 0
+        for k in range(1, L):
+            beautiful_no_zero_count += self.beautiful_perms_by_length[k]
+            
+        if L < 10:
+            for counts in self.beautiful_multisets_of_length[L]:
+                beautiful_no_zero_count += self.count_perms_le_same_length(counts, N_str, L)
+            
+        # Every number with a '0' will automatically be beautiful, simply join disjoint counts
+        return with_zero_count + beautiful_no_zero_count"

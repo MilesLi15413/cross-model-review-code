@@ -1,0 +1,25 @@
+Checkpoint: results/raw/test_one
+Benchmark:  livecodebench
+Tasks file: experiments/configs/test_one.txt
+Records:    1 across 1 conditions
+Updated:    2026-10-23T02:56:34.475394+00:00
+
+Condition                               Done  Eval  Pass ParseF  Err  TO      Cost
+--------------------------------------------------------------------------------------
+B1_claude_solo                             1     1     0      0    0   0    0.1566
+
+Index written: results/raw/test_one/index.json
+Task table:    results/processed/test_one/tasks.csv
+Checkpoint: results/raw/test_one
+Benchmark:  livecodebench
+Tasks file: experiments/configs/test_one.txt
+Records:    1 across 1 conditions
+Updated:    2026-10-23T02:56:34.475394+00:00
+
+Condition                               Done  Eval  Pass ParseF  Err  TO      Cost
+--------------------------------------------------------------------------------------
+B1_claude_solo                             1     1     0      0    0   0    0.1566
+
+Task               Condition                              Result       Cost  Latency Raw File
+--------------------------------------------------------------------------------------------------------------
+abc392_f           B1_claude_solo                         FAIL       0.1566     27.3 B1_claude_solo/abc392_f__B1_claude_solo.json

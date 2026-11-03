@@ -12,12 +12,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 CONDITION_LABELS = {
-    "C1": "Claude→GPT-5.4",
-    "C2": "GPT-5.4→Claude",
+    "C1": "Claude→GPT-5.5",
+    "C2": "GPT-5.5→Claude",
     "C3": "Claude→Claude",
-    "C4": "GPT-5.4→GPT-5.4",
+    "C4": "GPT-5.5→GPT-5.5",
+    "C5": "Claude→Gemini",
+    "C6": "Gemini→Claude",
+    "C7": "GPT-5.5→Gemini",
+    "C8": "Gemini→GPT-5.5",
+    "C9": "Gemini→Gemini",
     "B1": "Claude (solo)",
-    "B2": "GPT-5.4 (solo)",
+    "B2": "GPT-5.5 (solo)",
+    "B3": "Gemini (solo)",
 }
 
 COLORS = {
@@ -25,8 +31,14 @@ COLORS = {
     "C2": "#FF5722",
     "C3": "#4CAF50",
     "C4": "#FF9800",
+    "C5": "#9C27B0",
+    "C6": "#009688",
+    "C7": "#E91E63",
+    "C8": "#3F51B5",
+    "C9": "#795548",
     "B1": "#9E9E9E",
     "B2": "#607D8B",
+    "B3": "#BDBDBD",
 }
 
 

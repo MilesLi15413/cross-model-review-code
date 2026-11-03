@@ -1,0 +1,169 @@
+{
+  "checkpoint_dir": "results/raw/demo_gemini",
+  "generated_at": "2026-11-02T02:01:15.723728+00:00",
+  "started_at": "2026-11-02T01:48:39.417833+00:00",
+  "updated_at": "2026-11-02T02:01:15.721899+00:00",
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/three_model_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/test_one.txt",
+  "condition_settings": [
+    {
+      "id": "B3_gemini_solo",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": null
+    },
+    {
+      "id": "C5_claude_writes_gemini_reviews",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C6_gemini_writes_claude_reviews",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C7_gpt55_writes_gemini_reviews",
+      "writer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C8_gemini_writes_gpt55_reviews",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "codex",
+        "model": "gpt-5.5",
+        "effort": "high"
+      }
+    },
+    {
+      "id": "C9_gemini_writes_gemini_reviews",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      }
+    }
+  ],
+  "preflight_checked_at": null,
+  "records": 6,
+  "unique_tasks": 1,
+  "conditions": [
+    {
+      "condition": "B3_gemini_solo",
+      "directory": "results/raw/demo_gemini/B3_gemini_solo",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.129742,
+      "avg_total_latency_s": 64.36
+    },
+    {
+      "condition": "C5_claude_writes_gemini_reviews",
+      "directory": "results/raw/demo_gemini/C5_claude_writes_gemini_reviews",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.639215,
+      "avg_total_latency_s": 159.51
+    },
+    {
+      "condition": "C6_gemini_writes_claude_reviews",
+      "directory": "results/raw/demo_gemini/C6_gemini_writes_claude_reviews",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.2454,
+      "avg_total_latency_s": 66.46
+    },
+    {
+      "condition": "C7_gpt55_writes_gemini_reviews",
+      "directory": "results/raw/demo_gemini/C7_gpt55_writes_gemini_reviews",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.221915,
+      "avg_total_latency_s": 77.1
+    },
+    {
+      "condition": "C8_gemini_writes_gpt55_reviews",
+      "directory": "results/raw/demo_gemini/C8_gemini_writes_gpt55_reviews",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.217189,
+      "avg_total_latency_s": 71.69
+    },
+    {
+      "condition": "C9_gemini_writes_gemini_reviews",
+      "directory": "results/raw/demo_gemini/C9_gemini_writes_gemini_reviews",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.232246,
+      "avg_total_latency_s": 109.76
+    }
+  ]
+}

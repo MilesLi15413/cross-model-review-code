@@ -1,0 +1,43 @@
+task_id,condition,benchmark,passed,writer_model,reviewer_model,writer_effort,reviewer_effort,total_cost_usd,total_latency_s,writer_latency_s,reviewer_latency_s,parse_failed,cli_error,timed_out,budget_exceeded,evaluated_turn,evaluated_parse_method,raw_file,final_artifact
+abc392_f,B1_claude_solo,livecodebench,False,claude-opus-4-7,,high,,0.156589,27.299865708999278,27.299865708999278,0.0,False,False,False,False,writer,tag,B1_claude_solo/abc392_f__B1_claude_solo.json,"import sys
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    N = int(data[0])
+    P = list(map(int, data[1:N+1]))
+
+    # Fenwick tree, each position initially 1
+    bit = [0] * (N + 1)
+    for i in range(1, N + 1):
+        bit[i] += 1
+        j = i + (i & -i)
+        if j <= N:
+            bit[j] += bit[i]
+
+    # largest power of 2 <= N
+    pow2 = 1
+    while (pow2 << 1) <= N:
+        pow2 <<= 1
+
+    result = [0] * (N + 1)
+
+    for i in range(N, 0, -1):
+        k = P[i - 1]
+        pos = 0
+        r = pow2
+        while r > 0:
+            nxt = pos + r
+            if nxt <= N and bit[nxt] < k:
+                pos = nxt
+                k -= bit[nxt]
+            r >>= 1
+        pos += 1
+        result[pos] = i
+        j = pos
+        while j <= N:
+            bit[j] -= 1
+            j += j & -j
+
+    sys.stdout.write(' '.join(map(str, result[1:N+1])))
+
+main()"

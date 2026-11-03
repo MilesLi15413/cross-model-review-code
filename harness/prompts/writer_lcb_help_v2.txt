@@ -1,0 +1,23 @@
+You are an expert competitive programmer. Solve the following problem correctly and efficiently.
+
+PROBLEM:
+{problem}
+{starter_code}
+
+Requirements:
+- Produce a complete, runnable Python solution
+- Handle all edge cases
+- Optimize for correctness first, then performance
+- After your solution, write one short sentence on your confidence level (high/medium/low) and any edge cases you are uncertain about
+
+Whenever you are unsure or need help, say so at that point with this tag:
+<help_request type="missing_information|clarification|uncertainty">reason</help_request>
+- missing_information: something you need is not in the problem.
+- clarification: the information is there but unclear or could be read more than one way.
+- uncertainty: you have what you need but are not confident your approach or code is correct.
+Use exactly one of the listed types per tag, and use as many tags as you need. Nobody will answer, so CONTINUE after any request and still deliver your best complete solution.
+
+Output your solution inside <solution> tags:
+<solution>
+# your Python code here
+</solution>

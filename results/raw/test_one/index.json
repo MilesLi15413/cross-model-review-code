@@ -1,0 +1,39 @@
+{
+  "checkpoint_dir": "results/raw/test_one",
+  "generated_at": "2026-10-23T02:56:34.566188+00:00",
+  "started_at": "2026-10-22T23:33:52.663135+00:00",
+  "updated_at": "2026-10-23T02:56:34.475394+00:00",
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/test_one_condition.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/test_one.txt",
+  "condition_settings": [
+    {
+      "id": "B1_claude_solo",
+      "writer": {
+        "cli": "claude",
+        "model": "claude-opus-4-7",
+        "effort": "high"
+      },
+      "reviewer": null
+    }
+  ],
+  "preflight_checked_at": "2026-10-22T23:33:21.961829+00:00",
+  "records": 1,
+  "unique_tasks": 1,
+  "conditions": [
+    {
+      "condition": "B1_claude_solo",
+      "directory": "results/raw/test_one/B1_claude_solo",
+      "completed": 1,
+      "attempted": 1,
+      "evaluated": 1,
+      "passed": 0,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 0.156589,
+      "avg_total_latency_s": 27.3
+    }
+  ]
+}

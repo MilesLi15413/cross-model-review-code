@@ -1,0 +1,20 @@
+pricing_path: experiments/configs/pricing.yaml
+template: harness/prompts/reviewer_lcb_label_study.txt
+label_seed: 20261101
+
+reviewers:
+  - family: claude
+    cli: claude
+    model: claude-opus-4-7
+    effort: high
+    timeout_s: 30000
+  - family: gpt
+    cli: codex
+    model: gpt-5.5
+    effort: high
+    timeout_s: 30000
+  - family: gemini
+    cli: gemini
+    model: gemini-3.1-pro-preview
+    effort: high
+    timeout_s: 30000

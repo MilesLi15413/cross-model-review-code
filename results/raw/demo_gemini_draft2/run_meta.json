@@ -1,0 +1,24 @@
+{
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/three_model_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/configs/demo_gemini_draft2.txt",
+  "skip_eval": true,
+  "skip_preflight": true,
+  "lcb_difficulty": null,
+  "stop_on_limit": true,
+  "selected_conditions": [
+    "B3_gemini_solo"
+  ],
+  "conditions": [
+    {
+      "id": "B3_gemini_solo",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": null
+    }
+  ]
+}

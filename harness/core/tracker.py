@@ -173,6 +173,8 @@ class CostTracker:
 
         if record.cli_error or record.timed_out:
             return False
+        if "help_tracking" in record.extra:
+            return True
         if record.parse_failed:
             return False
         if not (record.final_artifact or "").strip():
