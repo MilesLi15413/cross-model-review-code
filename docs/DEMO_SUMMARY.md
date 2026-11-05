@@ -16,11 +16,11 @@ Nothing in the paper's frozen results (`results/raw/` from the original runs) wa
 
 ## Setup
 
-| Model  | Exact ID                 | Accessed through                          | Reasoning effort    |
-|--------|--------------------------|-------------------------------------------|---------------------|
-| Claude | `claude-opus-4-7`        | Claude Code 2.1.316, Pro subscription     | high                |
-| GPT    | `gpt-5.5`                | Codex CLI 0.163.0, prepaid OpenAI API key | high                |
-| Gemini | `gemini-3.1-pro-preview` | Gemini CLI 0.65.0, prepaid Gemini API key | thinking level HIGH |
+| Model  | Exact ID                 | Accessed through               | Effort          |
+|--------|--------------------------|--------------------------------|-----------------|
+| Claude | `claude-opus-4-7`        | Claude Code 2.1.316 (Pro plan) | high            |
+| GPT    | `gpt-5.5`                | Codex CLI 0.163.0 (API key)    | high            |
+| Gemini | `gemini-3.1-pro-preview` | Gemini CLI 0.65.0 (API key)    | HIGH (thinking) |
 
 Problems come from LiveCodeBench, the same benchmark as the paper (AtCoder problems
 plus LeetCode-style problems). All code was graded with the paper's grader
@@ -89,30 +89,34 @@ number of issues, fix rate on failing drafts, regression rate on passing drafts,
 McNemar test comparing each label with the no-label version. Each false label is
 tested separately.
 
-**Results.** Each review had one of three outcomes:
+**Results.** Each review had one of these outcomes. The number is the size of the edit
+in changed lines (from the diff between draft and returned code):
 
-- **Fixed:** the reviewer changed the code, and the new code passes.
-- **Changed, fails:** the reviewer changed the code, but it still fails.
-- **Unchanged:** the reviewer returned the draft exactly as it was.
+| Code   | Meaning                                                          |
+|--------|------------------------------------------------------------------|
+| fix N  | failing draft; the reviewer changed it, and it now passes        |
+| fail N | failing draft; the reviewer changed it, but it still fails       |
+| pass N | passing draft; the reviewer changed it, and it still passes      |
+| same   | the reviewer returned the draft exactly as it was                |
+| self   | this false label named the reviewer itself ("you wrote this")    |
+| n/a    | not applicable: this model wrote the draft (see the True column) |
 
-The number in brackets is the size of the edit in changed lines (from the diff between
-draft and returned code). There is one column for each model a false label could name;
-"—" marks the real author, which a false label never names. **(self)** marks the false
-label that named the reviewer itself.
+"False→Claude" means the reviewer was falsely told Claude wrote the draft, and so on.
+"None" means no label. GPT means GPT-5.5.
 
 *Failing drafts (36 reviews):*
 
-| Reviewer | Draft by (problem) | True label          | False → Claude                 | False → GPT-5.5                | False → Gemini                 | No label            |
-|----------|--------------------|---------------------|--------------------------------|--------------------------------|--------------------------------|---------------------|
-| Claude   | Claude (abc394_f)  | fixed (118)         | —                              | fixed (85)                     | fixed (119)                    | fixed (75)          |
-| Claude   | GPT-5.5 (3801)     | fixed (49)          | **(self)** fixed (1)           | —                              | **unchanged** (0)              | fixed (1)           |
-| Claude   | Gemini (abc392_f)  | changed, fails (14) | **(self)** changed, fails (34) | changed, fails (35)            | —                              | changed, fails (34) |
-| GPT-5.5  | Claude (abc394_f)  | fixed (94)          | —                              | **(self)** fixed (116)         | changed, fails (85)            | changed, fails (80) |
-| GPT-5.5  | GPT-5.5 (3801)     | fixed (2)           | fixed (2)                      | —                              | fixed (8)                      | fixed (9)           |
-| GPT-5.5  | Gemini (abc392_f)  | changed, fails (64) | changed, fails (68)            | **(self)** changed, fails (68) | —                              | changed, fails (68) |
-| Gemini   | Claude (abc394_f)  | fixed (105)         | —                              | fixed (117)                    | **(self)** changed, fails (72) | fixed (65)          |
-| Gemini   | GPT-5.5 (3801)     | fixed (58)          | **unchanged** (0)              | —                              | **(self)** fixed (77)          | fixed (94)          |
-| Gemini   | Gemini (abc392_f)  | unchanged (0)       | unchanged (0)                  | changed, fails (2)             | —                              | unchanged (0)       |
+| Reviewer | Draft by        | True    | False→Claude | False→GPT    | False→Gemini | None    |
+|----------|-----------------|---------|--------------|--------------|--------------|---------|
+| Claude   | Claude abc394_f | fix 118 | n/a          | fix 85       | fix 119      | fix 75  |
+| Claude   | GPT 3801        | fix 49  | fix 1 self   | n/a          | same         | fix 1   |
+| Claude   | Gemini abc392_f | fail 14 | fail 34 self | fail 35      | n/a          | fail 34 |
+| GPT      | Claude abc394_f | fix 94  | n/a          | fix 116 self | fail 85      | fail 80 |
+| GPT      | GPT 3801        | fix 2   | fix 2        | n/a          | fix 8        | fix 9   |
+| GPT      | Gemini abc392_f | fail 64 | fail 68      | fail 68 self | n/a          | fail 68 |
+| Gemini   | Claude abc394_f | fix 105 | n/a          | fix 117      | fail 72 self | fix 65  |
+| Gemini   | GPT 3801        | fix 58  | same         | n/a          | fix 77 self  | fix 94  |
+| Gemini   | Gemini abc392_f | same    | same         | fail 2       | n/a          | same    |
 
 Totals: 19 fixed, 12 changed but still failing, 5 unchanged. So of the 17 failing
 reviews that were not fixed, 12 were real edits that did not work, and only 5 were
@@ -120,17 +124,17 @@ reviews where nothing was changed.
 
 *Passing drafts (36 reviews):* all 36 still passed after review (0 regressions).
 
-| Reviewer | Draft by (problem) | True label    | False → Claude          | False → GPT-5.5          | False → Gemini           | No label      |
-|----------|--------------------|---------------|-------------------------|--------------------------|--------------------------|---------------|
-| Claude   | Claude (3801)      | changed (2)   | —                       | changed (18)             | changed (4)              | changed (4)   |
-| Claude   | GPT-5.5 (abc394_f) | changed (5)   | **(self)** changed (3)  | —                        | changed (5)              | changed (5)   |
-| Claude   | Gemini (3801)      | changed (35)  | **(self)** changed (35) | changed (35)             | —                        | changed (35)  |
-| GPT-5.5  | Claude (3801)      | changed (61)  | —                       | **(self)** changed (66)  | changed (63)             | changed (74)  |
-| GPT-5.5  | GPT-5.5 (abc394_f) | changed (5)   | changed (5)             | —                        | unchanged (0)            | changed (5)   |
-| GPT-5.5  | Gemini (3801)      | changed (161) | changed (103)           | **(self)** changed (139) | —                        | changed (87)  |
-| Gemini   | Claude (3801)      | changed (136) | —                       | changed (111)            | **(self)** changed (94)  | changed (142) |
-| Gemini   | GPT-5.5 (abc394_f) | unchanged (0) | unchanged (0)           | —                        | **(self)** unchanged (0) | changed (13)  |
-| Gemini   | Gemini (3801)      | unchanged (0) | unchanged (0)           | unchanged (0)            | —                        | unchanged (0) |
+| Reviewer | Draft by     | True     | False→Claude | False→GPT     | False→Gemini | None     |
+|----------|--------------|----------|--------------|---------------|--------------|----------|
+| Claude   | Claude 3801  | pass 2   | n/a          | pass 18       | pass 4       | pass 4   |
+| Claude   | GPT abc394_f | pass 5   | pass 3 self  | n/a           | pass 5       | pass 5   |
+| Claude   | Gemini 3801  | pass 35  | pass 35 self | pass 35       | n/a          | pass 35  |
+| GPT      | Claude 3801  | pass 61  | n/a          | pass 66 self  | pass 63      | pass 74  |
+| GPT      | GPT abc394_f | pass 5   | pass 5       | n/a           | same         | pass 5   |
+| GPT      | Gemini 3801  | pass 161 | pass 103     | pass 139 self | n/a          | pass 87  |
+| Gemini   | Claude 3801  | pass 136 | n/a          | pass 111      | pass 94 self | pass 142 |
+| Gemini   | GPT abc394_f | same     | same         | n/a           | same self    | pass 13  |
+| Gemini   | Gemini 3801  | same     | same         | same          | n/a          | same     |
 
 **Told "you wrote this" vs. told "another model wrote this".** On the 6 failing drafts
 where the reviewer did not write the code, one false label named the reviewer and the
@@ -175,11 +179,11 @@ test was done in three steps, each one prompted by what the step before it found
 
 **Overview:**
 
-| Step | What we did                                                | Why                                                          | Result                                                 |
-|------|------------------------------------------------------------|--------------------------------------------------------------|--------------------------------------------------------|
-| 1    | Offered 4 help-request types on 5 normal problems          | Do models ask for help on their own?                         | 0 requests                                             |
-| 2    | Removed a key piece of information from one problem        | Are models even capable of asking?                           | All 3 asked                                            |
-| 3    | Revised prompt with an `uncertainty` type, same 5 problems | Will models flag doubt when there is no missing information? | 0 requests; 6 failed answers claimed "high" confidence |
+| Step | What we did        | Question             | Result      |
+|------|--------------------|----------------------|-------------|
+| 1    | 4 request types    | Ask on their own?    | 0 requests  |
+| 2    | Key info removed   | Can they ask at all? | All 3 asked |
+| 3    | `uncertainty` type | Flag their doubt?    | 0 requests  |
 
 **How requests are counted (all steps).** The prompt tells the model to write
 `<help_request type="...">reason</help_request>` whenever it is unsure or needs help.
@@ -222,11 +226,9 @@ solved as written. Each model got this problem once, with the same Step 1 prompt
 **Result:** all three models asked for help, and all three used the right type,
 `missing_information`:
 
-| Model   | What it wrote                                                                                                                |
-|---------|------------------------------------------------------------------------------------------------------------------------------|
-| Claude  | "The 'condition described in the attached figure' is not provided, so I cannot know what makes a pair 'good'."               |
-| GPT-5.5 | "The attached figure defining a good pair is unavailable, so I assume the condition is \|i−j\| = A_i + A_j."                 |
-| Gemini  | "The problem statement mentions an attached figure that describes the condition for a good pair, but the figure is missing." |
+- **Claude:** "The 'condition described in the attached figure' is not provided, so I cannot know what makes a pair 'good'."
+- **GPT-5.5:** "The attached figure defining a good pair is unavailable, so I assume the condition is |i−j| = A_i + A_j."
+- **Gemini:** "The problem statement mentions an attached figure that describes the condition for a good pair, but the figure is missing."
 
 The tracker caught all three requests. There were no broken tags, and every model
 still gave code.
@@ -241,11 +243,11 @@ specified, so in Step 1 there was nothing to ask about.
 A model can have everything it needs but still be unsure its code is right. The prompt
 was revised (`writer_lcb_help_v2.txt`) to three types:
 
-| Type                  | Meaning in the prompt                                                            |
-|-----------------------|----------------------------------------------------------------------------------|
-| `missing_information` | something needed is not in the problem                                           |
-| `clarification`       | the information is there, but it is unclear or could be read more than one way   |
-| `uncertainty`         | the model has what it needs but is not confident its approach or code is correct |
+| Type                  | Meaning in the prompt                                |
+|-----------------------|------------------------------------------------------|
+| `missing_information` | something needed is not in the problem               |
+| `clarification`       | the information is there but unclear or ambiguous    |
+| `uncertainty`         | it has what it needs but is unsure its code is right |
 
 The same 5 problems were rerun, again 15 calls.
 
