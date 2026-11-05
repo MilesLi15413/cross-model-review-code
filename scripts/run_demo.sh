@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Limited demo. These stages call paid models; run each one only after approval.
 #   bash scripts/run_demo.sh gemini   # Gemini in the workflow (12 calls)
-#   bash scripts/run_demo.sh labels   # authorship labels (54 calls)
+#   bash scripts/run_demo.sh labels   # authorship labels (72 calls: true, none, and both false labels)
 #   bash scripts/run_demo.sh help     # help-request tracking (15 calls)
 #   bash scripts/run_demo.sh help2    # help requests with uncertainty types (15 calls)
 # After a usage limit stops a stage, rerun the same stage to continue.

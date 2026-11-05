@@ -75,32 +75,59 @@ class PromptTest(unittest.TestCase):
 
 
 class LabelAssignmentTest(unittest.TestCase):
-    def test_false_label_is_never_the_real_family_and_is_deterministic(self):
+    def test_false_labels_are_both_wrong_families(self):
         for family in study.FAMILY_LABELS:
-            for reviewer in study.FAMILY_LABELS:
-                for index in range(4):
-                    chosen = study.false_family(7, family, reviewer, index)
-                    self.assertNotEqual(family, chosen)
-                    self.assertEqual(chosen, study.false_family(7, family, reviewer, index))
+            wrong = study.false_families(family)
+            self.assertEqual(2, len(wrong))
+            self.assertNotIn(family, wrong)
 
-    def test_false_label_rotates_between_both_wrong_families(self):
-        chosen = {study.false_family(7, "claude", "gemini", index) for index in range(2)}
-
-        self.assertEqual({"gemini", "gpt"}, chosen)
-
-    def test_cells_cover_every_draft_reviewer_and_arm(self):
+    def test_cells_cover_every_draft_reviewer_and_every_false_label(self):
         drafts = [_draft(family=family) for family in study.FAMILY_LABELS]
 
         cells = study.build_cells(drafts, REVIEWERS, 7)
 
-        self.assertEqual(27, len(cells))
-        self.assertEqual(27, len({cell["condition"] for cell in cells}))
+        self.assertEqual(36, len(cells))
+        self.assertEqual(36, len({cell["condition"] for cell in cells}))
         self.assertEqual(9, sum(1 for cell in cells if cell["labeled_family"] is None))
+        false_cells = [cell for cell in cells if cell["arm"] == "false"]
+        self.assertEqual(18, len(false_cells))
+        for draft in drafts:
+            for reviewer in REVIEWERS:
+                named = {
+                    cell["labeled_family"]
+                    for cell in false_cells
+                    if cell["draft"] is draft and cell["reviewer"] is reviewer
+                }
+                self.assertEqual(set(study.false_families(draft.family)), named)
         for cell in cells:
             if cell["arm"] == "true":
                 self.assertEqual(cell["draft"].family, cell["labeled_family"])
             if cell["arm"] == "false":
-                self.assertNotEqual(cell["draft"].family, cell["labeled_family"])
+                self.assertTrue(str(cell["condition"]).endswith(f"_false_{cell['labeled_family']}"))
+
+    def test_legacy_false_record_counts_only_for_the_same_false_label(self):
+        draft = _draft(family="claude")
+        cells = [
+            cell
+            for cell in study.build_cells([draft], [REVIEWERS[1]], 7)
+            if cell["arm"] == "false"
+        ]
+        record = TaskRecord(
+            task_id="t1",
+            condition="L_claude_by_gpt_false",
+            benchmark="livecodebench",
+            writer_model="model",
+            reviewer_model="gpt-5.5",
+            final_artifact="print(1)",
+            passed=True,
+            extra={"labeled_family": "gemini"},
+        )
+        tracker = CostTracker()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker.save(record, str(Path(tmpdir) / "L_claude_by_gpt_false"))
+            done = {cell["labeled_family"]: study.is_cell_done(tracker, cell, tmpdir) for cell in cells}
+
+        self.assertEqual({"gemini": True, "gpt": False}, done)
 
 
 class ManifestTest(unittest.TestCase):
@@ -276,6 +303,21 @@ class MetricsTest(unittest.TestCase):
         self.assertEqual(1, by_metric["unchanged"]["none_only"])
         self.assertEqual(1, by_metric["fix"]["n_pairs"])
         self.assertEqual(1, by_metric["regression"]["n_pairs"])
+
+    def test_paired_tests_keep_each_false_label_separate(self):
+        records = self._records() + [
+            _result_record("t1", "gpt", "claude", "false", "other", True, False, False, 0),
+            _result_record("t1", "gpt", "claude", "false", "self", False, False, True, 0),
+        ]
+        records[-2]["extra"]["labeled_family"] = "gemini"
+        records[-1]["extra"]["labeled_family"] = "gpt"
+        fix_rows = {
+            row["label_condition"]: row for row in compute_paired_tests(records) if row["metric"] == "fix"
+        }
+
+        self.assertEqual({"true", "false_gemini", "false_gpt"}, set(fix_rows))
+        self.assertEqual(0, fix_rows["false_gemini"]["arm_only"])
+        self.assertEqual(1, fix_rows["false_gpt"]["arm_only"])
 
     def test_invalid_records_are_counted_not_scored(self):
         records = self._records()

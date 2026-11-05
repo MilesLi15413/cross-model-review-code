@@ -27,6 +27,19 @@ def load_records(checkpoint_dir: str) -> List[Dict[str, object]]:
     return records
 
 
+def label_condition(extra: Dict[str, object]) -> str:
+    """`true`, `none`, or `false_<model named>`, so the two false labels stay separate."""
+
+    arm = str(extra["label_arm"])
+    return f"false_{extra['labeled_family']}" if arm == "false" else arm
+
+
+def with_label_condition(records: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    for record in records:
+        record["extra"]["label_condition"] = label_condition(record["extra"])
+    return records
+
+
 def is_valid(record: Dict[str, object]) -> bool:
     return not (record.get("cli_error") or record.get("timed_out") or record.get("parse_failed")) and (
         record.get("passed") is not None
@@ -97,13 +110,13 @@ def _metric_value(record: Dict[str, object], metric: str) -> Optional[bool]:
 
 
 def compute_paired_tests(records: List[Dict[str, object]]) -> List[Dict[str, object]]:
-    """Paired McNemar tests of each labeled arm against `none` on the same drafts."""
+    """Paired McNemar tests of each label (each false label separately) against `none` on the same drafts."""
 
     by_cell: Dict[Tuple[str, str, str], Dict[str, Dict[str, object]]] = defaultdict(dict)
     for record in records:
         if is_valid(record):
             extra = record["extra"]
-            by_cell[(extra["reviewer_family"], extra["writer_family"], extra["label_arm"])][
+            by_cell[(extra["reviewer_family"], extra["writer_family"], label_condition(extra))][
                 str(record["task_id"])
             ] = record
 
@@ -125,7 +138,7 @@ def compute_paired_tests(records: List[Dict[str, object]]) -> List[Dict[str, obj
                 {
                     "reviewer_family": reviewer,
                     "writer_family": writer,
-                    "label_arm": arm,
+                    "label_condition": arm,
                     "metric": metric,
                     "n_pairs": len(left),
                     "arm_only": arm_only,
@@ -159,10 +172,11 @@ def main() -> None:
     parser.add_argument("--output-prefix", default="results/processed/label_study")
     args = parser.parse_args()
 
-    records = load_records(args.input)
+    records = with_label_condition(load_records(args.input))
     if not records:
         raise SystemExit(f"No records found in {args.input}")
     save_csv(compute_summary(records, "label_arm"), f"{args.output_prefix}_summary.csv")
+    save_csv(compute_summary(records, "label_condition"), f"{args.output_prefix}_by_false_label.csv")
     save_csv(compute_summary(records, "label_relation"), f"{args.output_prefix}_self_vs_other.csv")
     save_csv(compute_paired_tests(records), f"{args.output_prefix}_paired_tests.csv")
 

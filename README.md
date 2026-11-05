@@ -20,8 +20,9 @@ Python tasks scored only by hidden tests.
 ## Follow-up Experiments
 
 - [docs/AUTHORSHIP_LABEL_STUDY.md](docs/AUTHORSHIP_LABEL_STUDY.md): planned study of
-  whether telling the reviewer who wrote the draft changes its review. Design only,
-  not yet run.
+  whether telling the reviewer who wrote the draft changes its review. Three models,
+  with a true label, a false label naming each wrong model, and no label. Demo run
+  only; see [docs/DEMO_SUMMARY.md](docs/DEMO_SUMMARY.md).
 
 ## Repository Layout
 

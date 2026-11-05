@@ -96,20 +96,19 @@ def load_manifest(path: str) -> List[Draft]:
     return drafts
 
 
-def false_family(seed: int, writer_family: str, reviewer_family: str, family_index: int) -> str:
-    """Rotate through the two wrong families so each is used equally often."""
+def false_families(writer_family: str) -> List[str]:
+    """Every model that did not write the draft. Each one gets its own false-label review."""
 
-    others = sorted(family for family in FAMILY_LABELS if family != writer_family)
-    offset = int(sha256(f"{seed}|{writer_family}|{reviewer_family}"), 16)
-    return others[(offset + family_index) % len(others)]
+    return sorted(family for family in FAMILY_LABELS if family != writer_family)
 
 
-def labeled_family(arm: str, draft: Draft, reviewer_family: str, seed: int) -> Optional[str]:
-    if arm == "true":
-        return draft.family
-    if arm == "false":
-        return false_family(seed, draft.family, reviewer_family, draft.family_index)
-    return None
+def legacy_condition(cell: Dict[str, object]) -> Optional[str]:
+    """Name used when only one seeded false label was run per draft (demo run of 2026-11-02)."""
+
+    if cell["arm"] != "false":
+        return None
+    draft: Draft = cell["draft"]
+    return f"L_{draft.family}_by_{cell['reviewer']['family']}_false"
 
 
 def label_text(family: Optional[str]) -> str:
@@ -137,14 +136,18 @@ def diff_line_count(before: str, after: str) -> int:
 
 
 def build_cells(drafts: List[Draft], reviewers: List[Dict[str, object]], seed: int) -> List[Dict[str, object]]:
+    """One true, one no-label, and one false-label cell per wrong model, for each draft and reviewer."""
+
     cells = []
     for draft in drafts:
         for reviewer in reviewers:
-            for arm in ARMS:
-                family = labeled_family(arm, draft, str(reviewer["family"]), seed)
+            base = f"L_{draft.family}_by_{reviewer['family']}"
+            arms = [("true", draft.family, f"{base}_true"), ("none", None, f"{base}_none")]
+            arms += [("false", family, f"{base}_false_{family}") for family in false_families(draft.family)]
+            for arm, family, condition in arms:
                 cells.append(
                     {
-                        "condition": f"L_{draft.family}_by_{reviewer['family']}_{arm}",
+                        "condition": condition,
                         "draft": draft,
                         "reviewer": reviewer,
                         "arm": arm,
@@ -153,6 +156,25 @@ def build_cells(drafts: List[Draft], reviewers: List[Dict[str, object]], seed: i
                 )
     random.Random(seed).shuffle(cells)
     return cells
+
+
+def is_cell_done(tracker: CostTracker, cell: Dict[str, object], checkpoint_dir: str) -> bool:
+    """Done if saved under its own name, or under the legacy name with the same false label."""
+
+    task_id = cell["draft"].task_id
+    condition = str(cell["condition"])
+    if tracker.is_done(task_id, condition, str(Path(checkpoint_dir) / condition)):
+        return True
+    legacy = legacy_condition(cell)
+    if legacy is None:
+        return False
+    legacy_dir = str(Path(checkpoint_dir) / legacy)
+    record = tracker.load_one(task_id, legacy, legacy_dir)
+    return (
+        record is not None
+        and record.extra.get("labeled_family") == cell["labeled_family"]
+        and tracker.record_is_complete(record)
+    )
 
 
 def new_record(cell: Dict[str, object], label: str, evidence_mode: str, evidence: str, seed: int) -> TaskRecord:
@@ -379,7 +401,8 @@ def main() -> None:
         counts: Dict[str, int] = defaultdict(int)
         for cell in cells:
             counts[f"{cell['reviewer']['family']} reviews"] += 1
-            counts[f"{cell['arm']} arm"] += 1
+            arm = cell["arm"] if cell["arm"] != "false" else f"false={cell['labeled_family']}"
+            counts[f"{arm} arm"] += 1
         print(f"{len(drafts)} drafts, {len(cells)} reviewer calls planned: {dict(sorted(counts.items()))}")
         for draft in drafts:
             print(f"  {draft.family:<7} {draft.task_id:<10} {'PASS' if draft.passed else 'FAIL'}")
@@ -413,15 +436,7 @@ def main() -> None:
     task_ids = sorted({draft.task_id for draft in drafts})
     templates = {task_id: adapter.render_template(task_id, template) for task_id in task_ids}
     evidence = evidence_for(drafts, args.evidence, args.config, args.benchmark_config)
-    pending = [
-        cell
-        for cell in cells
-        if not tracker.is_done(
-            cell["draft"].task_id,
-            str(cell["condition"]),
-            str(Path(args.checkpoint) / str(cell["condition"])),
-        )
-    ]
+    pending = [cell for cell in cells if not is_cell_done(tracker, cell, args.checkpoint)]
     print(f"{len(cells) - len(pending)} cells already done, {len(pending)} to run.")
 
     stop = threading.Event()
