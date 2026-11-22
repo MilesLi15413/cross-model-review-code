@@ -68,7 +68,7 @@ prefix.
 
 | The paper said | What we found |
 |----------------|---------------|
-| GPT-5.5 costs ($0.190/task solo); Claude solo is the most cost-effective | Cached tokens were counted twice, so GPT-5.5 costs are ~45% too high. Corrected, **GPT-5.5 solo is the most cost-effective** condition. |
+| GPT-5.5 costs ($0.190/task solo); Claude solo is the most cost-effective (pass rate per dollar 4.04 vs 3.77) | The paper's code stored Codex's `input_tokens` (which already include cached tokens) and the cached count, and priced both, so cached tokens were charged twice (cached > input in 0 of 685 GPT turns; cached ≈ 67% of input). GPT-5.5 costs are ~45% too high. Corrected, **GPT-5.5 solo is the most cost-effective** (6.81 even with the paper's 83/116). Costs are estimates at the repo's list prices (`pricing.yaml`), not invoices; the fix matched OpenAI billing in this run. |
 
 **Reinforced**
 
@@ -77,7 +77,7 @@ prefix.
 | Claude writes + GPT-5.5 reviews (AO) is 8.6 pp worse than Claude alone | Explained directly: GPT-5.5 breaks Claude's working drafts (5/54 LiveCodeBench, 7/57 BigCodeBench), the worst pairing on both. |
 | Claude reviewing itself (AA) adds nothing | Confirmed: Claude leaves most of its own drafts unchanged (73% on BigCodeBench) and broke none. |
 | Scope warning: nothing protects a good draft from a worse rewrite | Shown to happen: every reviewer broke some working code. |
-| Results are writer-conditional; no general ranking of reviewers | Still true: the best reviewer depends on whether you want fewer breaks or more fixes. |
+| Results are writer-conditional; the two cross-model orderings (AO vs OA) cannot be separated, so no general ranking of reviewers | **Partly.** At the pipeline level this still holds. On the same fixed drafts, a partial ranking appears: GPT-5.5 breaks the most working code (both benchmarks), Claude fixes the most failing code (BigCodeBench), and Claude vs Gemini on breaks cannot be separated (LCB 1 vs 0, BCB 2 vs 4, not significant). Which reviewer helps still depends on the writer, e.g. GPT-5.5 is the worst reviewer for Claude's drafts. |
 
 **New (not measurable in the paper's design)**
 
