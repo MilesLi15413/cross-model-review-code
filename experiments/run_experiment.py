@@ -19,7 +19,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from harness.core.cli_runner import CLIRunner, UsageLimitError
+from harness.core.cli_runner import CLIRunner, OutOfCreditsError, UsageLimitError
 from harness.core.pipeline import TwoPassPipeline
 from harness.core.preflight import build_preflight_runners, run_preflight
 from harness.core.tracker import CostTracker
@@ -636,6 +636,8 @@ def run_plain(task_ids, conditions, adapter, tracker, checkpoint_dir, skip_eval,
             print(f"  [{cond['id']}] {index}/{len(task_ids)} {task.task_id} ... ", end="", flush=True)
             try:
                 result = pipeline.run_task(task_for_condition(adapter, task, cond))
+            except OutOfCreditsError:
+                raise
             except UsageLimitError:
                 print("\nManual pause requested.")
                 print(f"Resume with: python experiments/run_experiment.py --resume {checkpoint_dir}")
@@ -769,6 +771,13 @@ def main():
             )
         except ImportError:
             run_plain(task_ids, conditions, adapter, tracker, args.checkpoint, args.skip_eval, args.stop_on_limit)
+    except OutOfCreditsError as exc:
+        write_run_index(args.checkpoint)
+        raise SystemExit(
+            f"HARD STOP: {exc}\nFinished tasks are saved; the failed call was not saved. "
+            "Add credits, then resume with:\n"
+            f"  python experiments/run_experiment.py --resume {args.checkpoint} --confirm-resume"
+        )
     except UsageLimitError as exc:
         write_run_index(args.checkpoint)
         raise SystemExit(

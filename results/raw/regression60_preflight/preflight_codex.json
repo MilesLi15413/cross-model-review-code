@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-11-22T00:37:42.706780+00:00",
+  "cli_versions": {
+    "codex": "codex-cli 0.163.0"
+  },
+  "checks": [
+    {
+      "cli": "codex",
+      "model": "gpt-5.5",
+      "effort": "high",
+      "cli_version": "codex-cli 0.163.0",
+      "ok": true,
+      "response_text": "OK",
+      "checked_at": "2026-11-22T00:37:42.706757+00:00",
+      "runtime_settings": null
+    }
+  ]
+}

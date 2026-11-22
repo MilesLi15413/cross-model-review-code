@@ -1,0 +1,121 @@
+{
+  "task_id": "3771",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T00:05:48.703519+00:00",
+  "writer_finished_at": "2026-05-18T00:06:09.989878+00:00",
+  "reviewer_started_at": "2026-11-22T02:16:09.430435+00:00",
+  "reviewer_finished_at": "2026-11-22T02:17:44.811065+00:00",
+  "writer_prompt_sha256": "3a7c2f107f977aad06a1239d351a8236ee2bfe3e4f268ba48c2cdeeaed3501c8",
+  "reviewer_prompt_sha256": "8944e6681965db1714b36cce77e5ca6490be5da4c9e441cf1ae0fe4f1698b37b",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 95.38049424999917,
+  "total_latency_s": 95.38049424999917,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8682,
+  "reviewer_output_tokens": 15235,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.200184,
+  "total_cost_usd": 0.200184,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"009dbe58-2df7-409c-b9f8-29edced321ef\",\n  \"response\": \"An analysis of the problem reveals that we want to find at least $k$ non-overlapping valid substrings. A valid substring is defined by a contiguous block of characters where no character inside the block appears outside of it in the entire string. Furthermore, the block cannot be the entire string itself.\\n\\n### Method Explanation\\n1. **Starting Point Check:** A valid substring must always begin at the first occurrence of some character. If it started later, the character at its starting index would have appeared earlier (outside the substring), which violates the condition. Therefore, there are at most 26 possible minimal valid substrings to discover\u2014one starting at the first occurrence of each unique character in the string.\\n2. **Interval Expansion:** For each unique character, we start a tentative interval `[l, r]` where `l` is its first occurrence and `r` is its last occurrence. As we iterate through the characters within this interval, we may encounter new characters. We must stretch `r` to encompass the last occurrence of any new character we see inside our current bounds. \\n3. **Invalidity Checking:** While verifying and expanding, if we encounter a character whose first occurrence is strictly before our starting bound `l`, the condition is irreparably broken (since that character occurs before our interval). In this case, no valid substring can start at `l`, and we abandon it.\\n4. **Greedy Interval Scheduling:** For all the valid intervals we successfully formed (ignoring intervals that encompass the entire string), we can use the classic Greedy Interval Scheduling strategy. We sort the candidate intervals by their end time and continuously pick the ones that end earliest and do not overlap with our previously picked interval. This perfectly guarantees finding the maximum number of disjoint valid substrings. Finally, we simply check if this max count is $\\\\ge k$.\\n\\n### Optimization\\nThe submitted solution correctly implemented this mathematical logic. However, the runtime performance and readability can be improved and made more Pythonic:\\n- Using a dictionary to track `first` and `last` occurrences helps us naturally avoid calling Python's built-in `ord()` thousands of times inside nested loops.\\n- It also limits our main evaluation loop to strictly iterate through only the unique characters that are *actually present* in the string instead of a hardcoded 26 passes.\\n\\n### Corrected Code\\n\\n<solution>\\nclass Solution:\\n    def maxSubstringLength(self, s: str, k: int) -> bool:\\n        if k == 0:\\n            return True\\n\\n        first = {}\\n        last = {}\\n        # Find the first and last occurrence of each character\\n        for i, ch in enumerate(s):\\n            if ch not in first:\\n                first[ch] = i\\n            last[ch] = i\\n\\n        intervals = []\\n\\n        # Find the minimal valid substring starting at each character's first occurrence\\n        for c, l in first.items():\\n            r = last[c]\\n            i = l\\n            valid = True\\n\\n            while i <= r:\\n                x = s[i]\\n                # If a character inside our bounds appeared before our start index, it's invalid\\n                if first[x] < l:\\n                    valid = False\\n                    break\\n                # Expand the right bound to include all occurrences of the current character\\n                if last[x] > r:\\n                    r = last[x]\\n                i += 1\\n\\n            # A valid interval must not span the entire string\\n            if valid and not (l == 0 and r == len(s) - 1):\\n                intervals.append((l, r))\\n\\n        # Greedy Interval Scheduling: Sort by end time to pack maximum non-overlapping intervals\\n        intervals.sort(key=lambda x: x[1])\\n\\n        count = 0\\n        prev_end = -1\\n        for l, r in intervals:\\n            if l > prev_end:\\n                count += 1\\n                prev_end = r\\n                # If we've collected enough valid substrings, we can immediately return True\\n                if count >= k:\\n                    return True\\n\\n        return False\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 94600,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8682,\n          \"prompt\": 8682,\n          \"candidates\": 874,\n          \"total\": 23917,\n          \"cached\": 0,\n          \"thoughts\": 14361,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 94600,\n            \"tokens\": {\n              \"input\": 8682,\n              \"prompt\": 8682,\n              \"candidates\": 874,\n              \"total\": 23917,\n              \"cached\": 0,\n              \"thoughts\": 14361,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "class Solution:\n    def maxSubstringLength(self, s: str, k: int) -> bool:\n        if k == 0:\n            return True\n\n        n = len(s)\n        first = [n] * 26\n        last = [-1] * 26\n\n        for i, ch in enumerate(s):\n            idx = ord(ch) - ord('a')\n            first[idx] = min(first[idx], i)\n            last[idx] = i\n\n        intervals = []\n\n        for c in range(26):\n            if first[c] == n:\n                continue\n\n            l = first[c]\n            r = last[c]\n            i = l\n            valid = True\n\n            while i <= r:\n                x = ord(s[i]) - ord('a')\n                if first[x] < l:\n                    valid = False\n                    break\n                r = max(r, last[x])\n                i += 1\n\n            if valid and not (l == 0 and r == n - 1):\n                intervals.append((l, r))\n\n        intervals.sort(key=lambda x: x[1])\n\n        count = 0\n        prev_end = -1\n        for l, r in intervals:\n            if l > prev_end:\n                count += 1\n                prev_end = r\n                if count >= k:\n                    return True\n\n        return False",
+  "reviewer_artifact": "class Solution:\n    def maxSubstringLength(self, s: str, k: int) -> bool:\n        if k == 0:\n            return True\n\n        first = {}\n        last = {}\n        # Find the first and last occurrence of each character\n        for i, ch in enumerate(s):\n            if ch not in first:\n                first[ch] = i\n            last[ch] = i\n\n        intervals = []\n\n        # Find the minimal valid substring starting at each character's first occurrence\n        for c, l in first.items():\n            r = last[c]\n            i = l\n            valid = True\n\n            while i <= r:\n                x = s[i]\n                # If a character inside our bounds appeared before our start index, it's invalid\n                if first[x] < l:\n                    valid = False\n                    break\n                # Expand the right bound to include all occurrences of the current character\n                if last[x] > r:\n                    r = last[x]\n                i += 1\n\n            # A valid interval must not span the entire string\n            if valid and not (l == 0 and r == len(s) - 1):\n                intervals.append((l, r))\n\n        # Greedy Interval Scheduling: Sort by end time to pack maximum non-overlapping intervals\n        intervals.sort(key=lambda x: x[1])\n\n        count = 0\n        prev_end = -1\n        for l, r in intervals:\n            if l > prev_end:\n                count += 1\n                prev_end = r\n                # If we've collected enough valid substrings, we can immediately return True\n                if count >= k:\n                    return True\n\n        return False",
+  "final_artifact": "class Solution:\n    def maxSubstringLength(self, s: str, k: int) -> bool:\n        if k == 0:\n            return True\n\n        first = {}\n        last = {}\n        # Find the first and last occurrence of each character\n        for i, ch in enumerate(s):\n            if ch not in first:\n                first[ch] = i\n            last[ch] = i\n\n        intervals = []\n\n        # Find the minimal valid substring starting at each character's first occurrence\n        for c, l in first.items():\n            r = last[c]\n            i = l\n            valid = True\n\n            while i <= r:\n                x = s[i]\n                # If a character inside our bounds appeared before our start index, it's invalid\n                if first[x] < l:\n                    valid = False\n                    break\n                # Expand the right bound to include all occurrences of the current character\n                if last[x] > r:\n                    r = last[x]\n                i += 1\n\n            # A valid interval must not span the entire string\n            if valid and not (l == 0 and r == len(s) - 1):\n                intervals.append((l, r))\n\n        # Greedy Interval Scheduling: Sort by end time to pack maximum non-overlapping intervals\n        intervals.sort(key=lambda x: x[1])\n\n        count = 0\n        prev_end = -1\n        for l, r in intervals:\n            if l > prev_end:\n                count += 1\n                prev_end = r\n                # If we've collected enough valid substrings, we can immediately return True\n                if count >= k:\n                    return True\n\n        return False",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/3771__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "ebf2434b0284379cc87f4dffb89a654c8db828cb4619701d7c71b45aa3327a3d",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 21.286071165988687,
+      "input_tokens": 20412,
+      "output_tokens": 836,
+      "cached_input_tokens": 19840,
+      "cost_usd": 0.13706
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "151799f39f62a60dd553ee32df79407b52f425864c7e42d3e3a5e8e753dbdf4b",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 32,
+    "reviewer_cost_all_attempts": 0.200184
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "task_id": "abc396_g",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.125.0-alpha.3",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-10T08:49:33.733096+00:00",
+  "writer_finished_at": "2026-05-10T08:49:53.292260+00:00",
+  "reviewer_started_at": "2026-11-22T02:28:01.781360+00:00",
+  "reviewer_finished_at": "2026-11-22T02:29:07.722320+00:00",
+  "writer_prompt_sha256": "a5b39f9a9a535eeeba2d1d814f7cb75241a8b7b2ee12216750779092683602cf",
+  "reviewer_prompt_sha256": "129d9c94cdb6c7da0b13eee5c49de66a1745cc16667ac61c5b82b3856fd6003f",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 65.94077333300083,
+  "total_latency_s": 65.94077333300083,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8927,
+  "reviewer_output_tokens": 10535,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.144274,
+  "total_cost_usd": 0.144274,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"9fcd79c8-de41-4a00-80ed-c284c69d83c0\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef fwht(a):\\n    n = len(a)\\n    length = 1\\n    while length < n:\\n        step = length * 2\\n        for i in range(0, n, step):\\n            for j in range(i, i + length):\\n                x = a[j]\\n                y = a[j + length]\\n                a[j] = x + y\\n                a[j + length] = x - y\\n        length = step\\n\\ndef main():\\n    # Read all inputs from standard input at once for better performance \\n    # and robustness against trailing whitespaces/newlines.\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n    \\n    H = int(input_data[0])\\n    W = int(input_data[1])\\n    n = 1 << W\\n\\n    # Parse each row string as a binary number to build the frequency array\\n    freq = [0] * n\\n    for i in range(2, 2 + H):\\n        mask = int(input_data[i], 2)\\n        freq[mask] += 1\\n\\n    # Precompute the minimum cost for each bitmask\\n    cost = [0] * n\\n    for mask in range(n):\\n        k = mask.bit_count()\\n        cost[mask] = min(k, W - k)\\n\\n    # Perform Fast Walsh-Hadamard Transform (FWHT) for XOR convolution\\n    fwht(freq)\\n    fwht(cost)\\n\\n    # Element-wise multiplication\\n    conv = [freq[i] * cost[i] for i in range(n)]\\n    \\n    # Inverse FWHT\\n    fwht(conv)\\n\\n    # In an XOR convolution via FWHT, applying the transform again scales \\n    # the values by n. We take the minimum and divide by n efficiently.\\n    ans = min(conv) // n\\n    print(ans)\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 65138,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8927,\n          \"prompt\": 8927,\n          \"candidates\": 464,\n          \"total\": 19462,\n          \"cached\": 0,\n          \"thoughts\": 10071,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 65138,\n            \"tokens\": {\n              \"input\": 8927,\n              \"prompt\": 8927,\n              \"candidates\": 464,\n              \"total\": 19462,\n              \"cached\": 0,\n              \"thoughts\": 10071,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "writer_artifact": "import sys\n\ndef fwht(a):\n    n = len(a)\n    length = 1\n    while length < n:\n        step = length * 2\n        for i in range(0, n, step):\n            for j in range(i, i + length):\n                x = a[j]\n                y = a[j + length]\n                a[j] = x + y\n                a[j + length] = x - y\n        length = step\n\ndef main():\n    input = sys.stdin.readline\n    H, W = map(int, input().split())\n    n = 1 << W\n\n    freq = [0] * n\n    for _ in range(H):\n        s = input().strip()\n        mask = int(s, 2)\n        freq[mask] += 1\n\n    cost = [0] * n\n    for mask in range(n):\n        k = mask.bit_count()\n        cost[mask] = min(k, W - k)\n\n    fwht(freq)\n    fwht(cost)\n\n    conv = [freq[i] * cost[i] for i in range(n)]\n    fwht(conv)\n\n    ans = min(v // n for v in conv)\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "reviewer_artifact": "import sys\n\ndef fwht(a):\n    n = len(a)\n    length = 1\n    while length < n:\n        step = length * 2\n        for i in range(0, n, step):\n            for j in range(i, i + length):\n                x = a[j]\n                y = a[j + length]\n                a[j] = x + y\n                a[j + length] = x - y\n        length = step\n\ndef main():\n    # Read all inputs from standard input at once for better performance \n    # and robustness against trailing whitespaces/newlines.\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    H = int(input_data[0])\n    W = int(input_data[1])\n    n = 1 << W\n\n    # Parse each row string as a binary number to build the frequency array\n    freq = [0] * n\n    for i in range(2, 2 + H):\n        mask = int(input_data[i], 2)\n        freq[mask] += 1\n\n    # Precompute the minimum cost for each bitmask\n    cost = [0] * n\n    for mask in range(n):\n        k = mask.bit_count()\n        cost[mask] = min(k, W - k)\n\n    # Perform Fast Walsh-Hadamard Transform (FWHT) for XOR convolution\n    fwht(freq)\n    fwht(cost)\n\n    # Element-wise multiplication\n    conv = [freq[i] * cost[i] for i in range(n)]\n    \n    # Inverse FWHT\n    fwht(conv)\n\n    # In an XOR convolution via FWHT, applying the transform again scales \n    # the values by n. We take the minimum and divide by n efficiently.\n    ans = min(conv) // n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "final_artifact": "import sys\n\ndef fwht(a):\n    n = len(a)\n    length = 1\n    while length < n:\n        step = length * 2\n        for i in range(0, n, step):\n            for j in range(i, i + length):\n                x = a[j]\n                y = a[j + length]\n                a[j] = x + y\n                a[j + length] = x - y\n        length = step\n\ndef main():\n    # Read all inputs from standard input at once for better performance \n    # and robustness against trailing whitespaces/newlines.\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    H = int(input_data[0])\n    W = int(input_data[1])\n    n = 1 << W\n\n    # Parse each row string as a binary number to build the frequency array\n    freq = [0] * n\n    for i in range(2, 2 + H):\n        mask = int(input_data[i], 2)\n        freq[mask] += 1\n\n    # Precompute the minimum cost for each bitmask\n    cost = [0] * n\n    for mask in range(n):\n        k = mask.bit_count()\n        cost[mask] = min(k, W - k)\n\n    # Perform Fast Walsh-Hadamard Transform (FWHT) for XOR convolution\n    fwht(freq)\n    fwht(cost)\n\n    # Element-wise multiplication\n    conv = [freq[i] * cost[i] for i in range(n)]\n    \n    # Inverse FWHT\n    fwht(conv)\n\n    # In an XOR convolution via FWHT, applying the transform again scales \n    # the values by n. We take the minimum and divide by n efficiently.\n    ans = min(conv) // n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/abc396_g__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "3fdcc70f8f3a6f768891a579e7a464f3537ca0175849a3e2be345f74ddaef51b",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 19.558836417039856,
+      "input_tokens": 16574,
+      "output_tokens": 747,
+      "cached_input_tokens": 3456,
+      "cost_usd": 0.107008
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "8785270ae536fb693d7e29e4afb26de61336e73ed5a658eb11810f51ae60082d",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 25,
+    "reviewer_cost_all_attempts": 0.144274
+  }
+}

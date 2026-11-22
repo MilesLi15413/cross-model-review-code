@@ -1,0 +1,121 @@
+{
+  "task_id": "3737",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T01:29:42.827477+00:00",
+  "writer_finished_at": "2026-05-18T01:30:01.173103+00:00",
+  "reviewer_started_at": "2026-11-22T02:14:51.896872+00:00",
+  "reviewer_finished_at": "2026-11-22T02:15:40.014816+00:00",
+  "writer_prompt_sha256": "7dd849dc7441ba1f98f91d14585086e12480778743208926cc5b0c561f2be0b2",
+  "reviewer_prompt_sha256": "da1e120bc61ffefb30fa8dc5c041f03f3c87cd1e6d9d4c7655166741affaf32f",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 48.1178677909993,
+  "total_latency_s": 48.1178677909993,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8921,
+  "reviewer_output_tokens": 7670,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.109882,
+  "total_cost_usd": 0.109882,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"857582c3-2674-4bb6-8d9d-9a8e3426669d\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\\n        # All valid color pairs for equidistant houses (they must have different colors)\\n        pairs = [(a, b) for a in range(3) for b in range(3) if a != b]\\n        \\n        # Precompute valid previous pair states to avoid recalculating in the inner loop.\\n        # For a current pair `p`, the previous pair must have different colors for \\n        # both the left house (prev[0] != p[0]) and the right house (prev[1] != p[1]).\\n        # Because we're using 3 colors, there are exactly 3 valid previous pairs for any given pair.\\n        valid_prev = {\\n            p: [prev for prev in pairs if prev[0] != p[0] and prev[1] != p[1]]\\n            for p in pairs\\n        }\\n        \\n        # Initialize DP for the outermost houses\\n        dp = {p: cost[0][p[0]] + cost[n - 1][p[1]] for p in pairs}\\n        \\n        # Process remaining pairs of houses moving inwards\\n        for i in range(1, n // 2):\\n            left, right = i, n - 1 - i\\n            ndp = {}\\n            for p in pairs:\\n                # Cost to paint the current pair of houses with colors p[0] and p[1]\\n                curr_cost = cost[left][p[0]] + cost[right][p[1]]\\n                \\n                # Fetch the exactly 3 valid previous states\\n                v1, v2, v3 = valid_prev[p]\\n                \\n                # Add the minimum cost from valid previous transitions\\n                ndp[p] = curr_cost + min(dp[v1], dp[v2], dp[v3])\\n                \\n            dp = ndp\\n            \\n        # Minimum cost across all valid color assignments for the innermost pair\\n        return min(dp.values())\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 47348,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8921,\n          \"prompt\": 8921,\n          \"candidates\": 471,\n          \"total\": 16591,\n          \"cached\": 0,\n          \"thoughts\": 7199,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 47348,\n            \"tokens\": {\n              \"input\": 8921,\n              \"prompt\": 8921,\n              \"candidates\": 471,\n              \"total\": 16591,\n              \"cached\": 0,\n              \"thoughts\": 7199,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        INF = 10**30\n        pairs = [(a, b) for a in range(3) for b in range(3) if a != b]\n\n        dp = {}\n        left, right = 0, n - 1\n        for a, b in pairs:\n            dp[(a, b)] = cost[left][a] + cost[right][b]\n\n        for i in range(1, n // 2):\n            left, right = i, n - 1 - i\n            ndp = {}\n\n            for a, b in pairs:\n                best = INF\n                cur_cost = cost[left][a] + cost[right][b]\n\n                for pa, pb in pairs:\n                    if a != pa and b != pb:\n                        best = min(best, dp[(pa, pb)] + cur_cost)\n\n                ndp[(a, b)] = best\n\n            dp = ndp\n\n        return min(dp.values())",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        # All valid color pairs for equidistant houses (they must have different colors)\n        pairs = [(a, b) for a in range(3) for b in range(3) if a != b]\n        \n        # Precompute valid previous pair states to avoid recalculating in the inner loop.\n        # For a current pair `p`, the previous pair must have different colors for \n        # both the left house (prev[0] != p[0]) and the right house (prev[1] != p[1]).\n        # Because we're using 3 colors, there are exactly 3 valid previous pairs for any given pair.\n        valid_prev = {\n            p: [prev for prev in pairs if prev[0] != p[0] and prev[1] != p[1]]\n            for p in pairs\n        }\n        \n        # Initialize DP for the outermost houses\n        dp = {p: cost[0][p[0]] + cost[n - 1][p[1]] for p in pairs}\n        \n        # Process remaining pairs of houses moving inwards\n        for i in range(1, n // 2):\n            left, right = i, n - 1 - i\n            ndp = {}\n            for p in pairs:\n                # Cost to paint the current pair of houses with colors p[0] and p[1]\n                curr_cost = cost[left][p[0]] + cost[right][p[1]]\n                \n                # Fetch the exactly 3 valid previous states\n                v1, v2, v3 = valid_prev[p]\n                \n                # Add the minimum cost from valid previous transitions\n                ndp[p] = curr_cost + min(dp[v1], dp[v2], dp[v3])\n                \n            dp = ndp\n            \n        # Minimum cost across all valid color assignments for the innermost pair\n        return min(dp.values())",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        # All valid color pairs for equidistant houses (they must have different colors)\n        pairs = [(a, b) for a in range(3) for b in range(3) if a != b]\n        \n        # Precompute valid previous pair states to avoid recalculating in the inner loop.\n        # For a current pair `p`, the previous pair must have different colors for \n        # both the left house (prev[0] != p[0]) and the right house (prev[1] != p[1]).\n        # Because we're using 3 colors, there are exactly 3 valid previous pairs for any given pair.\n        valid_prev = {\n            p: [prev for prev in pairs if prev[0] != p[0] and prev[1] != p[1]]\n            for p in pairs\n        }\n        \n        # Initialize DP for the outermost houses\n        dp = {p: cost[0][p[0]] + cost[n - 1][p[1]] for p in pairs}\n        \n        # Process remaining pairs of houses moving inwards\n        for i in range(1, n // 2):\n            left, right = i, n - 1 - i\n            ndp = {}\n            for p in pairs:\n                # Cost to paint the current pair of houses with colors p[0] and p[1]\n                curr_cost = cost[left][p[0]] + cost[right][p[1]]\n                \n                # Fetch the exactly 3 valid previous states\n                v1, v2, v3 = valid_prev[p]\n                \n                # Add the minimum cost from valid previous transitions\n                ndp[p] = curr_cost + min(dp[v1], dp[v2], dp[v3])\n                \n            dp = ndp\n            \n        # Minimum cost across all valid color assignments for the innermost pair\n        return min(dp.values())",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/3737__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "503b1aee9f84ebf884ac82fb85d853d3bdd83417302bfc79e9f53df9b7c76ceb",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 18.345351749972906,
+      "input_tokens": 20724,
+      "output_tokens": 649,
+      "cached_input_tokens": 3456,
+      "cost_usd": 0.124818
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "9df969d85cc56dbfa4120476f9a9094b901cd3aa4108620a568236a43f52893b",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 46,
+    "reviewer_cost_all_attempts": 0.109882
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "task_id": "abc397_c",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-17T23:42:32.198729+00:00",
+  "writer_finished_at": "2026-05-17T23:42:42.917963+00:00",
+  "reviewer_started_at": "2026-11-22T02:28:53.759726+00:00",
+  "reviewer_finished_at": "2026-11-22T02:29:15.732842+00:00",
+  "writer_prompt_sha256": "5d03f06a27d17b080cb542b6035ba596e1b71cf7f29cedfcae09b2d9706c8897",
+  "reviewer_prompt_sha256": "6510bdded29edbbc8297f18636c808efafc7c847db9ac0d05c9ef223db17c524",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 21.97304583300138,
+  "total_latency_s": 21.97304583300138,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8651,
+  "reviewer_output_tokens": 3368,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.057718,
+  "total_cost_usd": 0.057718,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"4b5a3e82-1d9b-404f-a732-b06cea3768cd\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef main():\\n    # Read all input from standard input at once\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n    \\n    N = int(input_data[0])\\n    A = [int(x) for x in input_data[1:]]\\n\\n    # Precompute the number of distinct elements in the suffix\\n    suffix_distinct = [0] * N\\n    \\n    # Using bytearray for fast O(1) membership checks and lower memory overhead than Python sets\\n    seen = bytearray(N + 1)\\n    count = 0\\n    for i in range(N - 1, -1, -1):\\n        val = A[i]\\n        if not seen[val]:\\n            seen[val] = 1\\n            count += 1\\n        suffix_distinct[i] = count\\n\\n    ans = 0\\n    # Reset tracking structure for the prefix evaluation\\n    seen = bytearray(N + 1)\\n    count = 0\\n    for i in range(N - 1):\\n        val = A[i]\\n        if not seen[val]:\\n            seen[val] = 1\\n            count += 1\\n        \\n        # Calculate distinct elements in A[0...i] + A[i+1...N-1]\\n        current = count + suffix_distinct[i + 1]\\n        if current > ans:\\n            ans = current\\n\\n    print(ans)\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 21130,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8651,\n          \"prompt\": 8651,\n          \"candidates\": 356,\n          \"total\": 12019,\n          \"cached\": 0,\n          \"thoughts\": 3012,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 21130,\n            \"tokens\": {\n              \"input\": 8651,\n              \"prompt\": 8651,\n              \"candidates\": 356,\n              \"total\": 12019,\n              \"cached\": 0,\n              \"thoughts\": 3012,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef main():\n    input = sys.stdin.readline\n    N = int(input())\n    A = list(map(int, input().split()))\n\n    suffix_distinct = [0] * N\n    seen = set()\n    for i in range(N - 1, -1, -1):\n        seen.add(A[i])\n        suffix_distinct[i] = len(seen)\n\n    ans = 0\n    seen.clear()\n    for i in range(N - 1):\n        seen.add(A[i])\n        ans = max(ans, len(seen) + suffix_distinct[i + 1])\n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "reviewer_artifact": "import sys\n\ndef main():\n    # Read all input from standard input at once\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    N = int(input_data[0])\n    A = [int(x) for x in input_data[1:]]\n\n    # Precompute the number of distinct elements in the suffix\n    suffix_distinct = [0] * N\n    \n    # Using bytearray for fast O(1) membership checks and lower memory overhead than Python sets\n    seen = bytearray(N + 1)\n    count = 0\n    for i in range(N - 1, -1, -1):\n        val = A[i]\n        if not seen[val]:\n            seen[val] = 1\n            count += 1\n        suffix_distinct[i] = count\n\n    ans = 0\n    # Reset tracking structure for the prefix evaluation\n    seen = bytearray(N + 1)\n    count = 0\n    for i in range(N - 1):\n        val = A[i]\n        if not seen[val]:\n            seen[val] = 1\n            count += 1\n        \n        # Calculate distinct elements in A[0...i] + A[i+1...N-1]\n        current = count + suffix_distinct[i + 1]\n        if current > ans:\n            ans = current\n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "final_artifact": "import sys\n\ndef main():\n    # Read all input from standard input at once\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    N = int(input_data[0])\n    A = [int(x) for x in input_data[1:]]\n\n    # Precompute the number of distinct elements in the suffix\n    suffix_distinct = [0] * N\n    \n    # Using bytearray for fast O(1) membership checks and lower memory overhead than Python sets\n    seen = bytearray(N + 1)\n    count = 0\n    for i in range(N - 1, -1, -1):\n        val = A[i]\n        if not seen[val]:\n            seen[val] = 1\n            count += 1\n        suffix_distinct[i] = count\n\n    ans = 0\n    # Reset tracking structure for the prefix evaluation\n    seen = bytearray(N + 1)\n    count = 0\n    for i in range(N - 1):\n        val = A[i]\n        if not seen[val]:\n            seen[val] = 1\n            count += 1\n        \n        # Calculate distinct elements in A[0...i] + A[i+1...N-1]\n        current = count + suffix_distinct[i + 1]\n        if current > ans:\n            ans = current\n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/abc397_c__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "27b8750dc378e5ea143d3a25012b332a8b6e1566ad53ff94ceb97fc165dbbe8e",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 10.719059958006255,
+      "input_tokens": 20555,
+      "output_tokens": 307,
+      "cached_input_tokens": 2432,
+      "cost_usd": 0.113201
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "d29ab29bedbd4411c7ffc613db438e78a46f357c13004732d22db1a9c497273b",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 38,
+    "reviewer_cost_all_attempts": 0.057718
+  }
+}

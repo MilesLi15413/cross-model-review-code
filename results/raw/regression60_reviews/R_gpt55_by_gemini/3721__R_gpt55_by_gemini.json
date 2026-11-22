@@ -1,0 +1,121 @@
+{
+  "task_id": "3721",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T01:58:09.286789+00:00",
+  "writer_finished_at": "2026-05-18T01:58:31.574773+00:00",
+  "reviewer_started_at": "2026-11-22T02:14:06.240230+00:00",
+  "reviewer_finished_at": "2026-11-22T02:14:51.281196+00:00",
+  "writer_prompt_sha256": "93bcd69f820f63594064edd93d788eaaabc209541d92ebe97e9096b3636cb3f2",
+  "reviewer_prompt_sha256": "261d5c5a61ae7c35c2717ab736883a76a756f162394318cca21e74b6b3082056",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 45.04089599999861,
+  "total_latency_s": 45.04089599999861,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9127,
+  "reviewer_output_tokens": 6573,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.09713,
+  "total_cost_usd": 0.09713,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"b48c18a3-4970-4300-b8cf-433475eacf7d\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:\\n        mentions = [0] * numberOfUsers\\n        offline_until = [0] * numberOfUsers\\n\\n        # At the same timestamp, OFFLINE events must be processed before MESSAGE events.\\n        # This accurately models a user going offline just before a message is sent, \\n        # or coming back online naturally before going offline again simultaneously.\\n        events.sort(key=lambda e: (int(e[1]), 0 if e[0] == \\\"OFFLINE\\\" else 1))\\n\\n        for event_type, timestamp_str, data in events:\\n            time = int(timestamp_str)\\n\\n            if event_type == \\\"OFFLINE\\\":\\n                user_id = int(data)\\n                offline_until[user_id] = time + 60\\n            else:\\n                if data == \\\"ALL\\\":\\n                    for i in range(numberOfUsers):\\n                        mentions[i] += 1\\n                elif data == \\\"HERE\\\":\\n                    for i in range(numberOfUsers):\\n                        # User is online if their offline period has elapsed\\n                        if offline_until[i] <= time:\\n                            mentions[i] += 1\\n                else:\\n                    # Mentions specific users, including duplicates and offline users\\n                    for token in data.split():\\n                        user_id = int(token[2:])\\n                        mentions[user_id] += 1\\n\\n        return mentions\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 44226,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9127,\n          \"prompt\": 9127,\n          \"candidates\": 351,\n          \"total\": 15700,\n          \"cached\": 0,\n          \"thoughts\": 6222,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 44226,\n            \"tokens\": {\n              \"input\": 9127,\n              \"prompt\": 9127,\n              \"candidates\": 351,\n              \"total\": 15700,\n              \"cached\": 0,\n              \"thoughts\": 6222,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\n\nclass Solution:\n    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:\n        mentions = [0] * numberOfUsers\n        offline_until = [0] * numberOfUsers\n\n        # At the same timestamp, OFFLINE events must be processed before MESSAGE events.\n        events.sort(key=lambda e: (int(e[1]), 0 if e[0] == \"OFFLINE\" else 1))\n\n        for event_type, timestamp_str, data in events:\n            time = int(timestamp_str)\n\n            if event_type == \"OFFLINE\":\n                user_id = int(data)\n                offline_until[user_id] = time + 60\n            else:\n                if data == \"ALL\":\n                    for i in range(numberOfUsers):\n                        mentions[i] += 1\n                elif data == \"HERE\":\n                    for i in range(numberOfUsers):\n                        if offline_until[i] <= time:\n                            mentions[i] += 1\n                else:\n                    for token in data.split():\n                        user_id = int(token[2:])\n                        mentions[user_id] += 1\n\n        return mentions",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:\n        mentions = [0] * numberOfUsers\n        offline_until = [0] * numberOfUsers\n\n        # At the same timestamp, OFFLINE events must be processed before MESSAGE events.\n        # This accurately models a user going offline just before a message is sent, \n        # or coming back online naturally before going offline again simultaneously.\n        events.sort(key=lambda e: (int(e[1]), 0 if e[0] == \"OFFLINE\" else 1))\n\n        for event_type, timestamp_str, data in events:\n            time = int(timestamp_str)\n\n            if event_type == \"OFFLINE\":\n                user_id = int(data)\n                offline_until[user_id] = time + 60\n            else:\n                if data == \"ALL\":\n                    for i in range(numberOfUsers):\n                        mentions[i] += 1\n                elif data == \"HERE\":\n                    for i in range(numberOfUsers):\n                        # User is online if their offline period has elapsed\n                        if offline_until[i] <= time:\n                            mentions[i] += 1\n                else:\n                    # Mentions specific users, including duplicates and offline users\n                    for token in data.split():\n                        user_id = int(token[2:])\n                        mentions[user_id] += 1\n\n        return mentions",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:\n        mentions = [0] * numberOfUsers\n        offline_until = [0] * numberOfUsers\n\n        # At the same timestamp, OFFLINE events must be processed before MESSAGE events.\n        # This accurately models a user going offline just before a message is sent, \n        # or coming back online naturally before going offline again simultaneously.\n        events.sort(key=lambda e: (int(e[1]), 0 if e[0] == \"OFFLINE\" else 1))\n\n        for event_type, timestamp_str, data in events:\n            time = int(timestamp_str)\n\n            if event_type == \"OFFLINE\":\n                user_id = int(data)\n                offline_until[user_id] = time + 60\n            else:\n                if data == \"ALL\":\n                    for i in range(numberOfUsers):\n                        mentions[i] += 1\n                elif data == \"HERE\":\n                    for i in range(numberOfUsers):\n                        # User is online if their offline period has elapsed\n                        if offline_until[i] <= time:\n                            mentions[i] += 1\n                else:\n                    # Mentions specific users, including duplicates and offline users\n                    for token in data.split():\n                        user_id = int(token[2:])\n                        mentions[user_id] += 1\n\n        return mentions",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/3721__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "eb5a3899808a5bc34ffdd63372a0e79af2137ef4045e6990f80fecbaf1c298bf",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 22.287670916004572,
+      "input_tokens": 20834,
+      "output_tokens": 777,
+      "cached_input_tokens": 3456,
+      "cost_usd": 0.129208
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "1a744db5dad44f2f09a35f275a0b2edac58e422e1d7725916e88defe7f7b542c",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 4,
+    "reviewer_cost_all_attempts": 0.09713
+  }
+}

@@ -1,0 +1,3282 @@
+task_id,condition,benchmark,passed,writer_model,reviewer_model,writer_effort,reviewer_effort,total_cost_usd,total_latency_s,writer_latency_s,reviewer_latency_s,parse_failed,cli_error,timed_out,budget_exceeded,evaluated_turn,evaluated_parse_method,raw_file,final_artifact
+3562,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.347992,194.35827991599945,194.35827991599945,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3562__B3_gemini_solo.json,"from typing import List
+from bisect import bisect_right
+
+class Solution:
+    def maximumWeight(self, intervals: List[List[int]]) -> List[int]:
+        n = len(intervals)
+        # Store intervals with their original index: (l, r, weight, original_index)
+        intervals_with_idx = [(intervals[i][0], intervals[i][1], intervals[i][2], i) for i in range(n)]
+        
+        # Sort intervals primarily by the left endpoint
+        intervals_with_idx.sort(key=lambda x: x[0])
+        
+        # Extract left endpoints to use with binary search (bisect_right)
+        lefts = [x[0] for x in intervals_with_idx]
+        
+        # DP table: dp[i][k] stores the best (max_weight, lexicographically_smallest_indices_list) 
+        # using at most k intervals from the suffix i...n-1.
+        # k goes up to 4 (so size 5)
+        dp = [[(0, []) for _ in range(5)] for _ in range(n + 1)]
+        
+        # Process from right to left
+        for i in range(n - 1, -1, -1):
+            l, r, w, idx = intervals_with_idx[i]
+            
+            # Find the first interval that starts strictly after the current interval ends.
+            # Intervals sharing a boundary are considered overlapping, so we need l_next > r.
+            next_i = bisect_right(lefts, r)
+            
+            for k in range(1, 5):
+                # Option 1: Do not include the current interval
+                w1, list1 = dp[i + 1][k]
+                
+                # Option 2: Include the current interval
+                prev_w, prev_list = dp[next_i][k - 1]
+                w2 = w + prev_w
+                
+                # Compare both options. We want to maximize weight first.
+                if w1 > w2:
+                    dp[i][k] = (w1, list1)
+                elif w2 > w1:
+                    dp[i][k] = (w2, sorted(prev_list + [idx]))
+                else:
+                    # If weights are equal, choose the one with the lexicographically smallest list of indices.
+                    # Python's built-in list comparison intrinsically matches the problem's lexicographical rules.
+                    list2 = sorted(prev_list + [idx])
+                    if list1 < list2:
+                        dp[i][k] = (w1, list1)
+                    else:
+                        dp[i][k] = (w2, list2)
+                        
+        return dp[0][4][1]"
+3634,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.047976,20.649075582998194,20.649075582998194,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3634__B3_gemini_solo.json,"class Solution:
+    def calculateScore(self, s: str) -> int:
+        score = 0
+        pos = [[] for _ in range(26)]
+        
+        for i, char in enumerate(s):
+            c_idx = ord(char) - 97
+            mirror_idx = 25 - c_idx
+            
+            if pos[mirror_idx]:
+                j = pos[mirror_idx].pop()
+                score += i - j
+            else:
+                pos[c_idx].append(i)
+                
+        return score"
+3677,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.133998,59.38496200000009,59.38496200000009,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3677__B3_gemini_solo.json,"import math
+from typing import List
+
+class Solution:
+    def maximumAmount(self, coins: List[List[int]]) -> int:
+        m, n = len(coins), len(coins[0])
+        
+        # Space optimization: keep track of the DP state for the previous row
+        # dp[j][k] will store the maximum coins at column j with k neutralizations
+        dp = [[-math.inf] * 3 for _ in range(n)]
+        
+        # Base case for the starting cell
+        if coins[0][0] >= 0:
+            dp[0][0] = coins[0][0]
+        else:
+            dp[0][0] = coins[0][0]
+            dp[0][1] = 0
+            
+        for i in range(m):
+            next_dp = [[-math.inf] * 3 for _ in range(n)]
+            for j in range(n):
+                if i == 0 and j == 0:
+                    # Inherit base case if we're at the start
+                    next_dp[0][0] = dp[0][0]
+                    next_dp[0][1] = dp[0][1]
+                    next_dp[0][2] = dp[0][2]
+                    continue
+                
+                for k in range(3):
+                    # 1. Option: Do not use a neutralization on the current cell
+                    best_prev = -math.inf
+                    if i > 0:
+                        best_prev = max(best_prev, dp[j][k])
+                    if j > 0:
+                        best_prev = max(best_prev, next_dp[j-1][k])
+                        
+                    if best_prev != -math.inf:
+                        next_dp[j][k] = max(next_dp[j][k], best_prev + coins[i][j])
+                        
+                    # 2. Option: Use a neutralization on the current cell (if possible and needed)
+                    if k > 0 and coins[i][j] < 0:
+                        best_prev_k1 = -math.inf
+                        if i > 0:
+                            best_prev_k1 = max(best_prev_k1, dp[j][k-1])
+                        if j > 0:
+                            best_prev_k1 = max(best_prev_k1, next_dp[j-1][k-1])
+                            
+                        if best_prev_k1 != -math.inf:
+                            next_dp[j][k] = max(next_dp[j][k], best_prev_k1)
+                            
+            dp = next_dp
+            
+        return int(max(dp[n-1]))"
+3688,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.396372,212.76141612500214,212.76141612500214,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3688__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def maxSubarraySum(self, nums: List[int]) -> int:
+        n = len(nums)
+        
+        # 1. Compute original max subarray sum
+        original_max = -10**15
+        current_max = -10**15
+        for num in nums:
+            current_max = num if current_max + num < num else current_max + num
+            original_max = current_max if current_max > original_max else original_max
+            
+        # If max subarray is non-positive, removals can't help us
+        if original_max <= 0:
+            return original_max
+            
+        # 2. Setup prefix array and Sparse Tables for O(1) Range Queries
+        P = [0] * (n + 1)
+        for i in range(n):
+            P[i+1] = P[i] + nums[i]
+            
+        LOG = (n + 1).bit_length()
+        st_min = [[0] * LOG for _ in range(n + 1)]
+        st_max = [[0] * LOG for _ in range(n + 1)]
+        
+        for i in range(n + 1):
+            st_min[i][0] = P[i]
+            st_max[i][0] = P[i]
+            
+        for j in range(1, LOG):
+            step = 1 << (j - 1)
+            bound = n + 1 - (1 << j) + 1
+            for i in range(bound):
+                a = st_min[i][j-1]
+                b = st_min[i + step][j-1]
+                st_min[i][j] = a if a < b else b
+                
+                c = st_max[i][j-1]
+                d = st_max[i + step][j-1]
+                st_max[i][j] = c if c > d else d
+                
+        def get_seg_props(L, R):
+            """"""Returns sum, max_pref, max_suff for segment nums[L...R] in O(1)""""""
+            if L > R:
+                return 0, 0, 0
+                
+            s = P[R+1] - P[L]
+            
+            length = R - L + 2
+            j = length.bit_length() - 1
+            idx2 = R - (1 << j) + 2
+            
+            a = st_max[L][j]
+            b = st_max[idx2][j]
+            mx = a if a > b else b
+            mx_p = mx - P[L]
+            
+            c = st_min[L][j]
+            d = st_min[idx2][j]
+            mn = c if c < d else d
+            mx_s = P[R+1] - mn
+            
+            return s, mx_p, mx_s
+
+        # 3. Cache occurrences of negative elements
+        neg_indices = {}
+        for i, num in enumerate(nums):
+            if num < 0:
+                if num not in neg_indices:
+                    neg_indices[num] = []
+                neg_indices[num].append(i)
+                
+        ans = original_max
+        
+        # 4. Process compressed Kadane's for each distinct candidate removal natively
+        for x, indices in neg_indices.items():
+            k = len(indices)
+            
+            # Initial setup of Kadane suffix mapping representing our starting segment (s_1)
+            L = 0
+            R = indices[0] - 1
+            _, _, dp = get_seg_props(L, R)
+            
+            # Chain dynamic states dynamically
+            for j in range(k):
+                nxt_prev_idx = indices[j]
+                nxt_curr_idx = indices[j+1] if j + 1 < k else n
+                    
+                L_next = nxt_prev_idx + 1
+                R_next = nxt_curr_idx - 1
+                
+                s_sum, s_pref, s_suff = get_seg_props(L_next, R_next)
+                
+                # Maximally link ending sum with the next segment's best prefix layout
+                candidate = dp + s_pref
+                if candidate > ans:
+                    ans = candidate
+                    
+                # Evaluate transition into max suffix logic block mimicking Kadane mapping internally 
+                val = dp + s_sum
+                dp = s_suff if s_suff > val else val
+                
+        return ans"
+3714,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.11239,48.55908570899919,48.55908570899919,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3714__B3_gemini_solo.json,"class Solution:
+    def minMaxSums(self, nums: List[int], k: int) -> int:
+        MOD = 10**9 + 7
+        n = len(nums)
+        
+        # Sorting the array helps us easily identify the maximum and minimum elements
+        # for any chosen subsequence, as order does not matter for subsets.
+        nums.sort()
+        
+        # Precompute factorials and their modular inverses for O(1) combination calculations
+        fact = [1] * (n + 1)
+        for i in range(1, n + 1):
+            fact[i] = (fact[i-1] * i) % MOD
+            
+        inv = [1] * (n + 1)
+        inv[n] = pow(fact[n], MOD - 2, MOD)
+        for i in range(n - 1, -1, -1):
+            inv[i] = (inv[i+1] * (i + 1)) % MOD
+            
+        def nCr(n_val, r_val):
+            if r_val < 0 or r_val > n_val:
+                return 0
+            return fact[n_val] * inv[r_val] % MOD * inv[n_val - r_val] % MOD
+            
+        # S[m] represents the sum of combinations C(m, 0) + C(m, 1) + ... + C(m, k-1)
+        # Using the identity: sum_{i=0}^{k-1} C(m, i) = 2 * sum_{i=0}^{k-1} C(m-1, i) - C(m-1, k-1)
+        S = [0] * n
+        if n > 0:
+            S[0] = 1
+        for m in range(1, n):
+            S[m] = (2 * S[m-1] - nCr(m - 1, k - 1)) % MOD
+            
+        ans = 0
+        # Iterate over each element and calculate its contribution as a max and min
+        for i in range(n):
+            # As max, it is the largest in subsequences chosen from the 'i' elements before it.
+            # As min, it is the smallest in subsequences chosen from the 'n - 1 - i' elements after it.
+            term = (S[i] + S[n - 1 - i]) % MOD
+            ans = (ans + nums[i] * term) % MOD
+            
+        return ans"
+3715,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.202144,89.67666420800015,89.67666420800015,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3715__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def maximumCoins(self, coins: List[List[int]], k: int) -> int:
+        # Sort the intervals based on the starting positions
+        coins.sort(key=lambda x: x[0])
+        n = len(coins)
+        ans = 0
+        
+        # Case 1: The optimal window of length k starts exactly at the beginning of some interval `coins[i][0]`
+        current_coins = 0
+        j = 0
+        for i in range(n):
+            target = coins[i][0] + k - 1
+            
+            # Expand the window to include all intervals that are completely covered
+            while j < n and coins[j][1] <= target:
+                current_coins += (coins[j][1] - coins[j][0] + 1) * coins[j][2]
+                j += 1
+            
+            # Calculate any partial overlap with the `j`-th interval
+            partial = 0
+            if j < n and coins[j][0] <= target:
+                partial = (target - coins[j][0] + 1) * coins[j][2]
+            
+            ans = max(ans, current_coins + partial)
+            
+            # Prepare `current_coins` for the next iteration by removing the `i`-th interval
+            # Only remove it if it was actually fully added to `current_coins`
+            if j > i:
+                current_coins -= (coins[i][1] - coins[i][0] + 1) * coins[i][2]
+            else:
+                j = i + 1
+                
+        # Case 2: The optimal window of length k ends exactly at the end of some interval `coins[i][1]`
+        current_coins = 0
+        j = 0
+        for i in range(n):
+            target = coins[i][1] - k + 1
+            # Tentatively add the entire `i`-th interval to `current_coins`
+            current_coins += (coins[i][1] - coins[i][0] + 1) * coins[i][2]
+            
+            # Shrink the window from the left to remove intervals that start before `target`
+            while j <= i and coins[j][0] < target:
+                current_coins -= (coins[j][1] - coins[j][0] + 1) * coins[j][2]
+                j += 1
+            
+            # Calculate any partial overlap with the `(j-1)`-th interval
+            partial = 0
+            if j > 0 and coins[j-1][1] >= target:
+                partial = (coins[j-1][1] - target + 1) * coins[j-1][2]
+            
+            ans = max(ans, current_coins + partial)
+            
+        return ans"
+3716,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.305416,166.4629517079993,166.4629517079993,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3716__B3_gemini_solo.json,"class Solution:
+    def longestSubsequence(self, nums: List[int]) -> int:
+        # dp[x][d] stores max length of subsequence ending with value x and last absolute diff exactly d
+        dp = [[1] * 300 for _ in range(301)]
+        
+        # max_dp[x][d] stores max length of subsequence ending with value x and last absolute diff >= d
+        max_dp = [[1] * 300 for _ in range(301)]
+        
+        seen = []
+        seen_set = set()
+        
+        for x in nums:
+            temp_dp = dp[x]
+            
+            for y in seen:
+                d = abs(x - y)
+                val = max_dp[y][d] + 1
+                if val > temp_dp[d]:
+                    temp_dp[d] = val
+                    
+            # Update max_dp[x] using suffix maximums for O(1) lookups bounded closely
+            mx = 1
+            max_dp_x = max_dp[x]
+            for d in range(299, -1, -1):
+                if temp_dp[d] > mx:
+                    mx = temp_dp[d]
+                max_dp_x[d] = mx
+                
+            if x not in seen_set:
+                seen_set.add(x)
+                seen.append(x)
+                
+        # The answer will be the longest sequence across all explored values.
+        # Checking d=0 spans constraints representing the max diffs safely >= 0.
+        ans = 1
+        for v in seen:
+            if max_dp[v][0] > ans:
+                ans = max_dp[v][0]
+                
+        return ans"
+3717,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.345902,181.52488212500248,181.52488212500248,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3717__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def minOperations(self, nums: List[int], x: int, k: int) -> int:
+        N = len(nums)
+        # Coordinate compression to map values to Fenwick Tree indices (1-indexed)
+        unique_nums = sorted(list(set(nums)))
+        M = len(unique_nums)
+        val_to_idx = {val: i + 1 for i, val in enumerate(unique_nums)}
+        
+        # Fenwick Trees for counts and sums
+        bit_cnt = [0] * (M + 1)
+        bit_sum = [0] * (M + 1)
+        
+        # Calculate maximum power of 2 for bit lifting
+        max_pow = 0
+        while (1 << max_pow) <= M:
+            max_pow += 1
+        if max_pow == 0:
+            max_pow = 1
+            
+        # Initialize sliding window with the first x-1 elements
+        for i in range(x - 1):
+            val = nums[i]
+            idx = val_to_idx[val]
+            while idx <= M:
+                bit_cnt[idx] += 1
+                bit_sum[idx] += val
+                idx += idx & (-idx)
+                
+        C = [0] * (N - x + 1)
+        k1 = x // 2
+        k2 = (x + 1) // 2
+        
+        total_sum = sum(nums[:x-1])
+        
+        # Slide the window of size x over the array
+        for i in range(N - x + 1):
+            # Add the newest element to complete the window of size x
+            val = nums[i + x - 1]
+            idx = val_to_idx[val]
+            while idx <= M:
+                bit_cnt[idx] += 1
+                bit_sum[idx] += val
+                idx += idx & (-idx)
+            total_sum += val
+            
+            # Find the sum of the smallest k1 elements using bit lifting
+            curr_idx = 0
+            cnt = 0
+            s = 0
+            for p in range(max_pow - 1, -1, -1):
+                next_idx = curr_idx + (1 << p)
+                if next_idx <= M and cnt + bit_cnt[next_idx] <= k1:
+                    curr_idx = next_idx
+                    cnt += bit_cnt[curr_idx]
+                    s += bit_sum[curr_idx]
+            if cnt < k1:
+                s += (k1 - cnt) * unique_nums[curr_idx]
+            sum1 = s
+            
+            # Find the sum of the smallest k2 elements using bit lifting
+            curr_idx = 0
+            cnt = 0
+            s = 0
+            for p in range(max_pow - 1, -1, -1):
+                next_idx = curr_idx + (1 << p)
+                if next_idx <= M and cnt + bit_cnt[next_idx] <= k2:
+                    curr_idx = next_idx
+                    cnt += bit_cnt[curr_idx]
+                    s += bit_sum[curr_idx]
+            if cnt < k2:
+                s += (k2 - cnt) * unique_nums[curr_idx]
+            sum2 = s
+            
+            # The min operations to make a subarray equal is equivalent to the difference
+            # between the sum of its largest (x//2) elements and its smallest (x//2) elements.
+            C[i] = total_sum - sum1 - sum2
+            
+            # Remove the oldest element to prepare for the next iteration
+            old_val = nums[i]
+            idx = val_to_idx[old_val]
+            while idx <= M:
+                bit_cnt[idx] -= 1
+                bit_sum[idx] -= old_val
+                idx += idx & (-idx)
+            total_sum -= old_val
+            
+        # DP to find the minimum cost for k disjoint subarrays
+        # dp[i] represents the min cost using suffix starting at index i
+        dp = [0] * (N + 2)
+        
+        for j in range(1, k + 1):
+            new_dp = [float('inf')] * (N + 2)
+            # We can start the j-th interval up to index N - j * x
+            for i in range(N - j * x, -1, -1):
+                val = C[i] + dp[i + x]
+                if new_dp[i + 1] < val:
+                    new_dp[i] = new_dp[i + 1]
+                else:
+                    new_dp[i] = val
+            dp = new_dp
+            
+        return int(dp[0])"
+3720,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.106494,57.58888466699864,57.58888466699864,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3720__B3_gemini_solo.json,"import heapq
+from typing import List
+
+class Solution:
+    def minMaxWeight(self, n: int, edges: List[List[int]], threshold: int) -> int:
+        # We need to find the minimum possible maximum edge weight such that all nodes can reach node 0.
+        # The threshold condition (<= threshold outgoing edges) is a distractor because as long as 
+        # threshold >= 1 (which is guaranteed by constraints), any valid connectivity to node 0 
+        # can be pruned to a directed tree (arborescence) rooted at 0. In such a tree, every node 
+        # has exactly 1 outgoing edge (except node 0 which has 0), safely satisfying the threshold.
+        
+        # We model this as finding the minimax path from all nodes to node 0.
+        # This is equivalent to finding the minimax path from node 0 to all other nodes in the reversed graph.
+        
+        adj = [[] for _ in range(n)]
+        for u, v, w in edges:
+            # Build the reversed graph
+            adj[v].append((u, w))
+            
+        dist = [float('inf')] * n
+        dist[0] = 0
+        pq = [(0, 0)]  # (current_max_weight_on_path, current_node)
+        
+        # Dijkstra's algorithm modified for Bottleneck Path
+        while pq:
+            d, u = heapq.heappop(pq)
+            
+            if d > dist[u]:
+                continue
+                
+            for v, w in adj[u]:
+                new_d = max(d, w)
+                if new_d < dist[v]:
+                    dist[v] = new_d
+                    heapq.heappush(pq, (new_d, v))
+                    
+        ans = max(dist)
+        return ans if ans != float('inf') else -1"
+3721,B3_gemini_solo,livecodebench,True,gemini-3.1-pro-preview,,high,,0.109108,55.509439917001146,55.509439917001146,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3721__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def countMentions(self, numberOfUsers: int, events: List[List[str]]) -> List[int]:
+        # Sort events primarily by timestamp.
+        # If timestamps are the same, process OFFLINE (0) before MESSAGE (1).
+        # This accurately models the requirement that status changes occur before messages.
+        events.sort(key=lambda x: (int(x[1]), 0 if x[0] == ""OFFLINE"" else 1))
+        
+        mentions = [0] * numberOfUsers
+        # return_online_time tracks when a user will be back online. 
+        # Initialized to 0, since initial timestamps are >= 1, all users start online.
+        return_online_time = [0] * numberOfUsers
+        
+        for event in events:
+            if event[0] == ""OFFLINE"":
+                user = int(event[2])
+                # The user will come back online exactly 60 time units after going offline
+                return_online_time[user] = int(event[1]) + 60
+            else:  # ""MESSAGE""
+                t = int(event[1])
+                tokens = event[2].split()
+                for token in tokens:
+                    if token == ""ALL"":
+                        for i in range(numberOfUsers):
+                            mentions[i] += 1
+                    elif token == ""HERE"":
+                        for i in range(numberOfUsers):
+                            # A user is online if they either haven't gone offline or their offline period has ended
+                            if return_online_time[i] <= t:
+                                mentions[i] += 1
+                    else:
+                        # Extract user id from string formatted as ""id<number>""
+                        user_id = int(token[2:])
+                        mentions[user_id] += 1
+                        
+        return mentions"
+3722,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.187926,98.74631762500212,98.74631762500212,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3722__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def maxSum(self, nums: List[int], k: int, m: int) -> int:
+        n = len(nums)
+        # S will store the prefix sums of nums to quickly compute subarray sums
+        S = [0] * (n + 1)
+        s_val = 0
+        for i in range(n):
+            s_val += nums[i]
+            S[i+1] = s_val
+            
+        # dp[i] represents the maximum sum of j non-overlapping subarrays using a prefix of nums up to index i.
+        # Initialize for j = 0 (0 subarrays have a max sum of 0)
+        dp = [0] * (n + 1)
+        INF = 10**15  # Using a sufficiently large integer to represent infinity
+        
+        for j in range(1, k + 1):
+            new_dp = [-INF] * (n + 1)
+            max_val = -INF
+            
+            # The earliest an array of j subarrays, each of length at least m, can end is j * m
+            start = j * m
+            
+            for i in range(start, n + 1):
+                # We can either extend the previous subarray or start a new subarray for the j-th position.
+                # To maximize the sum, we maintain a running maximum (max_val) of `dp[x] - S[x]` 
+                # where x is a valid starting index for the j-th subarray (x <= i - m).
+                val = dp[i-m] - S[i-m]
+                if val > max_val:
+                    max_val = val
+                
+                # The maximum sum if the j-th subarray ends exactly at index i
+                curr = S[i] + max_val
+                
+                # We also have the option to end the j-th subarray BEFORE index i (taking the max from new_dp[i-1])
+                if i > start:
+                    prev = new_dp[i-1]
+                    if prev > curr:
+                        curr = prev
+                        
+                new_dp[i] = curr
+                
+            dp = new_dp
+            
+        return dp[n]"
+3737,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.137896,67.32415941599902,67.32415941599902,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3737__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def minCost(self, n: int, cost: List[List[int]]) -> int:
+        # dp array stores the minimum cost for the valid color combinations of the 
+        # current pair of equidistant houses (i and n - 1 - i).
+        # The 6 valid combinations (since colors must be different for equidistant houses) are:
+        # Index 0: Color 0 and Color 1
+        # Index 1: Color 0 and Color 2
+        # Index 2: Color 1 and Color 0
+        # Index 3: Color 1 and Color 2
+        # Index 4: Color 2 and Color 0
+        # Index 5: Color 2 and Color 1
+        
+        dp = [
+            cost[0][0] + cost[n - 1][1],
+            cost[0][0] + cost[n - 1][2],
+            cost[0][1] + cost[n - 1][0],
+            cost[0][1] + cost[n - 1][2],
+            cost[0][2] + cost[n - 1][0],
+            cost[0][2] + cost[n - 1][1],
+        ]
+        
+        for i in range(1, n // 2):
+            cost_i = cost[i]
+            cost_n_i = cost[n - 1 - i]
+            
+            # Transition to the next pair of houses.
+            # We must ensure that the adjacent houses do not share the same color.
+            # E.g., for Index 0 (Color 0 and Color 1), the previous houses' colors
+            # could not have been Color 0 on the left, nor Color 1 on the right.
+            dp = [
+                cost_i[0] + cost_n_i[1] + min(dp[2], dp[3], dp[4]),
+                cost_i[0] + cost_n_i[2] + min(dp[2], dp[4], dp[5]),
+                cost_i[1] + cost_n_i[0] + min(dp[0], dp[1], dp[5]),
+                cost_i[1] + cost_n_i[2] + min(dp[0], dp[4], dp[5]),
+                cost_i[2] + cost_n_i[0] + min(dp[0], dp[1], dp[3]),
+                cost_i[2] + cost_n_i[1] + min(dp[1], dp[2], dp[3]),
+            ]
+            
+        return min(dp)"
+3754,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.177202,90.74289262499951,90.74289262499951,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3754__B3_gemini_solo.json,"class Solution:
+    def maxDistance(self, s: str, k: int) -> int:
+        ans = 0
+        cnt_N = cnt_S = cnt_E = cnt_W = 0
+        
+        for i, ch in enumerate(s, 1):
+            if ch == 'N':
+                cnt_N += 1
+            elif ch == 'S':
+                cnt_S += 1
+            elif ch == 'E':
+                cnt_E += 1
+            else:
+                cnt_W += 1
+            
+            # Penalties for the 4 expressions: (X+Y), -(X+Y), (X-Y), -(X-Y)
+            val1 = cnt_S + cnt_W
+            val2 = cnt_N + cnt_E
+            val3 = cnt_N + cnt_W
+            val4 = cnt_S + cnt_E
+            
+            # Find the combination with the least amount of penalty moves
+            min_neg = val1
+            if val2 < min_neg: min_neg = val2
+            if val3 < min_neg: min_neg = val3
+            if val4 < min_neg: min_neg = val4
+            
+            # Start with the theoretical maximum distance bounded by the number of steps
+            cur_dist = i
+            
+            # If the minimum penalty moves exceed our allowance k, we deduct the difference
+            if min_neg > k:
+                cur_dist -= 2 * (min_neg - k)
+                
+            if cur_dist > ans:
+                ans = cur_dist
+                
+        return ans"
+3759,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.0813,37.246163959000114,37.246163959000114,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3759__B3_gemini_solo.json,"from typing import List
+import heapq
+
+class Solution:
+    def findMaxSum(self, nums1: List[int], nums2: List[int], k: int) -> List[int]:
+        n = len(nums1)
+        # Create an array of original indices to keep track of elements after sorting
+        indices = list(range(n))
+        # Sort indices based on the values in nums1 in ascending order
+        indices.sort(key=lambda x: nums1[x])
+        
+        ans = [0] * n
+        heap = []
+        current_sum = 0
+        
+        i = 0
+        while i < n:
+            j = i
+            # Find all elements with the same nums1 value.
+            # They should all share the same current_sum, which only includes values from strictly smaller nums1.
+            while j < n and nums1[indices[j]] == nums1[indices[i]]:
+                ans[indices[j]] = current_sum
+                j += 1
+                
+            # After updating the answer for all elements in the current group,
+            # push their corresponding nums2 values into the min-heap.
+            for idx in range(i, j):
+                val = nums2[indices[idx]]
+                heapq.heappush(heap, val)
+                current_sum += val
+                
+                # If the heap exceeds size k, remove the smallest element to maintain the top k largest values
+                if len(heap) > k:
+                    current_sum -= heapq.heappop(heap)
+                    
+            i = j
+            
+        return ans"
+3760,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.104436,53.52134225000191,53.52134225000191,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3760__B3_gemini_solo.json,"class Solution:
+    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:
+        if not groups:
+            return []
+            
+        max_group = max(groups)
+        
+        # best_assigned[x] will store the smallest index j such that elements[j] divides x
+        best_assigned = [-1] * (max_group + 1)
+        
+        for j, E in enumerate(elements):
+            # If the element is larger than the maximum group size, it cannot divide any group size
+            if E > max_group:
+                continue
+                
+            # If best_assigned[E] is already set, it means either E or a divisor of E 
+            # appeared at an earlier index. In either case, that earlier element will 
+            # also divide any multiple of E and will win the tie-breaker for smallest index.
+            # Thus, we can safely skip processing E.
+            if best_assigned[E] != -1:
+                continue
+            
+            # Mark all multiples of E with the current index j, if not already marked
+            for k in range(E, max_group + 1, E):
+                if best_assigned[k] == -1:
+                    best_assigned[k] = j
+                    
+        return [best_assigned[g] for g in groups]"
+3762,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.425712,213.68750804199954,213.68750804199954,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3762__B3_gemini_solo.json,"class Solution:
+    def maxScore(self, points: list[int], m: int) -> int:
+        n = len(points)
+        # If we have fewer moves than nodes, we cannot even visit all nodes once.
+        # Consequently, at least one node will remain at 0 points.
+        if m < n:
+            return 0
+            
+        # Allocate suffix DP arrays reused for every binary search check
+        suff0 = [0] * n
+        suff1 = [0] * n
+        
+        def check(X: int) -> bool:
+            # Compute requirements and suffix DP from right to left
+            req_n1 = (X + points[n-1] - 1) // points[n-1]
+            a_n1 = req_n1 - 1
+            if a_n1 < 0: 
+                a_n1 = 0
+            
+            suff0[n-1] = 0
+            suff1[n-1] = a_n1
+            
+            for i in range(n - 2, -1, -1):
+                req = (X + points[i] - 1) // points[i]
+                b = req - 2
+                if b < 0: 
+                    b = 0
+                
+                s0 = suff0[i+1]
+                s1 = suff1[i+1]
+                suff0[i] = s0 if s0 > s1 else s1
+                suff1[i] = s0 + b
+                
+            p0 = 0
+            p1 = 0
+            
+            # Check edge case for End point F = 0
+            s_0 = suff0[0]
+            s_1 = suff1[0]
+            max_is = s_0 if s_0 > s_1 else s_1
+            if 2 * n - 1 + 2 * max_is <= m:
+                return True
+                
+            # Linearly pass from left to right simulating endpoint F in [1...n-1]
+            for F in range(1, n):
+                i = F - 1
+                req = (X + points[i] - 1) // points[i]
+                a = req - 1
+                if a < 0: 
+                    a = 0
+                
+                new_p0 = p0 if p0 > p1 else p1
+                new_p1 = p0 + a
+                p0 = new_p0
+                p1 = new_p1
+                
+                s_0 = suff0[F]
+                s_1 = suff1[F]
+                s_max = s_0 if s_0 > s_1 else s_1
+                
+                c1 = p0 + s_max
+                c2 = p1 + s_0
+                max_is = c1 if c1 > c2 else c2
+                
+                if 2 * n - F - 1 + 2 * max_is <= m:
+                    return True
+                    
+            return False
+
+        # Binary search for the maximum possible minimum score
+        low = 1
+        high = max(points) * (m + 1)
+        ans = 0
+        
+        while low <= high:
+            mid = (low + high) // 2
+            if check(mid):
+                ans = mid
+                low = mid + 1  # Greedily search higher
+            else:
+                high = mid - 1
+                
+        return ans"
+3763,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.129844,69.08665358300277,69.08665358300277,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3763__B3_gemini_solo.json,"from typing import List
+from collections import defaultdict
+
+class Solution:
+    def separateSquares(self, squares: List[List[int]]) -> float:
+        # We can solve this with a sweep-line algorithm over the y-coordinates.
+        # Since x-coordinates do not matter for a horizontal line division, we only care about y and side length l.
+        y_diffs = defaultdict(int)
+        total_area = 0
+        
+        # Calculate total area and record the rate of change of the area at each y boundary
+        for _, y, l in squares:
+            total_area += l * l
+            y_diffs[y] += l
+            y_diffs[y + l] -= l
+            
+        # To avoid floating point precision issues until the final calculation,
+        # we multiply our area thresholds by 2 (hence working with _x2 variables).
+        # We are looking for the y where current_area == total_area / 2, 
+        # which translates to 2 * current_area == total_area.
+        target_x2 = total_area
+        current_area_x2 = 0
+        current_sum_L = 0
+        
+        sorted_ys = sorted(y_diffs.keys())
+        prev_y = sorted_ys[0]
+        
+        for y in sorted_ys:
+            dy = y - prev_y
+            
+            # If we've advanced in the y direction, we process the area increment
+            if dy > 0:
+                area_increase_x2 = 2 * dy * current_sum_L
+                
+                # Check if the target is reached within the current interval [prev_y, y]
+                if current_area_x2 + area_increase_x2 >= target_x2:
+                    # Linearly interpolate to find the exact y-coordinate
+                    return prev_y + (target_x2 - current_area_x2) / (2.0 * current_sum_L)
+                
+                current_area_x2 += area_increase_x2
+                
+            # Update the current rate of change for the area (sum of lengths of intersecting squares)
+            current_sum_L += y_diffs[y]
+            prev_y = y
+            
+        return 0.0"
+3764,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.060998,31.10718320900196,31.10718320900196,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3764__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:
+        candidates = []
+        for row, limit in zip(grid, limits):
+            if limit > 0:
+                # Get the largest 'limit' elements from the current row
+                candidates.extend(sorted(row, reverse=True)[:limit])
+        
+        # Sort all the eligible candidates in descending order
+        candidates.sort(reverse=True)
+        
+        # The answer is the sum of the top 'k' candidates
+        return sum(candidates[:k])"
+3771,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.16979,86.66243137499987,86.66243137499987,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3771__B3_gemini_solo.json,"class Solution:
+    def maxSubstringLength(self, s: str, k: int) -> bool:
+        if k == 0:
+            return True
+            
+        first = {}
+        last = {}
+        for i, char in enumerate(s):
+            if char not in first:
+                first[char] = i
+            last[char] = i
+            
+        intervals = []
+        n = len(s)
+        
+        # Find the minimal valid special substring starting at each character's first occurrence
+        for char in first:
+            L = first[char]
+            R = last[char]
+            valid = True
+            i = L
+            while i <= R:
+                c = s[i]
+                # If a character inside the current window has its first occurrence before L, 
+                # then a valid substring cannot start at L.
+                if first[c] < L:
+                    valid = False
+                    break
+                # Expand the right boundary to encompass the last occurrence of the current character
+                if last[c] > R:
+                    R = last[c]
+                i += 1
+                
+            if valid:
+                # The valid substring cannot be the entire string itself
+                if L == 0 and R == n - 1:
+                    continue
+                intervals.append((L, R))
+                
+        # Greedily find the maximum number of disjoint valid substrings
+        # By sorting intervals based on their end position
+        intervals.sort(key=lambda x: x[1])
+        
+        count = 0
+        end = -1
+        for L, R in intervals:
+            if L > end:
+                count += 1
+                end = R
+                
+        return count >= k"
+3779,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.079822,38.89998162499978,38.89998162499978,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3779__B3_gemini_solo.json,"class Solution:
+    def maxWeight(self, pizzas: list[int]) -> int:
+        # Sort pizzas in descending order
+        pizzas.sort(reverse=True)
+        
+        n = len(pizzas)
+        days = n // 4
+        
+        # Calculate the number of odd and even days
+        odd_days = (days + 1) // 2
+        even_days = days // 2
+        
+        total_weight = 0
+        
+        # For odd days, we greedily pick the absolutely largest available pizzas.
+        # They will be paired with 3 very small pizzas, so we always gain their full weight.
+        for i in range(odd_days):
+            total_weight += pizzas[i]
+            
+        # For even days, we need the second largest pizza among the 4 chosen.
+        # So we pair the largest remaining pizza with the second largest remaining pizza,
+        # effectively ""wasting"" the largest one to gain the second largest.
+        # Therefore, we skip one pizza and take the next.
+        for j in range(even_days):
+            total_weight += pizzas[odd_days + 1 + 2 * j]
+            
+        return total_weight"
+3783,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.133828,59.34557220900024,59.34557220900024,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3783__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def permute(self, n: int, k: int) -> List[int]:
+        # Precompute factorials for quick lookup
+        fact = [1] * (n + 1)
+        for i in range(1, n + 1):
+            fact[i] = fact[i - 1] * i
+            
+        # Determine the total number of valid alternating permutations
+        if n % 2 == 1:
+            total_ways = fact[(n + 1) // 2] * fact[n // 2]
+        else:
+            total_ways = 2 * fact[n // 2] * fact[n // 2]
+            
+        # If k is larger than the total possible valid permutations, return empty list
+        if k > total_ways:
+            return []
+            
+        available = list(range(1, n + 1))
+        ans = []
+        
+        rem_odds = (n + 1) // 2
+        rem_evens = n // 2
+        
+        # Build the permutation position by position
+        for i in range(n):
+            for x in available:
+                # Check if the chosen number 'x' satisfies the parity constraints
+                if i == 0:
+                    if n % 2 == 1 and x % 2 == 0:
+                        continue  # If n is odd, the sequence must strictly start with an odd number
+                else:
+                    if x % 2 == ans[-1] % 2:
+                        continue  # Parity must alternate with the previous element
+                        
+                # Calculate the number of ways to complete the permutation if 'x' is placed here
+                if x % 2 == 1:
+                    ways = fact[rem_odds - 1] * fact[rem_evens]
+                else:
+                    ways = fact[rem_odds] * fact[rem_evens - 1]
+                    
+                # If k falls within the 'ways', 'x' is our choice for the current position
+                if k <= ways:
+                    ans.append(x)
+                    available.remove(x)
+                    if x % 2 == 1:
+                        rem_odds -= 1
+                    else:
+                        rem_evens -= 1
+                    break
+                else:
+                    # Otherwise, skip these 'ways' permutations and check the next valid number
+                    k -= ways
+                    
+        return ans"
+3784,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.246502,119.72409400000106,119.72409400000106,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3784__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def longestCommonPrefix(self, words: List[str], k: int) -> List[int]:
+        n = len(words)
+        # If removing one element leaves less than k elements, answer is 0.
+        if n <= k:
+            return [0] * n
+        
+        # Array-based Trie initialization for fast lookups
+        trie_children = [[0] * 26]
+        trie_count = [0]
+        trie_depth = [0]
+        
+        # Build the Trie
+        for word in words:
+            curr = 0
+            trie_count[0] += 1
+            for char in word:
+                idx = ord(char) - 97
+                if not trie_children[curr][idx]:
+                    trie_children[curr][idx] = len(trie_children)
+                    trie_children.append([0] * 26)
+                    trie_count.append(0)
+                    trie_depth.append(trie_depth[curr] + 1)
+                curr = trie_children[curr][idx]
+                trie_count[curr] += 1
+                
+        best_all = 0
+        freq = [0] * 10005  # Size safely covers max length constraint 10^4
+        global_max_d = 0
+        
+        # Aggregate viable prefixes insights
+        for i in range(1, len(trie_count)):
+            c = trie_count[i]
+            d = trie_depth[i]
+            if c >= k + 1:
+                if d > best_all:
+                    best_all = d
+            elif c == k:
+                freq[d] += 1
+                if d > global_max_d:
+                    global_max_d = d
+                    
+        ans = []
+        # Calculate the consequence of leaving out each word out
+        for word in words:
+            curr = 0
+            path_k_nodes = []
+            
+            # Trace the unique prefixes that solely hinge on `words[i]`
+            for char in word:
+                idx = ord(char) - 97
+                curr = trie_children[curr][idx]
+                if trie_count[curr] == k:
+                    path_k_nodes.append(trie_depth[curr])
+            
+            # Temporarily invalidate these prefixes
+            for d in path_k_nodes:
+                freq[d] -= 1
+                
+            cur_max = global_max_d
+            # Seek the next robust maximal depth unharmed
+            while cur_max > 0 and freq[cur_max] == 0:
+                cur_max -= 1
+                
+            ans.append(max(best_all, cur_max))
+            
+            # Revert frequencies for evaluation of the next word
+            for d in path_k_nodes:
+                freq[d] += 1
+                
+        return ans"
+3786,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.198022,89.66249566699844,89.66249566699844,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3786__B3_gemini_solo.json,"class Solution:
+    def longestPalindromicSubsequence(self, s: str, k: int) -> int:
+        n = len(s)
+        if n == 0:
+            return 0
+            
+        # dp array will store the states for the (l + 1)-th starting index
+        dp = [[0] * (k + 1) for _ in range(n)]
+        
+        # Traverse the string from end to start to satisfy dependencies
+        for l in range(n - 1, -1, -1):
+            new_dp = [[0] * (k + 1) for _ in range(n)]
+            
+            # Base case: A single character is a palindrome of length 1
+            for rem in range(k + 1):
+                new_dp[l][rem] = 1
+                
+            for r in range(l + 1, n):
+                d = abs(ord(s[l]) - ord(s[r]))
+                cost = d if d < 26 - d else 26 - d
+                
+                # Aliases for fast array accesses
+                dp_l1_r = dp[r]
+                dp_l_r1 = new_dp[r-1]
+                dp_l1_r1 = dp[r-1]
+                ndp_r = new_dp[r]
+                
+                # If we don't have enough ops to match s[l] & s[r], just pass max of excluding one
+                limit = cost if cost <= k else k + 1
+                for rem in range(limit):
+                    a = dp_l1_r[rem]
+                    b = dp_l_r1[rem]
+                    ndp_r[rem] = a if a > b else b
+                    
+                # If we have >= cost ops, we can optionally match s[l] & s[r]
+                for rem in range(cost, k + 1):
+                    a = dp_l1_r[rem]
+                    b = dp_l_r1[rem]
+                    res = a if a > b else b
+                    
+                    c = dp_l1_r1[rem - cost] + 2
+                    ndp_r[rem] = c if c > res else res
+                    
+            dp = new_dp
+            
+        # After evaluating from l=0 to n-1, return the max len taking <= k operations
+        return dp[n - 1][k]"
+3789,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.252272,114.44610041600026,114.44610041600026,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3789__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:
+        m = len(conflictingPairs)
+        
+        # Group pairs by their maximum element (the right endpoint v)
+        pairs_at = [[] for _ in range(n + 1)]
+        for i in range(m):
+            a, b = conflictingPairs[i]
+            # Normalize pair so u is the smaller, v is the larger
+            u = a if a < b else b
+            v = a if a > b else b
+            pairs_at[v].append((u, i))
+            
+        # (value of u, pair_id)
+        best = (0, -1)
+        second_best = (0, -1)
+        
+        base_subarrays = 0
+        # Array to store the extra subarrays we get if we remove pair `i`
+        benefit = [0] * m
+        
+        for R in range(1, n + 1):
+            # Integrate new pairs whose right endpoint is exactly R
+            for u, i in pairs_at[R]:
+                if u > best[0]:
+                    second_best = best
+                    best = (u, i)
+                elif u >= second_best[0]:
+                    second_best = (u, i)
+                    
+            M1 = best[0]
+            id1 = best[1]
+            M2 = second_best[0]
+            
+            # Base valid subarrays ending at R with no pairs removed
+            base_subarrays += R - M1
+            
+            # If there's a valid restricting pair, calculate the localized benefit of removing it
+            if id1 != -1:
+                benefit[id1] += M1 - M2
+                
+        # The best outcome is the base validity combined with the peak benefit of eliminating one pair
+        return base_subarrays + max(benefit)"
+3794,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.224318,95.09740874999989,95.09740874999989,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3794__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def minTime(self, skill: List[int], mana: List[int]) -> int:
+        n = len(skill)
+        m = len(mana)
+        
+        # P will store the prefix sums of the skill array.
+        # P[i] = sum(skill[0...i-1])
+        P = [0] * (n + 1)
+        for i in range(n):
+            P[i+1] = P[i] + skill[i]
+            
+        # We want to maintain the upper envelope of lines to efficiently find the maximum of:
+        # V_i = (-P[i]) * mana[j] + P[i+1] * mana[j-1]
+        # Lines are defined as y = m_i * x + c_i where m_i = -P[i] and c_i = P[i+1].
+        stack = []
+        for i in range(n):
+            mi = -P[i]
+            ci = P[i+1]
+            
+            # Convex Hull Trick: maintain the upper envelope for lines with strictly decreasing slopes.
+            while len(stack) >= 2:
+                m_top, c_top = stack[-1]
+                m_prev, c_prev = stack[-2]
+                
+                # We check if the new line covers the intersection of the top and prev lines.
+                # Cross-multiplication is used to completely avoid floating-point inaccuracies.
+                # Intersection x of line A and line B is (c_B - c_A) / (m_A - m_B).
+                left_side = (ci - c_top) * (m_prev - m_top)
+                right_side = (c_top - c_prev) * (m_top - mi)
+                
+                if left_side >= right_side:
+                    stack.pop()
+                else:
+                    break
+            stack.append((mi, ci))
+            
+        S = 0
+        # For each potion from 1 to m-1, we find the maximum shift required to prevent overlap.
+        for j in range(1, m):
+            left = 0
+            right = len(stack) - 1
+            
+            # Ternary-search-like binary search on the upper envelope (the sequence of evaluations is bitonic)
+            while left < right:
+                mid = (left + right) // 2
+                m_mid, c_mid = stack[mid]
+                m_next, c_next = stack[mid+1]
+                
+                v_mid = m_mid * mana[j] + c_mid * mana[j-1]
+                v_next = m_next * mana[j] + c_next * mana[j-1]
+                
+                if v_mid <= v_next:
+                    left = mid + 1
+                else:
+                    right = mid
+                    
+            max_val = stack[left][0] * mana[j] + stack[left][1] * mana[j-1]
+            S += max_val
+            
+        # The total time is the start time of the last potion for the first wizard,
+        # plus the time taken by all wizards to brew the last potion.
+        return S + P[n] * mana[-1]"
+3795,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.315828,158.29284566600109,158.29284566600109,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3795__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:
+        # If the array is already a Zero Array, 0 queries are required
+        if all(x == 0 for x in nums):
+            return 0
+            
+        N = len(nums)
+        # Identify bounds to correctly size our arrays and state tuples
+        max_v = max([10] + [q[2] for q in queries])
+        max_target = max(nums)
+        # Mask to clip our bitset shifting, strictly limiting integer sizes for performance
+        MASK = (1 << (max_target + 1)) - 1
+        
+        def check(k: int) -> bool:
+            # Prepare sweeping events for exactly k queries
+            events = [None] * (N + 1)
+            for i in range(k):
+                l, r, v = queries[i]
+                if events[l] is None: events[l] = []
+                events[l].append((v, 1))
+                
+                if events[r + 1] is None: events[r + 1] = []
+                events[r + 1].append((v, -1))
+            
+            memo = {}
+            counts = [0] * (max_v + 1)
+            total_sum = 0
+            current_state = tuple(counts[1:])
+            
+            for j in range(N):
+                # Apply sweeping line events for the current index
+                if events[j] is not None:
+                    for v, delta in events[j]:
+                        counts[v] += delta
+                        total_sum += delta * v
+                    current_state = tuple(counts[1:])
+                
+                target = nums[j]
+                
+                # Fast rejection: Maximum achievable sum is less than the required target
+                if total_sum < target:
+                    return False
+                    
+                # Exact 0 sum is effortlessly reachable by choosing empty subset
+                if target == 0:
+                    continue
+                    
+                # Re-use known states to bypass heavy lifting computation 
+                if current_state not in memo:
+                    dp = 1
+                    for v in range(1, max_v + 1):
+                        c = counts[v]
+                        if c == 0: 
+                            continue
+                        
+                        # Apply bounded knapsack via binary lifting steps
+                        step = 1
+                        rem = c
+                        while rem >= step:
+                            dp = (dp | (dp << (step * v))) & MASK
+                            rem -= step
+                            step *= 2
+                        if rem > 0:
+                            dp = (dp | (dp << (rem * v))) & MASK
+                    
+                    memo[current_state] = dp
+                    
+                # Check if the needed target bit is toggled in achievable sums
+                if not (memo[current_state] & (1 << target)):
+                    return False
+                    
+            return True
+            
+        # Binary search for the minimum k
+        low = 1
+        high = len(queries)
+        ans = -1
+        
+        while low <= high:
+            mid = (low + high) // 2
+            if check(mid):
+                ans = mid
+                high = mid - 1
+            else:
+                low = mid + 1
+                
+        return ans"
+3801,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.289152,152.57471129199985,152.57471129199985,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3801__B3_gemini_solo.json,"from itertools import combinations_with_replacement
+
+class Solution:
+    def beautifulNumbers(self, l: int, r: int) -> int:
+        l_str = str(l - 1)
+        r_str = str(r)
+        
+        # Helper function to count numbers <= limit_str that contain at least one '0'
+        def count_has_zero_le(limit_str):
+            if limit_str == ""0"":
+                return 0
+            limit_val = int(limit_str)
+            limit_len = len(limit_str)
+            no_zero = 0
+            # Add up all numbers with fewer digits than limit that have no '0'
+            for L in range(1, limit_len):
+                no_zero += 9 ** L
+            
+            # Add up all numbers with the same length as limit that have no '0' and are <= limit
+            for i in range(limit_len):
+                limit_digit = int(limit_str[i])
+                if limit_digit == 0:
+                    break
+                no_zero += (limit_digit - 1) * (9 ** (limit_len - 1 - i))
+            else:
+                no_zero += 1 # exact match if it has no zeros
+                
+            return limit_val - no_zero
+
+        # Since any number containing '0' has a digit product of 0, 
+        # and 0 is divisible by any sum (sum is > 0 for positive numbers),
+        # all numbers containing at least one '0' are beautiful numbers.
+        has_zero_r = count_has_zero_le(r_str)
+        has_zero_l = count_has_zero_le(l_str)
+        ans = has_zero_r - has_zero_l
+        
+        no_zero_r = 0
+        no_zero_l = 0
+        
+        r_len = len(r_str)
+        l_len = len(l_str) if l_str != ""0"" else 0
+        max_len = r_len
+        
+        # Precompute factorials for fast permutation math
+        fact = [1] * 10
+        for i in range(1, 10):
+            fact[i] = fact[i-1] * i
+            
+        # Helper to count how many permutations of `counts` are lexicographically <= limit_str
+        def count_le(counts, L, limit_str, total_perms):
+            ways_le = 0
+            curr_counts = list(counts)
+            rem_len = L
+            
+            for i in range(L):
+                limit_digit = int(limit_str[i])
+                if limit_digit == 0:
+                    break
+                    
+                for d in range(1, limit_digit):
+                    if curr_counts[d] > 0:
+                        ways_le += total_perms * curr_counts[d] // rem_len
+                        
+                if curr_counts[limit_digit] > 0:
+                    total_perms = total_perms * curr_counts[limit_digit] // rem_len
+                    curr_counts[limit_digit] -= 1
+                    rem_len -= 1
+                else:
+                    break
+            else:
+                ways_le += 1
+            return ways_le
+
+        # Generate all multisets (combinations) of digits 1-9
+        for L in range(1, max_len + 1):
+            for combo in combinations_with_replacement(range(1, 10), L):
+                S = sum(combo)
+                P = 1
+                for x in combo:
+                    P *= x
+                
+                # If product is divisible by sum, count permutations of this multiset
+                if P % S == 0:
+                    counts = [0] * 10
+                    for d in combo:
+                        counts[d] += 1
+                    
+                    ways = fact[L]
+                    for c in counts:
+                        if c > 1:
+                            ways //= fact[c]
+                    
+                    if L < r_len:
+                        no_zero_r += ways
+                    elif L == r_len:
+                        no_zero_r += count_le(counts, L, r_str, ways)
+                        
+                    if l_str != ""0"":
+                        if L < l_len:
+                            no_zero_l += ways
+                        elif L == l_len:
+                            no_zero_l += count_le(counts, L, l_str, ways)
+                            
+        ans += (no_zero_r - no_zero_l)
+        return ans"
+3805,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.268456,143.1753561250007,143.1753561250007,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3805__B3_gemini_solo.json,"class Solution:
+    def maxActiveSectionsAfterTrade(self, s: str) -> int:
+        ones_count = 0
+        prev_zero_len = 0
+        curr_zero_len = 0
+        max_gain = 0
+        
+        # Traverse the binary string to find '1's count and evaluate '0' blocks
+        for char in s:
+            if char == '1':
+                ones_count += 1
+                if curr_zero_len > 0:
+                    # If we already have a previous '0' block, we calculate the gain
+                    # from merging the prev_zero_len and curr_zero_len.
+                    if prev_zero_len > 0:
+                        max_gain = max(max_gain, prev_zero_len + curr_zero_len)
+                    
+                    # The current '0' block becomes the previous '0' block for the next potential gap
+                    prev_zero_len = curr_zero_len
+                    curr_zero_len = 0
+            else:
+                curr_zero_len += 1
+                
+        # After the loop completes, check if the string ended on a '0' block
+        # that could be paired with the last registered 'prev_zero_len'.
+        if curr_zero_len > 0:
+            if prev_zero_len > 0:
+                max_gain = max(max_gain, prev_zero_len + curr_zero_len)
+                
+        return ones_count + max_gain"
+3809,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.040508,15.583761999998387,15.583761999998387,0.0,False,False,False,False,writer,tag,B3_gemini_solo/3809__B3_gemini_solo.json,"from typing import List
+
+class Solution:
+    def numberOfComponents(self, properties: List[List[int]], k: int) -> int:
+        n = len(properties)
+        parent = list(range(n))
+        
+        def find(i):
+            if parent[i] == i:
+                return i
+            parent[i] = find(parent[i])
+            return parent[i]
+            
+        def union(i, j):
+            root_i = find(i)
+            root_j = find(j)
+            if root_i != root_j:
+                parent[root_i] = root_j
+                return True
+            return False
+            
+        sets = [set(p) for p in properties]
+        components = n
+        
+        for i in range(n):
+            for j in range(i + 1, n):
+                if len(sets[i] & sets[j]) >= k:
+                    if union(i, j):
+                        components -= 1
+                        
+        return components"
+abc387_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.08829,41.67534295800215,41.67534295800215,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc387_c__B3_gemini_solo.json,"import sys
+
+def count_snake(x):
+    if x < 10:
+        return 0
+    S = str(x)
+    D = len(S)
+    ans = 0
+    
+    # Lengths strictly less than D
+    for d in range(2, D):
+        for k in range(1, 10):
+            ans += k**(d - 1)
+            
+    # Length exactly D, top digit strictly less than S[0]
+    s0 = int(S[0])
+    for k in range(1, s0):
+        ans += k**(D - 1)
+        
+    # Length exactly D, top digit equal to S[0]
+    for i in range(1, D):
+        si = int(S[i])
+        limit = min(si, s0)
+        ans += limit * (s0**(D - 1 - i))
+        if si >= s0:
+            break
+    else:
+        # If we never broke, it means all digits after the first are strictly less than s0
+        # This means the number x itself is a Snake number.
+        ans += 1
+        
+    return ans
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    L = int(input_data[0])
+    R = int(input_data[1])
+    
+    print(count_snake(R) - count_snake(L - 1))
+
+if __name__ == '__main__':
+    solve()"
+abc388_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.060212,28.166608875002566,28.166608875002566,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc388_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    a = [int(x) for x in input_data[1:]]
+    
+    ans = 0
+    j = 0
+    
+    # Use two pointers to find the number of valid pairs (i, j)
+    # Since the array 'a' is sorted, for each 'i', 'j' only needs to move forward.
+    for i in range(n):
+        # Advance j until a[j] >= 2 * a[i]
+        while j < n and a[j] < 2 * a[i]:
+            j += 1
+        # All elements from j to n-1 are valid bases for mochi i
+        ans += n - j
+        
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc388_f,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.340034,202.0516921669987,202.0516921669987,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc388_f__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    N = int(input_data[0])
+    M = int(input_data[1])
+    A = int(input_data[2])
+    B = int(input_data[3])
+    
+    intervals = []
+    idx = 4
+    for _ in range(M):
+        L = int(input_data[idx])
+        R = int(input_data[idx+1])
+        intervals.append((L, R))
+        idx += 2
+        
+    # Special exact-step case when A == B
+    # We can only step by exactly A, so we only visit squares 1 + k * A.
+    if A == B:
+        if (N % A) != (1 % A):
+            print(""No"")
+            return
+        for L, R in intervals:
+            # We want to know if there is any blocked square x in [L, R] such that x == 1 mod A
+            # This is equivalent to checking if there is a multiple of A in [L-1, R-1]
+            if (R - 1) // A - (L - 2) // A > 0:
+                print(""No"")
+                return
+        print(""Yes"")
+        return
+
+    # For A < B, we simulate the reachability state bit by bit.
+    # The state S represents the reachability of the last B squares.
+    # bit 0 is the current square, bit 1 is curr-1, ..., bit B-1 is curr-B+1.
+    full_mask = (1 << B) - 1
+    step_mask = full_mask ^ ((1 << (A - 1)) - 1)
+    
+    curr = 1
+    S = 1
+    
+    for L, R in intervals:
+        target = L - 1
+        # Advance through the gap of valid squares
+        while curr < target:
+            # If all last B squares are reachable, they will stay reachable in valid gaps
+            # So we can instantly fast-forward to the target.
+            if S == full_mask:
+                curr = target
+                break
+            
+            if S & step_mask:
+                S = ((S << 1) & full_mask) | 1
+            else:
+                S = (S << 1) & full_mask
+            
+            curr += 1
+            
+            if not S:
+                print(""No"")
+                return
+                
+        length = R - L + 1
+        # Any consecutive block of B or more bad squares acts as an impassable wall
+        if length >= B:
+            print(""No"")
+            return
+            
+        # Fast-forward over the entire bad interval at once (can_reach is strictly 0 here)
+        S = (S << length) & full_mask
+        curr = R
+        if not S:
+            print(""No"")
+            return
+            
+    # Finally, simulate towards N
+    target = N
+    while curr < target:
+        if S == full_mask:
+            curr = target
+            break
+            
+        if S & step_mask:
+            S = ((S << 1) & full_mask) | 1
+        else:
+            S = (S << 1) & full_mask
+            
+        curr += 1
+        
+        if not S:
+            print(""No"")
+            return
+            
+    # At the end, check if the exact square N is reachable (bit 0 of S)
+    if S & 1:
+        print(""Yes"")
+    else:
+        print(""No"")
+
+if __name__ == '__main__':
+    solve()"
+abc389_e,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.242204,124.9505356669979,124.9505356669979,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc389_e__B3_gemini_solo.json,"import sys
+from collections import Counter
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+        
+    N = int(input_data[0])
+    M = int(input_data[1])
+    
+    # Count frequencies of each product's base price to optimize iteration
+    P_counts = Counter(int(x) for x in input_data[2:2+N])
+    unique_P = sorted([(p, count) for p, count in P_counts.items()])
+    
+    # Binary search for the maximum marginal cost X that we can fully afford
+    low = 0
+    high = 2_000_000_000_000_000_000  # 2 * 10^18, generously safely upper bounds maximum possible marginal cost
+    ans_X = 0
+    
+    while low <= high:
+        mid = (low + high) // 2
+        total_cost = 0
+        possible = True
+        
+        for p, count in unique_P:
+            if p > mid:
+                break
+            k = (mid // p + 1) // 2
+            total_cost += k * k * p * count
+            
+            if total_cost > M:
+                possible = False
+                break
+                
+        if possible:
+            ans_X = mid
+            low = mid + 1
+        else:
+            high = mid - 1
+            
+    # Recalculate exactly how much it costs to buy all units strictly within the threshold ans_X
+    total_cost = 0
+    total_items = 0
+    for p, count in unique_P:
+        if p > ans_X:
+            break
+        k = (ans_X // p + 1) // 2
+        total_items += k * count
+        total_cost += k * k * p * count
+        
+    # Using the remaining budget, buy as many units as possible at the marginal cost of exactly (ans_X + 1)
+    remaining_budget = M - total_cost
+    extra = remaining_budget // (ans_X + 1)
+    
+    print(total_items + extra)
+
+if __name__ == '__main__':
+    solve()"
+abc389_f,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.417242,217.6631531669991,217.6631531669991,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc389_f__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Fast I/O
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    idx = 1
+    
+    L = [0] * N
+    R = [0] * N
+    for i in range(N):
+        L[i] = int(input_data[idx])
+        R[i] = int(input_data[idx+1])
+        idx += 2
+        
+    Q = int(input_data[idx])
+    idx += 1
+    
+    queries = [0] * Q
+    for i in range(Q):
+        queries[i] = int(input_data[idx])
+        idx += 1
+
+    # BIT (Fenwick Tree) array of size 524289 (1-indexed, max valid index 524288)
+    # We choose 2^19 = 524288 as it comfortably covers the max queries rating limit 500,000.
+    bit = [0] * 524289
+
+    # Initialize BIT with difference array D[i] = 1, ensuring initial array A[i] = i
+    for i in range(1, 524289):
+        bit[i] += 1
+        nxt = i + (i & (-i))
+        if nxt <= 524288:
+            bit[nxt] += bit[i]
+
+    # Process all N contests
+    for i in range(N):
+        l_val = L[i]
+        r_val = R[i] + 1
+        
+        # Binary lifting to find the first index where A[index] >= l_val
+        # Fully unrolled for maximum performance without bounds-checking overhead
+        val = l_val
+        pos = 0
+        if bit[pos + 262144] < val: pos += 262144; val -= bit[pos]
+        if bit[pos + 131072] < val: pos += 131072; val -= bit[pos]
+        if bit[pos + 65536] < val: pos += 65536; val -= bit[pos]
+        if bit[pos + 32768] < val: pos += 32768; val -= bit[pos]
+        if bit[pos + 16384] < val: pos += 16384; val -= bit[pos]
+        if bit[pos + 8192] < val: pos += 8192; val -= bit[pos]
+        if bit[pos + 4096] < val: pos += 4096; val -= bit[pos]
+        if bit[pos + 2048] < val: pos += 2048; val -= bit[pos]
+        if bit[pos + 1024] < val: pos += 1024; val -= bit[pos]
+        if bit[pos + 512] < val: pos += 512; val -= bit[pos]
+        if bit[pos + 256] < val: pos += 256; val -= bit[pos]
+        if bit[pos + 128] < val: pos += 128; val -= bit[pos]
+        if bit[pos + 64] < val: pos += 64; val -= bit[pos]
+        if bit[pos + 32] < val: pos += 32; val -= bit[pos]
+        if bit[pos + 16] < val: pos += 16; val -= bit[pos]
+        if bit[pos + 8] < val: pos += 8; val -= bit[pos]
+        if bit[pos + 4] < val: pos += 4; val -= bit[pos]
+        if bit[pos + 2] < val: pos += 2; val -= bit[pos]
+        if bit[pos + 1] < val: pos += 1; val -= bit[pos]
+        left_idx = pos + 1
+
+        # Binary lifting to find the last index where A[index] <= R[i]
+        # This is exactly equivalent to find_first(r_val) - 1, which reduces cleanly to 'pos'
+        val = r_val
+        pos = 0
+        if bit[pos + 262144] < val: pos += 262144; val -= bit[pos]
+        if bit[pos + 131072] < val: pos += 131072; val -= bit[pos]
+        if bit[pos + 65536] < val: pos += 65536; val -= bit[pos]
+        if bit[pos + 32768] < val: pos += 32768; val -= bit[pos]
+        if bit[pos + 16384] < val: pos += 16384; val -= bit[pos]
+        if bit[pos + 8192] < val: pos += 8192; val -= bit[pos]
+        if bit[pos + 4096] < val: pos += 4096; val -= bit[pos]
+        if bit[pos + 2048] < val: pos += 2048; val -= bit[pos]
+        if bit[pos + 1024] < val: pos += 1024; val -= bit[pos]
+        if bit[pos + 512] < val: pos += 512; val -= bit[pos]
+        if bit[pos + 256] < val: pos += 256; val -= bit[pos]
+        if bit[pos + 128] < val: pos += 128; val -= bit[pos]
+        if bit[pos + 64] < val: pos += 64; val -= bit[pos]
+        if bit[pos + 32] < val: pos += 32; val -= bit[pos]
+        if bit[pos + 16] < val: pos += 16; val -= bit[pos]
+        if bit[pos + 8] < val: pos += 8; val -= bit[pos]
+        if bit[pos + 4] < val: pos += 4; val -= bit[pos]
+        if bit[pos + 2] < val: pos += 2; val -= bit[pos]
+        if bit[pos + 1] < val: pos += 1; val -= bit[pos]
+        right_idx = pos
+        
+        # If valid range found, add +1 to the continuous range [left_idx, right_idx] via difference array
+        if left_idx <= right_idx:
+            # Inline Add logic for efficiency
+            pos_add = left_idx
+            while pos_add <= 524288:
+                bit[pos_add] += 1
+                pos_add += pos_add & (-pos_add)
+                
+            pos_sub = right_idx + 1
+            while pos_sub <= 524288:
+                bit[pos_sub] -= 1
+                pos_sub += pos_sub & (-pos_sub)
+
+    # Process queries and output results efficiently
+    out = []
+    for q in queries:
+        s = 0
+        pos_q = q
+        while pos_q > 0:
+            s += bit[pos_q]
+            pos_q -= pos_q & (-pos_q)
+        out.append(str(s))
+        
+    sys.stdout.write('\n'.join(out) + '\n')
+
+if __name__ == '__main__':
+    solve()"
+abc390_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.073106,35.58263595799872,35.58263595799872,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc390_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    H = int(input_data[0])
+    W = int(input_data[1])
+    grid = input_data[2:]
+    
+    r_min, r_max = H, -1
+    c_min, c_max = W, -1
+    
+    # Find the bounding box of all '#' cells
+    for i, row in enumerate(grid):
+        first = row.find('#')
+        if first != -1:
+            if i < r_min: r_min = i
+            if i > r_max: r_max = i
+            if first < c_min: c_min = first
+            last = row.rfind('#')
+            if last > c_max: c_max = last
+            
+    # Check if there are any '.' cells inside this minimal bounding box
+    for i in range(r_min, r_max + 1):
+        if '.' in grid[i][c_min:c_max + 1]:
+            print(""No"")
+            return
+            
+    print(""Yes"")
+
+if __name__ == '__main__':
+    solve()"
+abc390_g,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.28045,136.34922158300105,136.34922158300105,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc390_g__B3_gemini_solo.json,"import sys
+
+def solve():
+    input = sys.stdin.read
+    data = input().split()
+    if not data:
+        return
+    n = int(data[0])
+    
+    MOD = 998244353
+    
+    # Calculate counts and sums for elements of each possible decimal length
+    c_count = {}
+    S_sum = {}
+    for L in range(1, 7):
+        start = 10**(L-1)
+        end = min(n, 10**L - 1)
+        if start <= end:
+            c_count[L] = (end - start + 1)
+            S_sum[L] = (start + end) * c_count[L] // 2 % MOD
+
+    L_list = list(c_count.keys())
+    
+    def poly_mul(poly1, poly2):
+        res = [0] * (len(poly1) + len(poly2) - 1)
+        for i, c1 in enumerate(poly1):
+            for j, c2 in enumerate(poly2):
+                res[i+j] = (res[i+j] + c1 * c2) % MOD
+        return res
+
+    def poly_add(poly1, poly2):
+        res = [0] * max(len(poly1), len(poly2))
+        for i in range(len(poly1)):
+            res[i] = (res[i] + poly1[i]) % MOD
+        for i in range(len(poly2)):
+            res[i] = (res[i] + poly2[i]) % MOD
+        return res
+
+    v = {L: (10**L - 1) % MOD for L in L_list}
+
+    # Construct the small degree polynomials A(t), B(t), C(t)
+    A = [1]
+    for L in L_list:
+        A = poly_mul(A, [1, v[L]])
+
+    B = [0]
+    for L in L_list:
+        temp = [c_count[L] * v[L] % MOD]
+        for M in L_list:
+            if M != L:
+                temp = poly_mul(temp, [1, v[M]])
+        B = poly_add(B, temp)
+
+    C = [0]
+    for L in L_list:
+        temp = [S_sum[L]]
+        for M in L_list:
+            if M != L:
+                temp = poly_mul(temp, [1, v[M]])
+        C = poly_add(C, temp)
+
+    # Precompute modular inverses up to n
+    inv = [0] * (n + 1)
+    if n >= 1:
+        inv[1] = 1
+    for i in range(2, n + 1):
+        inv[i] = MOD - (MOD // i) * inv[MOD % i] % MOD
+
+    # Iteratively compute coefficients of P(t)
+    p = [0] * (n + 1)
+    p[0] = 1
+
+    len_B = len(B)
+    len_A = len(A)
+    len_C = len(C)
+
+    for k in range(1, n + 1):
+        sum_b = 0
+        limit_B = min(k, len_B)
+        for i in range(limit_B):
+            sum_b += p[k - 1 - i] * B[i]
+            
+        sum_a = 0
+        limit_A = min(k + 1, len_A)
+        for i in range(1, limit_A):
+            sum_a += (k - i) * p[k - i] * A[i]
+            
+        p[k] = (sum_b - sum_a) % MOD * inv[k] % MOD
+
+    # Iteratively compute coefficients of Q(t)
+    q = [0] * n
+    for k in range(n):
+        sum_c = 0
+        limit_C = min(k + 1, len_C)
+        for i in range(limit_C):
+            sum_c += p[k - i] * C[i]
+            
+        sum_qa = 0
+        limit_A = min(k + 1, len_A)
+        for i in range(1, limit_A):
+            sum_qa += q[k - i] * A[i]
+            
+        q[k] = (sum_c - sum_qa) % MOD
+
+    # Compute final integral outcome sum
+    ans = 0
+    for k in range(n):
+        ans = (ans + q[k] * inv[k + 1]) % MOD
+
+    # Factor in N! permutations multiplier factor
+    fact = 1
+    for i in range(1, n + 1):
+        fact = (fact * i) % MOD
+
+    ans = (ans * fact) % MOD
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc391_e,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.125836,62.99729741700139,62.99729741700139,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc391_e__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    A = input_data[1]
+    
+    # Initialize the base level (leaves of the tree)
+    vals = [int(x) for x in A]
+    costs = [1] * (3**N)
+    
+    length = 3**N
+    
+    # Process level by level bottom-up
+    for _ in range(N):
+        new_length = length // 3
+        
+        for i in range(new_length):
+            idx = i * 3
+            v1, v2, v3 = vals[idx], vals[idx+1], vals[idx+2]
+            c1, c2, c3 = costs[idx], costs[idx+1], costs[idx+2]
+            
+            s = v1 + v2 + v3
+            
+            if s == 3 or s == 0:
+                # All 3 children are the same. We need to flip the 2 cheapest children.
+                vals[i] = 1 if s == 3 else 0
+                if c1 > c2:
+                    costs[i] = c2 + c3 if c1 > c3 else c1 + c2
+                else:
+                    costs[i] = c1 + c3 if c2 > c3 else c1 + c2
+            else:
+                if s == 2:
+                    # Two 1s and one 0. We need to flip one of the 1s (the cheapest one).
+                    vals[i] = 1
+                    if v1 == 0:
+                        costs[i] = c2 if c2 < c3 else c3
+                    elif v2 == 0:
+                        costs[i] = c1 if c1 < c3 else c3
+                    else:
+                        costs[i] = c1 if c1 < c2 else c2
+                else:
+                    # Two 0s and one 1. We need to flip one of the 0s (the cheapest one).
+                    vals[i] = 0
+                    if v1 == 1:
+                        costs[i] = c2 if c2 < c3 else c3
+                    elif v2 == 1:
+                        costs[i] = c1 if c1 < c3 else c3
+                    else:
+                        costs[i] = c1 if c1 < c2 else c2
+                        
+        length = new_length
+
+    # The root node's cost yields the absolute minimum bits required to flip the string outcome
+    print(costs[0])
+
+if __name__ == '__main__':
+    solve()"
+abc391_f,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.15206,75.80345170799774,75.80345170799774,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc391_f__B3_gemini_solo.json,"import sys
+import heapq
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+        
+    N = int(input_data[0])
+    K = int(input_data[1])
+    
+    # Parse arrays A, B, and C
+    A = [int(x) for x in input_data[2:N+2]]
+    B = [int(x) for x in input_data[N+2:2*N+2]]
+    C = [int(x) for x in input_data[2*N+2:3*N+2]]
+    
+    # Sort arrays in descending order to make the function values monotonically decreasing
+    A.sort(reverse=True)
+    B.sort(reverse=True)
+    C.sort(reverse=True)
+    
+    pq = []
+    # Calculate the initial value for indices (0, 0, 0)
+    v0 = A[0] * (B[0] + C[0]) + B[0] * C[0]
+    # We use a max-heap, so we push the negative of the value
+    pq.append((-v0, 0, 0, 0))
+    
+    # Using an integer bitmask for visited states to save memory and hashing time
+    # i, j, k <= 200000, which fits in 18 bits (max 2^18 - 1 = 262143)
+    visited = {0} 
+    
+    # Cache methods for slightly faster execution
+    heappop = heapq.heappop
+    heappush = heapq.heappush
+    v_add = visited.add
+    
+    ans = v0
+    for _ in range(K):
+        val, i, j, k = heappop(pq)
+        ans = -val
+        
+        # Consider extending the state by increasing index i
+        i_next = i + 1
+        if i_next < N:
+            state = (i_next << 36) | (j << 18) | k
+            if state not in visited:
+                v_add(state)
+                # Optimized arithmetic: A_i*B_j + B_j*C_k + C_k*A_i = A_i*(B_j + C_k) + B_j*C_k
+                v = A[i_next] * (B[j] + C[k]) + B[j] * C[k]
+                heappush(pq, (-v, i_next, j, k))
+                
+        # Consider extending the state by increasing index j
+        j_next = j + 1
+        if j_next < N:
+            state = (i << 36) | (j_next << 18) | k
+            if state not in visited:
+                v_add(state)
+                v = B[j_next] * (A[i] + C[k]) + A[i] * C[k]
+                heappush(pq, (-v, i, j_next, k))
+                
+        # Consider extending the state by increasing index k
+        k_next = k + 1
+        if k_next < N:
+            state = (i << 36) | (j << 18) | k_next
+            if state not in visited:
+                v_add(state)
+                v = C[k_next] * (A[i] + B[j]) + A[i] * B[j]
+                heappush(pq, (-v, i, j, k_next))
+                
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc392_d,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.071874,33.47111141699861,33.47111141699861,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc392_d__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    idx = 1
+    
+    dice = []
+    K_list = []
+    
+    # Parse the dice configurations
+    for _ in range(N):
+        K = int(input_data[idx])
+        K_list.append(K)
+        idx += 1
+        
+        freq = {}
+        for _ in range(K):
+            val = int(input_data[idx])
+            freq[val] = freq.get(val, 0) + 1
+            idx += 1
+        dice.append(freq)
+        
+    max_prob = 0.0
+    
+    # Compare every pair of dice to find the maximum probability
+    for i in range(N):
+        dict1 = dice[i]
+        k1 = K_list[i]
+        for j in range(i + 1, N):
+            dict2 = dice[j]
+            k2 = K_list[j]
+            
+            # To optimize the intersection, iterate over the smaller dictionary
+            if len(dict1) > len(dict2):
+                d1, d2 = dict2, dict1
+            else:
+                d1, d2 = dict1, dict2
+                
+            match_sum = 0
+            for val, count in d1.items():
+                if val in d2:
+                    match_sum += count * d2[val]
+                    
+            # The probability of rolling the same number is the sum of (count1 * count2) / (K1 * K2)
+            prob = match_sum / (k1 * k2)
+            if prob > max_prob:
+                max_prob = prob
+                
+    print(max_prob)
+
+if __name__ == '__main__':
+    solve()"
+abc392_g,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.194164,108.9978025829987,108.9978025829987,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc392_g__B3_gemini_solo.json,"import sys
+
+def solve():
+    input = sys.stdin.read
+    data = input().split()
+    if not data:
+        return
+    N = int(data[0])
+    if N < 3:
+        print(0)
+        return
+        
+    S = [int(x) for x in data[1:N+1]]
+    max_val = max(S)
+    
+    try:
+        # NumPy's FFT is implemented in C and incredibly fast, solving the polynomial 
+        # convolution in O(M log M) time. Used commonly on platforms like AtCoder.
+        import numpy as np
+        
+        # We need a power of 2 size that's strictly larger than the max index 
+        # we can possibly get, which is 2 * max_val.
+        size = 1
+        while size <= 2 * max_val:
+            size *= 2
+            
+        poly = np.zeros(size, dtype=np.float64)
+        for x in S:
+            poly[x] = 1.0
+            
+        poly_f = np.fft.rfft(poly)
+        poly_sq = poly_f * poly_f
+        poly_res = np.fft.irfft(poly_sq)
+        
+        ans = 0
+        for b in S:
+            # Number of pairs A, C such that A + C = 2B
+            # This correctly computes the exact convolution coefficient.
+            # We subtract 1 to remove the A=B=C case, and divide by 2 to enforce A < C.
+            val = int(np.round(poly_res[2 * b]))
+            ans += (val - 1) // 2
+            
+        print(ans)
+        
+    except ImportError:
+        # Fast bitwise fallback for environments without NumPy (O(M^2 / 30) operations in Python).
+        # Shift amounts correspond to iterating across the common difference, d.
+        S_bits = 0
+        for x in S:
+            S_bits |= (1 << x)
+            
+        max_d = max_val // 2
+        ans = 0
+        for d in range(1, max_d + 1):
+            ans += (S_bits & (S_bits >> d) & (S_bits >> (2 * d))).bit_count()
+            
+        print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc393_d,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.048192,20.039924083997903,20.039924083997903,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc393_d__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all input from Standard Input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    S = input_data[1]
+    
+    # Find all indices of '1's in the string
+    ones = [i for i, char in enumerate(S) if char == '1']
+    
+    # If there are no 1s (though problem guarantees at least one) or only one 1, 
+    # no swaps are needed.
+    if not ones:
+        print(0)
+        return
+        
+    # We want to minimize the sum of distances from each '1' to a contiguous block.
+    # Moving the i-th '1' to position (start + i) requires |pos[i] - (start + i)| swaps.
+    # Let p[i] = pos[i] - i. We want to find a 'start' that minimizes sum(|p[i] - start|).
+    # This is a classic median problem: the optimal 'start' is the median of the array p.
+    p = [pos - i for i, pos in enumerate(ones)]
+    
+    # p is naturally sorted because pos[i+1] > pos[i] implies pos[i+1] - (i+1) >= pos[i] - i
+    median = p[len(p) // 2]
+    
+    # Calculate the minimum number of swaps
+    ans = sum(abs(x - median) for x in p)
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc393_f,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.066856,31.4107398749984,31.4107398749984,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc393_f__B3_gemini_solo.json,"import sys
+from bisect import bisect_left, bisect_right
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    Q = int(input_data[1])
+    
+    # Extract the sequence A
+    A = [int(x) for x in input_data[2:N+2]]
+    
+    # Store queries grouped by R_i
+    queries = [[] for _ in range(N + 1)]
+    idx = N + 2
+    for i in range(Q):
+        R = int(input_data[idx])
+        X = int(input_data[idx+1])
+        queries[R].append((X, i))
+        idx += 2
+        
+    ans = [0] * Q
+    
+    # dp[l] will store the minimum ending element of an increasing subsequence of length l + 1
+    dp = []
+    
+    # Process elements of A one by one
+    for i in range(N):
+        val = A[i]
+        
+        # Find the position to replace or append in the DP array
+        pos = bisect_left(dp, val)
+        if pos == len(dp):
+            dp.append(val)
+        else:
+            dp[pos] = val
+        
+        # Answer all queries that end exactly at the current prefix R = i + 1
+        for X, q_idx in queries[i + 1]:
+            # The maximum length of an increasing subsequence with all elements <= X
+            # is the number of elements in the dp array that are <= X.
+            ans[q_idx] = bisect_right(dp, X)
+            
+    # Print the answers in the original order of queries
+    print('\n'.join(map(str, ans)))
+
+if __name__ == '__main__':
+    solve()"
+abc394_d,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.04697,19.0993192499991,19.0993192499991,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc394_d__B3_gemini_solo.json,"import sys
+
+def main():
+    # Read all standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    s = input_data[0]
+    st = []
+    
+    # Process each character using a stack
+    for c in s:
+        if c == '(': 
+            st.append(c)
+        elif c == '[': 
+            st.append(c)
+        elif c == '<': 
+            st.append(c)
+        elif c == ')':
+            if not st or st[-1] != '(':
+                print(""No"")
+                return
+            st.pop()
+        elif c == ']':
+            if not st or st[-1] != '[':
+                print(""No"")
+                return
+            st.pop()
+        elif c == '>':
+            if not st or st[-1] != '<':
+                print(""No"")
+                return
+            st.pop()
+            
+    # If the stack is empty at the end, all brackets were matched properly
+    if not st:
+        print(""Yes"")
+    else:
+        print(""No"")
+
+if __name__ == '__main__':
+    main()"
+abc394_e,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.284668,159.96264937500018,159.96264937500018,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc394_e__B3_gemini_solo.json,"import sys
+from collections import deque
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    grid = input_data[1:]
+    
+    # D[u][v] stores the shortest palindrome path length from u to v.
+    D = [[-1] * n for _ in range(n)]
+    
+    # D_prime[x][v][c] stores the shortest path from x to v such that 
+    # skipping the first edge (which has label c), the remaining path is a palindrome to v.
+    D_prime = [[[-1] * 26 for _ in range(n)] for _ in range(n)]
+    
+    q = deque()
+    
+    # out_edges[u][c] stores a list of destinations v from u with edge label c
+    out_edges = [[[] for _ in range(26)] for _ in range(n)]
+    # in_edges[v] stores a list of (u, c) where u is origin and c is edge label
+    in_edges = [[] for _ in range(n)]
+    
+    for i in range(n):
+        for j in range(n):
+            if grid[i][j] != '-':
+                c = ord(grid[i][j]) - ord('a')
+                out_edges[i][c].append(j)
+                in_edges[j].append((i, c))
+                
+    # Base cases: distance 0 (single vertex)
+    for i in range(n):
+        D[i][i] = 0
+        q.append((0, i, i, -1))
+        
+    # Base cases: distance 1 (single edge)
+    for i in range(n):
+        for j in range(n):
+            if grid[i][j] != '-':
+                # Only set to 1 if it's not already 0 (which handles i != j correctly)
+                if D[i][j] == -1:
+                    D[i][j] = 1
+                    q.append((0, i, j, -1))
+                    
+    # BFS to find shortest palindrome paths
+    while q:
+        state = q.popleft()
+        type_ = state[0]
+        
+        if type_ == 0:
+            # Normal state: we have a palindrome path from u to v
+            u = state[1]
+            v = state[2]
+            d = D[u][v]
+            
+            # Try to extend by prepending an edge x -> u
+            for x, c in in_edges[u]:
+                if D_prime[x][v][c] == -1:
+                    D_prime[x][v][c] = d + 1
+                    q.append((1, x, v, c))
+        else:
+            # Intermediate state: path from x to v where first edge has label c
+            x = state[1]
+            v = state[2]
+            c = state[3]
+            d = D_prime[x][v][c]
+            
+            # Complete the palindrome by appending an edge v -> y with the same label c
+            for y in out_edges[v][c]:
+                if D[x][y] == -1:
+                    D[x][y] = d + 1
+                    q.append((0, x, y, -1))
+                    
+    # Print the resulting matrix
+    for i in range(n):
+        print("" "".join(map(str, D[i])))
+
+if __name__ == '__main__':
+    solve()"
+abc394_g,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.318318,172.05094525000095,172.05094525000095,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc394_g__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    H = int(input_data[0])
+    W = int(input_data[1])
+    V = H * W
+    idx = 2
+    
+    # Read grid dimensions into a flat 1D list
+    F = [int(x) for x in input_data[idx:idx+V]]
+    idx += V
+    Q = int(input_data[idx])
+    idx += 1
+    queries = input_data[idx:]
+    
+    edges = []
+    # Build Horizontal edges
+    for i in range(H):
+        base = i * W
+        for j in range(W - 1):
+            u = base + j
+            v = base + j + 1
+            w = F[u] if F[u] < F[v] else F[v]
+            edges.append((w, u, v))
+            
+    # Build Vertical edges
+    for i in range(H - 1):
+        base = i * W
+        next_base = (i + 1) * W
+        for j in range(W):
+            u = base + j
+            v = next_base + j
+            w = F[u] if F[u] < F[v] else F[v]
+            edges.append((w, u, v))
+            
+    # Sort edges in descending order of bottleneck weights
+    edges.sort(reverse=True)
+    
+    # Kruskal's Reconstruction Tree Preparation
+    parent = list(range(2 * V))
+    def find(i):
+        while i != parent[i]:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    weights = [0] * (2 * V)
+    left_child = [-1] * (2 * V)
+    right_child = [-1] * (2 * V)
+    
+    num_nodes = V
+    for w, u, v in edges:
+        root_u = find(u)
+        root_v = find(v)
+        if root_u != root_v:
+            weights[num_nodes] = w
+            left_child[num_nodes] = root_u
+            right_child[num_nodes] = root_v
+            parent[root_u] = num_nodes
+            parent[root_v] = num_nodes
+            num_nodes += 1
+            
+    # Binary Lifting arrays for Fast LCA
+    up = [[0] * num_nodes for _ in range(19)]
+    depth = [0] * num_nodes
+    
+    up0 = up[0]
+    # Reversely iterating correctly dictates topologically sorted parents initializing children
+    for i in range(num_nodes - 1, -1, -1):
+        lc = left_child[i]
+        if lc != -1:
+            up0[lc] = i
+            depth[lc] = depth[i] + 1
+        rc = right_child[i]
+        if rc != -1:
+            up0[rc] = i
+            depth[rc] = depth[i] + 1
+            
+    up0[num_nodes - 1] = num_nodes - 1
+    
+    for j in range(1, 19):
+        prev = up[j-1]
+        curr = up[j]
+        for i in range(num_nodes):
+            curr[i] = prev[prev[i]]
+            
+    out = []
+    q_idx = 0
+    # Process Queries
+    while q_idx < len(queries):
+        A = int(queries[q_idx]) - 1
+        B = int(queries[q_idx+1]) - 1
+        Y = int(queries[q_idx+2])
+        C = int(queries[q_idx+3]) - 1
+        D = int(queries[q_idx+4]) - 1
+        Z = int(queries[q_idx+5])
+        q_idx += 6
+        
+        u = A * W + B
+        v = C * W + D
+        
+        if u == v:
+            ans = Y - Z if Y > Z else Z - Y
+            out.append(str(ans))
+            continue
+            
+        if depth[u] < depth[v]:
+            u, v = v, u
+            
+        diff = depth[u] - depth[v]
+        if diff > 0:
+            bl = diff.bit_length()
+            for j in range(bl):
+                if (diff >> j) & 1:
+                    u = up[j][u]
+                    
+        if u == v:
+            lca = u
+        else:
+            for j in range(18, -1, -1):
+                up_u = up[j][u]
+                up_v = up[j][v]
+                if up_u != up_v:
+                    u = up_u
+                    v = up_v
+            lca = up[0][u]
+            
+        M = weights[lca]
+        min_YZ = Y if Y < Z else Z
+        
+        # O(1) formula decision application
+        if M >= min_YZ:
+            ans = Y - Z if Y > Z else Z - Y
+        else:
+            ans = Y + Z - 2 * M
+            
+        out.append(str(ans))
+        
+    sys.stdout.write('\n'.join(out) + '\n')
+
+if __name__ == '__main__':
+    solve()"
+abc395_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.068042,30.12629187499988,30.12629187499988,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc395_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    
+    last_seen = {}
+    min_len = float('inf')
+    
+    # Process the sequence A
+    for i in range(1, n + 1):
+        val = int(input_data[i])
+        if val in last_seen:
+            current_len = i - last_seen[val] + 1
+            if current_len < min_len:
+                min_len = current_len
+        # Update the most recent index where this value was seen
+        last_seen[val] = i
+        
+    # Output the result
+    if min_len == float('inf'):
+        print(-1)
+    else:
+        print(min_len)
+
+if __name__ == '__main__':
+    solve()"
+abc396_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.101174,45.90517766599805,45.90517766599805,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc396_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all input from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    M = int(input_data[1])
+    
+    B = [int(x) for x in input_data[2:N+2]]
+    W = [int(x) for x in input_data[N+2:N+M+2]]
+    
+    # Sort both arrays in descending order to always pick the balls with the highest values
+    B.sort(reverse=True)
+    W.sort(reverse=True)
+    
+    # Prefix sums for the black balls
+    pref_B = [0] * (N + 1)
+    for i in range(N):
+        pref_B[i+1] = pref_B[i] + B[i]
+        
+    # Prefix sums for the white balls. 
+    # We only want to accumulate positive values because adding a negative white ball 
+    # would only decrease our sum without helping us satisfy the (black balls >= white balls) condition.
+    pref_W = [0] * (M + 1)
+    for i in range(M):
+        pref_W[i+1] = pref_W[i] + max(0, W[i])
+        
+    ans = -float('inf')
+    
+    # Iterate over all possible number of chosen black balls `b`
+    for b in range(N + 1):
+        # The optimal number of white balls to consider is up to `b` or `M`, whichever is smaller.
+        # Thanks to the `max(0, W[i])` in the prefix sum, we naturally only take the positive ones.
+        w_idx = min(b, M)
+        current_sum = pref_B[b] + pref_W[w_idx]
+        
+        if current_sum > ans:
+            ans = current_sum
+            
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc396_g,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.139448,66.68047533299978,66.68047533299978,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc396_g__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    H = int(input_data[0])
+    W = int(input_data[1])
+    
+    C = [0] * (1 << W)
+    for i in range(2, 2 + H):
+        C[int(input_data[i], 2)] += 1
+        
+    popcnt = [0] * (1 << W)
+    for i in range(1, 1 << W):
+        popcnt[i] = popcnt[i & (i - 1)] + 1
+        
+    F = [0] * (1 << W)
+    for i in range(1 << W):
+        c = popcnt[i]
+        F[i] = c if c < W - c else W - c
+        
+    def fwht(a):
+        n = len(a)
+        h = 1
+        while h < n:
+            h2 = h * 2
+            for i in range(0, n, h2):
+                for j in range(i, i + h):
+                    x = a[j]
+                    y = a[j + h]
+                    a[j] = x + y
+                    a[j + h] = x - y
+            h = h2
+            
+    fwht(C)
+    fwht(F)
+    
+    R = [C[i] * F[i] for i in range(1 << W)]
+    
+    fwht(R)
+    
+    n = 1 << W
+    ans = min(R) // n
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc397_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.038298,14.405287249999674,14.405287249999674,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc397_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    n = int(input_data[0])
+    a = [int(x) for x in input_data[1:]]
+    
+    pref = [0] * n
+    seen_pref = bytearray(n + 1)
+    count = 0
+    for i in range(n):
+        x = a[i]
+        if not seen_pref[x]:
+            seen_pref[x] = 1
+            count += 1
+        pref[i] = count
+        
+    suff = [0] * n
+    seen_suff = bytearray(n + 1)
+    count = 0
+    for i in range(n - 1, -1, -1):
+        x = a[i]
+        if not seen_suff[x]:
+            seen_suff[x] = 1
+            count += 1
+        suff[i] = count
+        
+    max_sum = 0
+    for i in range(n - 1):
+        current_sum = pref[i] + suff[i+1]
+        if current_sum > max_sum:
+            max_sum = current_sum
+            
+    print(max_sum)
+
+if __name__ == '__main__':
+    solve()"
+abc398_b,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.043054,17.689898749998974,17.689898749998974,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc398_b__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    counts = {}
+    for x in input_data:
+        counts[x] = counts.get(x, 0) + 1
+        
+    for x, cx in counts.items():
+        if cx >= 3:
+            for y, cy in counts.items():
+                if x != y and cy >= 2:
+                    print(""Yes"")
+                    return
+    print(""No"")
+
+if __name__ == '__main__':
+    solve()"
+abc398_f,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.165274,89.06212970900015,89.06212970900015,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc398_f__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    S = input_data[0]
+    
+    # Reverse of S
+    rev_S = S[::-1]
+    
+    # Create the combined string. 
+    # Encoding to ascii bytearray speeds up Python's internal character comparison in the loop.
+    comb = (rev_S + ""#"" + S).encode('ascii')
+    m = len(comb)
+    
+    # Initialize the KMP prefix array (pi array)
+    pi = [0] * m
+    j = 0
+    
+    # Compute the KMP pi array
+    for i in range(1, m):
+        c = comb[i]
+        while j > 0 and c != comb[j]:
+            j = pi[j - 1]
+        if c == comb[j]:
+            j += 1
+        pi[i] = j
+        
+    # The last value of the pi array gives the length of the longest palindromic suffix
+    max_len = pi[-1]
+    
+    # Form the shortest palindrome
+    if max_len == len(S):
+        ans = S
+    else:
+        ans = S + S[:len(S) - max_len][::-1]
+        
+    # Output the result
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc399_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.084152,41.305501250000816,41.305501250000816,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc399_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    M = int(input_data[1])
+    
+    # Initialize Disjoint Set Union (DSU) structures
+    parent = list(range(N + 1))
+    size = [1] * (N + 1)
+    
+    # Iterative find with path halving for efficiency
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    # Union by size
+    def union(i, j):
+        root_i = find(i)
+        root_j = find(j)
+        if root_i != root_j:
+            if size[root_i] < size[root_j]:
+                parent[root_i] = root_j
+                size[root_j] += size[root_i]
+            else:
+                parent[root_j] = root_i
+                size[root_i] += size[root_j]
+            return True
+        return False
+
+    idx = 2
+    removed = 0
+    
+    # Process all edges
+    for _ in range(M):
+        u = int(input_data[idx])
+        v = int(input_data[idx+1])
+        idx += 2
+        
+        # If they are already in the same component, this edge forms a cycle
+        if not union(u, v):
+            removed += 1
+            
+    # The number of edges forming cycles exactly equals the minimum edges to remove
+    print(removed)
+
+if __name__ == '__main__':
+    solve()"
+abc399_d,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.334064,184.04017662499973,184.04017662499973,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc399_d__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input efficiently
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+        
+    iterator = iter(input_data)
+    
+    try:
+        T_str = next(iterator)
+    except StopIteration:
+        return
+    T = int(T_str)
+    
+    out = []
+    
+    for _ in range(T):
+        N = int(next(iterator))
+        
+        # Read the 2N elements of the array A
+        A = [int(next(iterator)) for _ in range(2 * N)]
+        
+        # Determine all 'bad' elements which are already adjacent
+        bad = set()
+        for i in range(2 * N - 1):
+            if A[i] == A[i+1]:
+                bad.add(A[i])
+                
+        # Base mapping to store tuples (u, v) as unique integers to optimize memory & time
+        N_plus_1 = N + 1
+        
+        pair_min = {}
+        pair_max = {}
+        
+        for i in range(2 * N - 1):
+            u = A[i]
+            v = A[i+1]
+            
+            if u != v and u not in bad and v not in bad:
+                # Ensure ordered pairs so that (u, v) and (v, u) map to the same signature
+                if u > v:
+                    u, v = v, u
+                
+                # Signature for the pair mapped to a uniquely identifiable integer
+                p = u * N_plus_1 + v
+                
+                if p not in pair_min:
+                    pair_min[p] = i
+                pair_max[p] = i  # Max index dynamically moves forward as `i` strictly climbs
+                    
+        # Count configurations where identical couples are spread suitably apart
+        ans = 0
+        for p in pair_min:
+            if pair_max[p] - pair_min[p] >= 2:
+                ans += 1
+                
+        out.append(str(ans))
+        
+    # Flush output all at once
+    sys.stdout.write('\n'.join(out) + '\n')
+
+if __name__ == '__main__':
+    solve()"
+abc399_e,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.272416,151.1059317909967,151.1059317909967,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc399_e__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    S = input_data[1]
+    T = input_data[2]
+    
+    # Check if a valid transformation character mapping exists
+    mapping = {}
+    for s_char, t_char in zip(S, T):
+        if s_char in mapping:
+            if mapping[s_char] != t_char:
+                print(-1)
+                return
+        else:
+            mapping[s_char] = t_char
+            
+    # If we need to make changes but all 26 characters are strictly required in the target,
+    # any operation will merge two characters permanently, making it impossible to form T.
+    if S != T and len(set(T)) == 26:
+        print(-1)
+        return
+        
+    # Build functional graph for necessary character transitions
+    edges = 0
+    adj = {}
+    for c, target in mapping.items():
+        if c != target:
+            edges += 1
+            adj[c] = target
+            
+    # Count the number of cycles in the directed graph
+    cycles = 0
+    visited = set()
+    
+    for node in adj:
+        if node not in visited:
+            curr = node
+            path_set = set()
+            while curr in adj and curr not in visited:
+                visited.add(curr)
+                path_set.add(curr)
+                curr = adj[curr]
+            
+            # If we loop back to a node in the current traversal path, a cycle is found
+            if curr in path_set:
+                cycles += 1
+                
+    # Minimum operations = (number of transition edges) + (number of cycles to break)
+    print(edges + cycles)
+
+if __name__ == '__main__':
+    solve()"
+abc399_f,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.112564,51.50842062499942,51.50842062499942,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc399_f__B3_gemini_solo.json,"import sys
+import math
+
+def solve():
+    # Read all tokens from standard input
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    K = int(input_data[1])
+    A = [int(x) for x in input_data[2:N+2]]
+    
+    MOD = 998244353
+    
+    # Precompute binomial coefficients for K
+    b_K = [math.comb(K, j) % MOD for j in range(K + 1)]
+    
+    # X array keeps track of the sum of (-S_l)^p for p in 0..K over all seen l
+    X = [0] * (K + 1)
+    X[0] = 1  # For l = 0, S_0 = 0, so (-0)^0 = 1, other powers are 0
+    
+    ans = 0
+    S = 0
+    S_pow = [0] * (K + 1)
+    S_pow[0] = 1
+    
+    for a in A:
+        S = (S + a) % MOD
+        
+        # Calculate S^j for j = 0..K
+        curr = 1
+        for j in range(1, K + 1):
+            curr = (curr * S) % MOD
+            S_pow[j] = curr
+            
+        # Compute the sum (S_r - S_l)^K = sum( binom(K, j) * S_r^j * (-S_l)^{K-j} )
+        term_sum = 0
+        for j in range(K + 1):
+            term_sum += b_K[j] * S_pow[j] * X[K - j]
+            
+        ans = (ans + term_sum) % MOD
+        
+        # Update X for the next iterations with the current prefix sum
+        neg_S = MOD - S if S else 0
+        neg_S_pow = 1
+        for p in range(K + 1):
+            X[p] = (X[p] + neg_S_pow) % MOD
+            neg_S_pow = (neg_S_pow * neg_S) % MOD
+            
+    print(ans)
+
+if __name__ == '__main__':
+    solve()"
+abc400_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.059998,25.604158250000182,25.604158250000182,0.0,False,False,False,False,writer,tag,B3_gemini_solo/abc400_c__B3_gemini_solo.json,"import sys
+import math
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    N = int(input_data[0])
+    
+    # A positive integer X = 2^a * b^2 (a >= 1, b >= 1) falls into exactly one of two categories:
+    # 1. 'a' is odd: X = 2^(2k+1) * b^2 = 2 * (2^k * b)^2 = 2 * c^2 for some integer c >= 1.
+    #    Any c >= 1 can be formed by choosing k = 0 (a = 1) and b = c.
+    # 2. 'a' is even: X = 2^(2k) * b^2 = (2^k * b)^2 = c^2 for some EVEN integer c >= 2.
+    #    Any even c >= 2 can be formed by choosing k = 1 (a = 2) and b = c / 2.
+    #
+    # Furthermore, these two sets of integers are mutually exclusive because 
+    # numbers in the first category have an odd number of 2s in their prime factorization,
+    # while numbers in the second category have an even number of 2s.
+    
+    # Count of numbers of the form 2 * c^2 <= N with c >= 1
+    count1 = math.isqrt(N // 2)
+    
+    # Count of numbers of the form c^2 <= N with c >= 2 and c is even
+    count2 = math.isqrt(N) // 2
+    
+    print(count1 + count2)
+
+if __name__ == '__main__':
+    solve()"
+arc191_c,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.08021,40.27972220800075,40.27972220800075,0.0,False,False,False,False,writer,tag,B3_gemini_solo/arc191_c__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    T = int(input_data[0])
+    out = [f""{int(x) + 1} {int(x) * int(x)}"" for x in input_data[1:T+1]]
+    print('\n'.join(out))
+
+if __name__ == '__main__':
+    solve()"
+arc194_b,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.338966,185.45706391600106,185.45706391600106,0.0,False,False,False,False,writer,tag,B3_gemini_solo/arc194_b__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    N = int(input_data[0])
+    
+    # We use a Fenwick tree (Binary Indexed Tree) to count elements.
+    # It stores the number of elements we've seen so far, allowing us to query
+    # how many seen elements are strictly smaller than the current element.
+    tree = [0] * (N + 1)
+    total_cost = 0
+    
+    for i in range(1, N + 1):
+        X = int(input_data[i])
+        
+        # Query Fenwick tree for the number of elements strictly smaller than X 
+        # that appeared before X in the original array.
+        s = 0
+        idx = X - 1
+        while idx > 0:
+            s += tree[idx]
+            idx -= idx & (-idx)
+        L = s
+        
+        # R is the number of elements strictly smaller than X that appear 
+        # after X in the original array.
+        # Since X is a permutation of 1..N, there are exactly X - 1 elements smaller than X overall.
+        R = X - 1 - L
+        
+        # Calculate the cost contribution for the element X moving to its correct relative position.
+        # According to the max-to-right optimal swap property, element X will bypass R smaller elements 
+        # originally to its right, while keeping L smaller elements initially to its left undisturbed.
+        total_cost += R * L + R * (R + 1) // 2
+        
+        # Add the current element X to the Fenwick tree.
+        idx = X
+        while idx <= N:
+            tree[idx] += 1
+            idx += idx & (-idx)
+            
+    print(total_cost)
+
+if __name__ == '__main__':
+    solve()"
+arc195_a,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.062452,26.678711374999693,26.678711374999693,0.0,False,False,False,False,writer,tag,B3_gemini_solo/arc195_a__B3_gemini_solo.json,"import sys
+
+def solve():
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+        
+    N = int(input_data[0])
+    M = int(input_data[1])
+    
+    # We can keep the array elements as strings to avoid the overhead of int conversion,
+    # since we only need to perform exact equality checks.
+    A = input_data[2 : N + 2]
+    B = input_data[N + 2 : N + M + 2]
+    
+    # Find the leftmost match of B in A
+    L = []
+    j = 0
+    for i in range(N):
+        if A[i] == B[j]:
+            L.append(i)
+            j += 1
+            if j == M:
+                break
+                
+    # If B is not even a subsequence of A once, output No
+    if j < M:
+        print(""No"")
+        return
+        
+    # Find the rightmost match of B in A
+    R = []
+    j = M - 1
+    for i in range(N - 1, -1, -1):
+        if A[i] == B[j]:
+            R.append(i)
+            j -= 1
+            if j < 0:
+                break
+    R.reverse()
+    
+    # If the leftmost match indices and the rightmost match indices differ,
+    # there must be at least two subsequences matching B.
+    if L != R:
+        print(""Yes"")
+    else:
+        print(""No"")
+
+if __name__ == '__main__':
+    solve()"
+arc195_e,B3_gemini_solo,livecodebench,,gemini-3.1-pro-preview,,high,,0.31518,158.75954345799983,158.75954345799983,0.0,False,False,False,False,writer,tag,B3_gemini_solo/arc195_e__B3_gemini_solo.json,"import sys
+
+def solve():
+    # Read all tokens from standard input efficiently
+    input_data = sys.stdin.read().split()
+    if not input_data:
+        return
+    
+    # Parse N and Q
+    N = int(input_data[0])
+    Q = int(input_data[1])
+    
+    # Parse A, using 1-based indexing for ease of use. 
+    # Nodes are 1 to N. A[i] is the edge weight above node i.
+    # We set A[0] and A[1] to 0 for convenience.
+    A = [0, 0] + [int(x) for x in input_data[2:N+1]]
+    
+    queries = input_data[N+1:]
+    
+    M = 998244353
+    
+    # Precompute modular inverses in O(N) time
+    inv = [0] * (N + 2)
+    inv[1] = 1
+    for i in range(2, N + 2):
+        inv[i] = (M - M // i) * inv[M % i] % M
+        
+    # Precompute prefix sums for O(1) query processing
+    # S1 handles the sum of A_x / x for u < x < v
+    # S2 handles the sum of A_x * 2*(x-1) / (x*(x+1)) for x < u
+    S1 = [0] * (N + 1)
+    S2 = [0] * (N + 1)
+    
+    for x in range(2, N + 1):
+        S1[x] = (S1[x - 1] + A[x] * inv[x]) % M
+        
+        term2 = (A[x] * 2 * (x - 1) % M * inv[x] % M * inv[x + 1]) % M
+        S2[x] = (S2[x - 1] + term2) % M
+        
+    # Compute (N-1)! modulo M, which is the total number of valid sequences P
+    fact = 1
+    for i in range(1, N):
+        fact = (fact * i) % M
+        
+    out = []
+    idx = 0
+    for _ in range(Q):
+        u = int(queries[idx])
+        v = int(queries[idx+1])
+        idx += 2
+        
+        # Ensure u < v as assumed by our formula
+        if u > v:
+            u, v = v, u
+            
+        # Calculate the expected distance between u and v
+        E = A[v]
+        
+        if u > 1:
+            E = (E + A[u] * (1 - inv[u])) % M
+            
+        E = (E + S1[v - 1] - S1[u]) % M
+        
+        if u > 2:
+            E = (E + S2[u - 1]) % M
+            
+        # Total distance sum is the expected distance multiplied by the number of trees
+        ans = (E * fact) % M
+        out.append(str(ans))
+        
+    # Print all answers separated by a newline
+    sys.stdout.write('\n'.join(out) + '\n')
+
+if __name__ == '__main__':
+    solve()"

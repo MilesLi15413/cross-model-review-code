@@ -1,0 +1,121 @@
+{
+  "task_id": "arc191_c",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T01:13:02.133667+00:00",
+  "writer_finished_at": "2026-11-22T01:13:42.413407+00:00",
+  "reviewer_started_at": "2026-11-22T01:40:04.735841+00:00",
+  "reviewer_finished_at": "2026-11-22T01:40:28.788874+00:00",
+  "writer_prompt_sha256": "db11e128eed0506492d7a5c8344b60d1f9ac2658d6fad99b3a057b60bb869e94",
+  "reviewer_prompt_sha256": "7940da2418b667a26ccd0443f255e96a6c051b5db10b5d5d47879d1496944eef",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 24.05301787499775,
+  "total_latency_s": 24.05301787499775,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8601,
+  "reviewer_output_tokens": 3744,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.06213,
+  "total_cost_usd": 0.06213,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"cacfb1f4-0eea-415d-a185-43087d9cd92b\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef solve():\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n    \\n    T = int(input_data[0])\\n    out = []\\n    \\n    for i in range(1, T + 1):\\n        n = int(input_data[i])\\n        # Setting A = n + 1 and M = n^2 satisfies the condition.\\n        # (n+1)^k - 1 \u2261 k * n (mod n^2). \\n        # The smallest k > 0 for which this is a multiple of n^2 is k = n.\\n        # Both A and M will be within the bounds of 1 to 10^18 since n <= 10^9.\\n        out.append(f\\\"{n + 1} {n * n}\\\")\\n        \\n    print('\\\\n'.join(out))\\n\\nif __name__ == '__main__':\\n    solve()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 23231,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8601,\n          \"prompt\": 8601,\n          \"candidates\": 228,\n          \"total\": 12345,\n          \"cached\": 0,\n          \"thoughts\": 3516,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 23231,\n            \"tokens\": {\n              \"input\": 8601,\n              \"prompt\": 8601,\n              \"candidates\": 228,\n              \"total\": 12345,\n              \"cached\": 0,\n              \"thoughts\": 3516,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    T = int(input_data[0])\n    out = [f\"{int(x) + 1} {int(x) * int(x)}\" for x in input_data[1:T+1]]\n    print('\\n'.join(out))\n\nif __name__ == '__main__':\n    solve()",
+  "reviewer_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    T = int(input_data[0])\n    out = []\n    \n    for i in range(1, T + 1):\n        n = int(input_data[i])\n        # Setting A = n + 1 and M = n^2 satisfies the condition.\n        # (n+1)^k - 1 \u2261 k * n (mod n^2). \n        # The smallest k > 0 for which this is a multiple of n^2 is k = n.\n        # Both A and M will be within the bounds of 1 to 10^18 since n <= 10^9.\n        out.append(f\"{n + 1} {n * n}\")\n        \n    print('\\n'.join(out))\n\nif __name__ == '__main__':\n    solve()",
+  "final_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    T = int(input_data[0])\n    out = []\n    \n    for i in range(1, T + 1):\n        n = int(input_data[i])\n        # Setting A = n + 1 and M = n^2 satisfies the condition.\n        # (n+1)^k - 1 \u2261 k * n (mod n^2). \n        # The smallest k > 0 for which this is a multiple of n^2 is k = n.\n        # Both A and M will be within the bounds of 1 to 10^18 since n <= 10^9.\n        out.append(f\"{n + 1} {n * n}\")\n        \n    print('\\n'.join(out))\n\nif __name__ == '__main__':\n    solve()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/arc191_c__B3_gemini_solo.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "069c4c81890c0c11e509e44de537fa0f048c7ff6804d4101a174a14100553fc7",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 40.27972220800075,
+      "input_tokens": 8473,
+      "output_tokens": 5272,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.08021
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "9b8f202ae46365727e3b4f241aa3fa916141944278fc010462c137d67af804d0",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 12,
+    "reviewer_cost_all_attempts": 0.06213
+  }
+}

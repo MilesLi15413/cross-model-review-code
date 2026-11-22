@@ -1,0 +1,121 @@
+{
+  "task_id": "3789",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T00:56:50.057171+00:00",
+  "writer_finished_at": "2026-11-22T00:58:44.503236+00:00",
+  "reviewer_started_at": "2026-11-22T01:53:29.418617+00:00",
+  "reviewer_finished_at": "2026-11-22T01:54:45.961404+00:00",
+  "writer_prompt_sha256": "a29a9c56d5f314b95e51bd9df71c1903aef96ba362598070017b443fbcc1e0fb",
+  "reviewer_prompt_sha256": "faca4847778f9a7a6a89cfa90b392f27b4b9483bad1aef5dcf2d3f3adf030e42",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 76.5426700829994,
+  "total_latency_s": 76.5426700829994,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8944,
+  "reviewer_output_tokens": 11146,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.15164,
+  "total_cost_usd": 0.15164,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"93935882-4835-4957-99bf-38437ec4234f\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\\n        m = len(conflictingPairs)\\n        \\n        # Group pairs by their maximum element (the right endpoint v)\\n        pairs_at = [[] for _ in range(n + 1)]\\n        for i in range(m):\\n            a, b = conflictingPairs[i]\\n            # Normalize pair so u is the smaller, v is the larger\\n            u = a if a < b else b\\n            v = a if a > b else b\\n            pairs_at[v].append((u, i))\\n            \\n        # (value of u, pair_id)\\n        best = (0, -1)\\n        second_best = (0, -1)\\n        \\n        base_subarrays = 0\\n        # Array to store the extra subarrays we get if we remove pair `i`\\n        benefit = [0] * m\\n        \\n        for R in range(1, n + 1):\\n            # Integrate new pairs whose right endpoint is exactly R\\n            for u, i in pairs_at[R]:\\n                if u > best[0]:\\n                    second_best = best\\n                    best = (u, i)\\n                elif u >= second_best[0]:\\n                    second_best = (u, i)\\n                    \\n            M1 = best[0]\\n            id1 = best[1]\\n            M2 = second_best[0]\\n            \\n            # Base valid subarrays ending at R with no pairs removed\\n            base_subarrays += R - M1\\n            \\n            # If there's a valid restricting pair, calculate the localized benefit of removing it\\n            if id1 != -1:\\n                benefit[id1] += M1 - M2\\n                \\n        # The best outcome is the base validity combined with the peak benefit of eliminating one pair\\n        return base_subarrays + max(benefit)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 75755,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8944,\n          \"prompt\": 8944,\n          \"candidates\": 452,\n          \"total\": 20090,\n          \"cached\": 0,\n          \"thoughts\": 10694,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 75755,\n            \"tokens\": {\n              \"input\": 8944,\n              \"prompt\": 8944,\n              \"candidates\": 452,\n              \"total\": 20090,\n              \"cached\": 0,\n              \"thoughts\": 10694,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        m = len(conflictingPairs)\n        \n        # Group pairs by their maximum element (the right endpoint v)\n        pairs_at = [[] for _ in range(n + 1)]\n        for i in range(m):\n            a, b = conflictingPairs[i]\n            # Normalize pair so u is the smaller, v is the larger\n            u = a if a < b else b\n            v = a if a > b else b\n            pairs_at[v].append((u, i))\n            \n        # (value of u, pair_id)\n        best = (0, -1)\n        second_best = (0, -1)\n        \n        base_subarrays = 0\n        # Array to store the extra subarrays we get if we remove pair `i`\n        benefit = [0] * m\n        \n        for R in range(1, n + 1):\n            # Integrate new pairs whose right endpoint is exactly R\n            for u, i in pairs_at[R]:\n                if u > best[0]:\n                    second_best = best\n                    best = (u, i)\n                elif u >= second_best[0]:\n                    second_best = (u, i)\n                    \n            M1 = best[0]\n            id1 = best[1]\n            M2 = second_best[0]\n            \n            # Base valid subarrays ending at R with no pairs removed\n            base_subarrays += R - M1\n            \n            # If there's a valid restricting pair, calculate the localized benefit of removing it\n            if id1 != -1:\n                benefit[id1] += M1 - M2\n                \n        # The best outcome is the base validity combined with the peak benefit of eliminating one pair\n        return base_subarrays + max(benefit)",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        m = len(conflictingPairs)\n        \n        # Group pairs by their maximum element (the right endpoint v)\n        pairs_at = [[] for _ in range(n + 1)]\n        for i in range(m):\n            a, b = conflictingPairs[i]\n            # Normalize pair so u is the smaller, v is the larger\n            u = a if a < b else b\n            v = a if a > b else b\n            pairs_at[v].append((u, i))\n            \n        # (value of u, pair_id)\n        best = (0, -1)\n        second_best = (0, -1)\n        \n        base_subarrays = 0\n        # Array to store the extra subarrays we get if we remove pair `i`\n        benefit = [0] * m\n        \n        for R in range(1, n + 1):\n            # Integrate new pairs whose right endpoint is exactly R\n            for u, i in pairs_at[R]:\n                if u > best[0]:\n                    second_best = best\n                    best = (u, i)\n                elif u >= second_best[0]:\n                    second_best = (u, i)\n                    \n            M1 = best[0]\n            id1 = best[1]\n            M2 = second_best[0]\n            \n            # Base valid subarrays ending at R with no pairs removed\n            base_subarrays += R - M1\n            \n            # If there's a valid restricting pair, calculate the localized benefit of removing it\n            if id1 != -1:\n                benefit[id1] += M1 - M2\n                \n        # The best outcome is the base validity combined with the peak benefit of eliminating one pair\n        return base_subarrays + max(benefit)",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        m = len(conflictingPairs)\n        \n        # Group pairs by their maximum element (the right endpoint v)\n        pairs_at = [[] for _ in range(n + 1)]\n        for i in range(m):\n            a, b = conflictingPairs[i]\n            # Normalize pair so u is the smaller, v is the larger\n            u = a if a < b else b\n            v = a if a > b else b\n            pairs_at[v].append((u, i))\n            \n        # (value of u, pair_id)\n        best = (0, -1)\n        second_best = (0, -1)\n        \n        base_subarrays = 0\n        # Array to store the extra subarrays we get if we remove pair `i`\n        benefit = [0] * m\n        \n        for R in range(1, n + 1):\n            # Integrate new pairs whose right endpoint is exactly R\n            for u, i in pairs_at[R]:\n                if u > best[0]:\n                    second_best = best\n                    best = (u, i)\n                elif u >= second_best[0]:\n                    second_best = (u, i)\n                    \n            M1 = best[0]\n            id1 = best[1]\n            M2 = second_best[0]\n            \n            # Base valid subarrays ending at R with no pairs removed\n            base_subarrays += R - M1\n            \n            # If there's a valid restricting pair, calculate the localized benefit of removing it\n            if id1 != -1:\n                benefit[id1] += M1 - M2\n                \n        # The best outcome is the base validity combined with the peak benefit of eliminating one pair\n        return base_subarrays + max(benefit)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/3789__B3_gemini_solo.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "7f5815c527c0d18bdbe93cfd3278236352852bd6e6662afe0bce144f4776e542",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 114.44610041600026,
+      "input_tokens": 8476,
+      "output_tokens": 19610,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.252272
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "7f5815c527c0d18bdbe93cfd3278236352852bd6e6662afe0bce144f4776e542",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.15164
+  }
+}

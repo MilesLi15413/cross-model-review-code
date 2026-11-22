@@ -1,0 +1,121 @@
+{
+  "task_id": "3789",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.125.0-alpha.3",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-10T06:56:35.248178+00:00",
+  "writer_finished_at": "2026-05-10T06:56:58.198535+00:00",
+  "reviewer_started_at": "2026-11-22T02:17:55.675625+00:00",
+  "reviewer_finished_at": "2026-11-22T02:19:51.348257+00:00",
+  "writer_prompt_sha256": "651d00971bf800fdcfd323cb57f7ffd73a24976f5a6630b9442d6e994a1eec43",
+  "reviewer_prompt_sha256": "6fcd0ddc543d1ad08157896e1be8aa542bdb36dbcccde1d50a13d6685938dcb9",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 115.67247029199643,
+  "total_latency_s": 115.67247029199643,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8861,
+  "reviewer_output_tokens": 18189,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.23599,
+  "total_cost_usd": 0.23599,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"e9d02c68-ab9f-455c-84c0-478208a4ecc8\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\\n        by_right = [[] for _ in range(n + 1)]\\n        \\n        for idx, (a, b) in enumerate(conflictingPairs):\\n            if a > b:\\n                a, b = b, a\\n            by_right[b].append((a, idx))\\n        \\n        # Best and second-best active left endpoints among pairs with right <= r.\\n        top1_val = 0\\n        top1_count = 0\\n        top1_id = -1\\n        top2_val = 0\\n        \\n        base = 0\\n        gain = [0] * len(conflictingPairs)\\n        \\n        for r in range(1, n + 1):\\n            for left, idx in by_right[r]:\\n                if left > top1_val:\\n                    top2_val = top1_val\\n                    top1_val = left\\n                    top1_count = 1\\n                    top1_id = idx\\n                elif left == top1_val:\\n                    top1_count += 1\\n                    top1_id = -1\\n                elif left > top2_val:\\n                    top2_val = left\\n            \\n            base += r - top1_val\\n            \\n            if top1_count == 1:\\n                gain[top1_id] += top1_val - top2_val\\n        \\n        return base + max(gain)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 114882,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8861,\n          \"prompt\": 8861,\n          \"candidates\": 362,\n          \"total\": 27050,\n          \"cached\": 0,\n          \"thoughts\": 17827,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 114882,\n            \"tokens\": {\n              \"input\": 8861,\n              \"prompt\": 8861,\n              \"candidates\": 362,\n              \"total\": 27050,\n              \"cached\": 0,\n              \"thoughts\": 17827,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "writer_artifact": "```python\nfrom typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        by_right = [[] for _ in range(n + 1)]\n        \n        for idx, (a, b) in enumerate(conflictingPairs):\n            if a > b:\n                a, b = b, a\n            by_right[b].append((a, idx))\n        \n        # Best and second-best active left endpoints among pairs with right <= r.\n        top1_val = 0\n        top1_count = 0\n        top1_id = -1\n        top2_val = 0\n        \n        base = 0\n        gain = [0] * len(conflictingPairs)\n        \n        for r in range(1, n + 1):\n            for left, idx in by_right[r]:\n                if left > top1_val:\n                    top2_val = top1_val\n                    top1_val = left\n                    top1_count = 1\n                    top1_id = idx\n                elif left == top1_val:\n                    top1_count += 1\n                    top1_id = -1\n                elif left > top2_val:\n                    top2_val = left\n            \n            base += r - top1_val\n            \n            if top1_count == 1:\n                gain[top1_id] += top1_val - top2_val\n        \n        return base + max(gain)\n```",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        by_right = [[] for _ in range(n + 1)]\n        \n        for idx, (a, b) in enumerate(conflictingPairs):\n            if a > b:\n                a, b = b, a\n            by_right[b].append((a, idx))\n        \n        # Best and second-best active left endpoints among pairs with right <= r.\n        top1_val = 0\n        top1_count = 0\n        top1_id = -1\n        top2_val = 0\n        \n        base = 0\n        gain = [0] * len(conflictingPairs)\n        \n        for r in range(1, n + 1):\n            for left, idx in by_right[r]:\n                if left > top1_val:\n                    top2_val = top1_val\n                    top1_val = left\n                    top1_count = 1\n                    top1_id = idx\n                elif left == top1_val:\n                    top1_count += 1\n                    top1_id = -1\n                elif left > top2_val:\n                    top2_val = left\n            \n            base += r - top1_val\n            \n            if top1_count == 1:\n                gain[top1_id] += top1_val - top2_val\n        \n        return base + max(gain)",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarrays(self, n: int, conflictingPairs: List[List[int]]) -> int:\n        by_right = [[] for _ in range(n + 1)]\n        \n        for idx, (a, b) in enumerate(conflictingPairs):\n            if a > b:\n                a, b = b, a\n            by_right[b].append((a, idx))\n        \n        # Best and second-best active left endpoints among pairs with right <= r.\n        top1_val = 0\n        top1_count = 0\n        top1_id = -1\n        top2_val = 0\n        \n        base = 0\n        gain = [0] * len(conflictingPairs)\n        \n        for r in range(1, n + 1):\n            for left, idx in by_right[r]:\n                if left > top1_val:\n                    top2_val = top1_val\n                    top1_val = left\n                    top1_count = 1\n                    top1_id = idx\n                elif left == top1_val:\n                    top1_count += 1\n                    top1_id = -1\n                elif left > top2_val:\n                    top2_val = left\n            \n            base += r - top1_val\n            \n            if top1_count == 1:\n                gain[top1_id] += top1_val - top2_val\n        \n        return base + max(gain)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/3789__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "a2584edabda80f430a3314d7fcd8666ec711740dd85dbc740f53d9b2998c6163",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 22.949967040971387,
+      "input_tokens": 16483,
+      "output_tokens": 845,
+      "cached_input_tokens": 15744,
+      "cost_usd": 0.115637
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "a2584edabda80f430a3314d7fcd8666ec711740dd85dbc740f53d9b2998c6163",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.23599
+  }
+}

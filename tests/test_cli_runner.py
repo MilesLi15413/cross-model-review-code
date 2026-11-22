@@ -157,7 +157,8 @@ class CLIRunnerTest(unittest.TestCase):
                 result = runner.run("Reply exactly with OK")
 
         self.assertEqual("OK", result.response_text)
-        self.assertEqual(17, result.input_tokens)
+        # OpenAI's input_tokens (17) includes the 5 cached tokens; only 12 are uncached.
+        self.assertEqual(12, result.input_tokens)
         self.assertEqual(5, result.cached_input_tokens)
         self.assertEqual(8, result.output_tokens)
         self.assertIsNone(result.cost_usd)

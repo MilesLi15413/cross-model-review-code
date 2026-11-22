@@ -1,0 +1,121 @@
+{
+  "task_id": "3784",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.125.0-alpha.3",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-10T08:08:52.802914+00:00",
+  "writer_finished_at": "2026-05-10T08:09:16.217246+00:00",
+  "reviewer_started_at": "2026-11-22T02:16:56.867144+00:00",
+  "reviewer_finished_at": "2026-11-22T02:18:41.239308+00:00",
+  "writer_prompt_sha256": "0505b323cf79d33eea5bf81f4e5ad806f6f8ad24fc152d5e8348e448a7172361",
+  "reviewer_prompt_sha256": "19c630f7ff558df816fab9ff4b4af86287ba611efa66e713486f6cf83245197e",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 104.37201204099983,
+  "total_latency_s": 104.37201204099983,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9227,
+  "reviewer_output_tokens": 17570,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.229294,
+  "total_cost_usd": 0.229294,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"671fdfc1-f0b4-4a92-957c-77d447c2287e\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def longestCommonPrefix(self, words: List[str], k: int) -> List[int]:\\n        n = len(words)\\n        if n - 1 < k:\\n            return [0] * n\\n\\n        children = []\\n        count = []\\n        depth = []\\n\\n        children.append({})\\n        count.append(0)\\n        depth.append(0)\\n\\n        paths = []\\n        max_depth = 0\\n\\n        for word in words:\\n            node = 0\\n            count[node] += 1\\n            path = []\\n            for ch in word:\\n                if ch not in children[node]:\\n                    children[node][ch] = len(children)\\n                    children.append({})\\n                    count.append(0)\\n                    depth.append(depth[node] + 1)\\n                node = children[node][ch]\\n                count[node] += 1\\n                path.append(node)\\n            paths.append(path)\\n            max_depth = max(max_depth, len(word))\\n\\n        good_by_depth = [0] * (max_depth + 1)\\n        for node in range(1, len(count)):\\n            if count[node] >= k:\\n                good_by_depth[depth[node]] += 1\\n\\n        size = 1\\n        while size <= max_depth:\\n            size *= 2\\n\\n        seg = [0] * (2 * size)\\n        for d in range(1, max_depth + 1):\\n            if good_by_depth[d] > 0:\\n                seg[size + d] = d\\n\\n        for idx in range(size - 1, 0, -1):\\n            seg[idx] = max(seg[idx * 2], seg[idx * 2 + 1])\\n\\n        def set_depth(d: int, active: bool) -> None:\\n            pos = size + d\\n            seg[pos] = d if active else 0\\n            pos //= 2\\n            while pos:\\n                seg[pos] = max(seg[pos * 2], seg[pos * 2 + 1])\\n                pos //= 2\\n\\n        ans = []\\n\\n        for path in paths:\\n            changed = []\\n\\n            for node in path:\\n                if count[node] == k:\\n                    d = depth[node]\\n                    good_by_depth[d] -= 1\\n                    if good_by_depth[d] == 0:\\n                        set_depth(d, False)\\n                    changed.append(d)\\n\\n            ans.append(seg[1])\\n\\n            for d in changed:\\n                was_zero = good_by_depth[d] == 0\\n                good_by_depth[d] += 1\\n                if was_zero:\\n                    set_depth(d, True)\\n\\n        return ans\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 103588,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9227,\n          \"prompt\": 9227,\n          \"candidates\": 668,\n          \"total\": 26797,\n          \"cached\": 0,\n          \"thoughts\": 16902,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 103588,\n            \"tokens\": {\n              \"input\": 9227,\n              \"prompt\": 9227,\n              \"candidates\": 668,\n              \"total\": 26797,\n              \"cached\": 0,\n              \"thoughts\": 16902,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def longestCommonPrefix(self, words: List[str], k: int) -> List[int]:\n        n = len(words)\n        if n - 1 < k:\n            return [0] * n\n\n        children = []\n        count = []\n        depth = []\n\n        children.append({})\n        count.append(0)\n        depth.append(0)\n\n        paths = []\n        max_depth = 0\n\n        for word in words:\n            node = 0\n            count[node] += 1\n            path = []\n            for ch in word:\n                if ch not in children[node]:\n                    children[node][ch] = len(children)\n                    children.append({})\n                    count.append(0)\n                    depth.append(depth[node] + 1)\n                node = children[node][ch]\n                count[node] += 1\n                path.append(node)\n            paths.append(path)\n            max_depth = max(max_depth, len(word))\n\n        good_by_depth = [0] * (max_depth + 1)\n        for node in range(1, len(count)):\n            if count[node] >= k:\n                good_by_depth[depth[node]] += 1\n\n        size = 1\n        while size <= max_depth:\n            size *= 2\n\n        seg = [0] * (2 * size)\n        for d in range(1, max_depth + 1):\n            if good_by_depth[d] > 0:\n                seg[size + d] = d\n\n        for idx in range(size - 1, 0, -1):\n            seg[idx] = max(seg[idx * 2], seg[idx * 2 + 1])\n\n        def set_depth(d: int, active: bool) -> None:\n            pos = size + d\n            seg[pos] = d if active else 0\n            pos //= 2\n            while pos:\n                seg[pos] = max(seg[pos * 2], seg[pos * 2 + 1])\n                pos //= 2\n\n        ans = []\n\n        for path in paths:\n            changed = []\n\n            for node in path:\n                if count[node] == k:\n                    d = depth[node]\n                    good_by_depth[d] -= 1\n                    if good_by_depth[d] == 0:\n                        set_depth(d, False)\n                    changed.append(d)\n\n            ans.append(seg[1])\n\n            for d in changed:\n                was_zero = good_by_depth[d] == 0\n                good_by_depth[d] += 1\n                if was_zero:\n                    set_depth(d, True)\n\n        return ans",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def longestCommonPrefix(self, words: List[str], k: int) -> List[int]:\n        n = len(words)\n        if n - 1 < k:\n            return [0] * n\n\n        children = []\n        count = []\n        depth = []\n\n        children.append({})\n        count.append(0)\n        depth.append(0)\n\n        paths = []\n        max_depth = 0\n\n        for word in words:\n            node = 0\n            count[node] += 1\n            path = []\n            for ch in word:\n                if ch not in children[node]:\n                    children[node][ch] = len(children)\n                    children.append({})\n                    count.append(0)\n                    depth.append(depth[node] + 1)\n                node = children[node][ch]\n                count[node] += 1\n                path.append(node)\n            paths.append(path)\n            max_depth = max(max_depth, len(word))\n\n        good_by_depth = [0] * (max_depth + 1)\n        for node in range(1, len(count)):\n            if count[node] >= k:\n                good_by_depth[depth[node]] += 1\n\n        size = 1\n        while size <= max_depth:\n            size *= 2\n\n        seg = [0] * (2 * size)\n        for d in range(1, max_depth + 1):\n            if good_by_depth[d] > 0:\n                seg[size + d] = d\n\n        for idx in range(size - 1, 0, -1):\n            seg[idx] = max(seg[idx * 2], seg[idx * 2 + 1])\n\n        def set_depth(d: int, active: bool) -> None:\n            pos = size + d\n            seg[pos] = d if active else 0\n            pos //= 2\n            while pos:\n                seg[pos] = max(seg[pos * 2], seg[pos * 2 + 1])\n                pos //= 2\n\n        ans = []\n\n        for path in paths:\n            changed = []\n\n            for node in path:\n                if count[node] == k:\n                    d = depth[node]\n                    good_by_depth[d] -= 1\n                    if good_by_depth[d] == 0:\n                        set_depth(d, False)\n                    changed.append(d)\n\n            ans.append(seg[1])\n\n            for d in changed:\n                was_zero = good_by_depth[d] == 0\n                good_by_depth[d] += 1\n                if was_zero:\n                    set_depth(d, True)\n\n        return ans",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def longestCommonPrefix(self, words: List[str], k: int) -> List[int]:\n        n = len(words)\n        if n - 1 < k:\n            return [0] * n\n\n        children = []\n        count = []\n        depth = []\n\n        children.append({})\n        count.append(0)\n        depth.append(0)\n\n        paths = []\n        max_depth = 0\n\n        for word in words:\n            node = 0\n            count[node] += 1\n            path = []\n            for ch in word:\n                if ch not in children[node]:\n                    children[node][ch] = len(children)\n                    children.append({})\n                    count.append(0)\n                    depth.append(depth[node] + 1)\n                node = children[node][ch]\n                count[node] += 1\n                path.append(node)\n            paths.append(path)\n            max_depth = max(max_depth, len(word))\n\n        good_by_depth = [0] * (max_depth + 1)\n        for node in range(1, len(count)):\n            if count[node] >= k:\n                good_by_depth[depth[node]] += 1\n\n        size = 1\n        while size <= max_depth:\n            size *= 2\n\n        seg = [0] * (2 * size)\n        for d in range(1, max_depth + 1):\n            if good_by_depth[d] > 0:\n                seg[size + d] = d\n\n        for idx in range(size - 1, 0, -1):\n            seg[idx] = max(seg[idx * 2], seg[idx * 2 + 1])\n\n        def set_depth(d: int, active: bool) -> None:\n            pos = size + d\n            seg[pos] = d if active else 0\n            pos //= 2\n            while pos:\n                seg[pos] = max(seg[pos * 2], seg[pos * 2 + 1])\n                pos //= 2\n\n        ans = []\n\n        for path in paths:\n            changed = []\n\n            for node in path:\n                if count[node] == k:\n                    d = depth[node]\n                    good_by_depth[d] -= 1\n                    if good_by_depth[d] == 0:\n                        set_depth(d, False)\n                    changed.append(d)\n\n            ans.append(seg[1])\n\n            for d in changed:\n                was_zero = good_by_depth[d] == 0\n                good_by_depth[d] += 1\n                if was_zero:\n                    set_depth(d, True)\n\n        return ans",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/3784__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "bfc5242ab35d068a0966e28907bf3b1f33bef4da4fd6fd7aa8af95e24bd70c8b",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 23.413951875001658,
+      "input_tokens": 16526,
+      "output_tokens": 1095,
+      "cached_input_tokens": 2432,
+      "cost_usd": 0.116696
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "805876c2c26e3f1718be736c74649ce900089fd1398953d6105a1ba5bfc5398c",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 1,
+    "reviewer_cost_all_attempts": 0.229294
+  }
+}

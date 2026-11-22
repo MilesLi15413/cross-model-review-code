@@ -1,0 +1,14 @@
+{
+  "response": "OK",
+  "input_tokens": 16102,
+  "output_tokens": 20,
+  "cached": 0,
+  "cost_usd": 0.08111,
+  "runtime_settings": {
+    "codex_home": "isolated",
+    "user_mcp_servers": "disabled",
+    "tool_calls": 0
+  },
+  "cli_version": "codex-cli 0.163.0",
+  "comparison_default_home_input_tokens": 17072
+}

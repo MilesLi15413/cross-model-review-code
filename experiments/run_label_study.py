@@ -29,7 +29,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from experiments.run_experiment import get_adapter, maybe_run_preflight, merge_configs
-from harness.core.cli_runner import CLIRunner, UsageLimitError
+from harness.core.cli_runner import CLIRunner, OutOfCreditsError, UsageLimitError
 from harness.core.parser import normalize_code_artifact, parse_issues, parse_model_response
 from harness.core.tracker import CostTracker, TaskRecord
 
@@ -489,6 +489,8 @@ def main() -> None:
             )
 
     print(f"Reviewer spend at API rates this session: ${total_cost:.2f}")
+    if isinstance(limit_error, OutOfCreditsError):
+        raise SystemExit(f"HARD STOP: {limit_error}\nFinished cells are saved; the failed call was not.")
     if limit_error:
         raise SystemExit(
             f"{limit_error}\nFinished cells are saved. After the limit resets, continue with:\n"

@@ -1,0 +1,561 @@
+# Regression-60 Run: Does Review Break Code That Already Works?
+
+**Started:** 2026-11-21. **Branch:** `regression-60` (from `limited-demo-run`).
+**Status:** complete (2026-11-21). All 540 reviews are valid and graded.
+
+This run answers three questions for all 9 writer × reviewer pairings of Claude,
+GPT-5.5 and Gemini:
+
+1. **Regression rate:** when a reviewer is handed a draft that already passes, how
+   often does the code fail after review? (The main question.)
+2. **Fix rate:** when a reviewer is handed a draft that fails, how often does it pass
+   after review? (Added during the run at the user's request.)
+3. **Cost:** what does each review, and each pairing, cost?
+
+This is the plain cross-model review setting. There are **no authorship labels**: the
+reviewer is never told who wrote the code.
+
+Nothing in the paper's frozen results (`results/raw/lcb_hard_full`,
+`results/raw/lcb_medium_100`) was changed. All new output uses the `regression60_`
+prefix.
+
+## Setup
+
+| Model  | Exact ID                 | Accessed through                | Effort          |
+|--------|--------------------------|---------------------------------|-----------------|
+| Claude | `claude-opus-4-7`        | Claude Code 2.1.330 (Pro plan)  | high            |
+| GPT    | `gpt-5.5`                | Codex CLI 0.163.0 (API key)     | high            |
+| Gemini | `gemini-3.1-pro-preview` | Gemini CLI 0.65.0 (API key)     | HIGH (thinking) |
+
+**How it works.** A writer model solves a LiveCodeBench problem. A reviewer model reads
+the problem and the draft, without running any tests, and returns a revised solution.
+The paper's grader (`analysis/lcb_eval_runner.py`) scores the code against hidden
+tests. Only drafts that **pass** are sent for review, so any failure after review is a
+regression the reviewer caused.
+
+**Prompts.** Writers use the paper's prompt (`harness/prompts/writer_lcb.txt`), and
+reviewers use the paper's reviewer prompt (`harness/prompts/reviewer_lcb.txt`). It is
+filled in exactly as the paper's pipeline fills it. Each review is a fresh, one-shot
+call with no shared conversation.
+
+**Where the drafts come from:**
+
+| Writer  | Drafts from                                        | CLI version used for the draft |
+|---------|----------------------------------------------------|--------------------------------|
+| Claude  | The paper's original runs (condition A)            | Claude Code 2.1.50             |
+| GPT-5.5 | The paper's original runs (condition O)            | Codex CLI 0.125.0-alpha.3      |
+| Gemini  | New in this run (condition B3)                     | Gemini CLI 0.65.0              |
+
+All reviews use the current CLI versions in the Setup table.
+
+**Checks done before any paid call (Step 3):**
+
+- `ANTHROPIC_API_KEY` is not set, so Claude bills the Pro plan.
+- Gemini B3 uses the paper's writer prompt, not the help-request prompt. It runs at HIGH
+  thinking, with no tools and the same parser and grader.
+- All three CLIs passed a live "Reply exactly with OK" check.
+- The first Codex check failed because the API key had expired. A new key was loaded
+  and the check passed.
+
+## Changes made to the harness for this run
+
+### 1. Out-of-credits is now a hard stop
+
+Before this run, the harness had no handling for HTTP 402 (Payment Required) or an
+empty balance. Worse, OpenAI reports an empty balance as `insufficient_quota`, and the
+harness treated that as an ordinary rate limit and retried it forever.
+
+Now any 402 or out-of-credits error:
+
+- stops the whole run,
+- is never retried,
+- is never saved as a model failure.
+
+Gemini's ordinary per-minute "quota exceeded" errors still wait and retry as before.
+The check only looks at failed calls, so a successful reply that happens to contain
+"402" does not stop anything. There are 11 tests for this in
+`tests/test_out_of_credits.py`.
+
+### 2. GPT-5.5 reviews without tools, like the other two
+
+**What we found.** Codex loads the user's personal settings (`~/.codex`), which on this
+machine include 4 MCP tool servers, 9 plugins, memories, skills and hooks. Codex also
+has a **built-in shell** that lets the model run commands, even with no MCP servers.
+Gemini, by contrast, already runs with every tool switched off.
+
+**What we changed.** For this run only, GPT reviews use a separate Codex settings folder
+(`~/.codex-regression60`, outside the repo) that holds only the login. Shell, web
+search and the other built-in tools are switched off, and the sandbox is read-only.
+The user's own Codex settings are not touched.
+
+**How we checked.** One test call asked GPT to list its tools and run
+`python3 -c 'print(6*7)'`:
+
+- It answered **CANNOT_RUN** and made 0 tool calls.
+- The only tools left are a file-edit tool (useless in a read-only folder), an
+  "ask the user" tool (no one answers in headless mode) and a wrapper for those two.
+  None can run code.
+- Input per call dropped from about 17,000 to about 10,600 tokens, so GPT reviews cost
+  less than in the demo.
+
+Every GPT review record stores `codex_home: isolated` and its tool-call count.
+
+## Step 1: the 60 problems
+
+The paper's 116 problems (the pooled complete case in
+`results/processed/pooled_manifest.csv`) were sorted. Then `random.seed(2026)` gave a
+fixed order, and the first 60 problems in that order were kept.
+
+**Replacements: none.** Every one of the 60 has a valid original solo record for both
+Claude (A) and GPT-5.5 (O), with the draft code stored.
+
+**Mix:** 26 hard and 34 medium.
+
+```
+3562 3634 3677 3688 3714 3715 3716 3717 3720 3721 3722 3737 3754 3759 3760
+3762 3763 3764 3771 3779 3783 3784 3786 3789 3794 3795 3801 3805 3809
+abc387_c abc388_c abc388_f abc389_e abc389_f abc390_c abc390_g abc391_e
+abc391_f abc392_d abc392_g abc393_d abc393_f abc394_d abc394_e abc394_g
+abc395_c abc396_c abc396_g abc397_c abc398_b abc398_f abc399_c abc399_d
+abc399_e abc399_f abc400_c arc191_c arc194_b arc195_a arc195_e
+```
+
+## Step 2: which original drafts pass
+
+Every original draft was **regraded now** with the paper's grader. That way "passed
+before review" and "failed after review" come from the same grader.
+
+| Writer  | Passing drafts | Agrees with the paper's stored result |
+|---------|----------------|---------------------------------------|
+| Claude  | **54 / 60**    | 60 / 60                               |
+| GPT-5.5 | **52 / 60**    | 52 / 60                               |
+
+**The 8 disagreements.** All 8 are GPT-5.5 drafts that the paper scored as failing and
+that pass today: 3562, 3688, 3717, 3789, 3801, abc388_f, abc399_e and arc195_e.
+
+- Each was regraded two more times on its own and passed every time, so this is not
+  random.
+- All 8 went from fail to pass; none went the other way.
+- The cause is not confirmed. One possibility is that the original grading hit time
+  limits while the machine was running several conditions at once.
+- If this holds across all 116 problems, the paper's GPT-5.5 solo pass rate (71.6%)
+  may be understated. The frozen results were not changed. This run uses the regraded
+  results, and the paper's values are kept in the `paper_passed` column of the
+  inventory.
+
+## Stage 1a: Gemini alone on the first 10 problems
+
+| Measure               | Result                                          |
+|-----------------------|-------------------------------------------------|
+| Records saved         | 10 / 10                                         |
+| Parse failures        | 0                                               |
+| Errors or timeouts    | 0                                               |
+| Retries               | 0                                               |
+| **Passed**            | **10 / 10**                                     |
+| Tool calls            | 0 (only `gemini-3.1-pro-preview` was used)      |
+| Cost per call         | average **$0.211**, maximum $0.396              |
+| Total cost            | $2.11                                           |
+| Time per call         | average 109 s, maximum 213 s                    |
+
+| Problem | Result | Cost   | Time  | Output tokens |
+|---------|--------|--------|-------|---------------|
+| 3562    | pass   | $0.348 | 194 s | 27,581        |
+| 3634    | pass   | $0.048 | 21 s  | 2,590         |
+| 3677    | pass   | $0.134 | 59 s  | 9,732         |
+| 3688    | pass   | $0.396 | 213 s | 31,614        |
+| 3714    | pass   | $0.112 | 49 s  | 7,960         |
+| 3715    | pass   | $0.202 | 90 s  | 15,448        |
+| 3716    | pass   | $0.305 | 166 s | 24,050        |
+| 3717    | pass   | $0.346 | 182 s | 27,403        |
+| 3720    | pass   | $0.106 | 58 s  | 7,435         |
+| 3721    | pass   | $0.109 | 56 s  | 7,620         |
+
+**Cost flag.** The average cost was **48% above the demo's $0.142**, which is more than
+the 30% threshold. Gemini thought for much longer on these problems: almost all of its
+output is thinking, which is billed as output. The first 10 problems in sorted order are
+all LeetCode-style, so they may not represent the other 50.
+
+## Stage 1b: Gemini alone on the other 50 problems
+
+| Measure               | Other 50 problems    | All 60 problems         |
+|-----------------------|----------------------|-------------------------|
+| Records saved         | 50 / 50              | 60 / 60                 |
+| Parse failures        | 0                    | 0                       |
+| Errors or timeouts    | 0                    | 0                       |
+| Retries               | 0                    | 0                       |
+| **Passed**            | **46 / 50**          | **56 / 60 (93%)**       |
+| Tool calls            | 0                    | 0                       |
+| Average cost per call | $0.171               | **$0.178**              |
+| Maximum cost per call | $0.426               | $0.426                  |
+| Total cost            | $8.55                | **$10.66**              |
+| Average time per call | 87 s                 | 90 s                    |
+
+**Gemini's solo pass rate is 56 / 60 (93%).** The 4 failures are 3763, abc392_d,
+abc399_e and arc191_c.
+
+**All three writers on the same 60 problems** (regraded with the same grader):
+
+| Writer  | Hard (26) | Medium (34) | Total (60)      |
+|---------|-----------|-------------|-----------------|
+| Claude  | 22        | 32          | 54 (90%)        |
+| GPT-5.5 | 22        | 30          | 52 (87%)        |
+| Gemini  | 24        | 32          | **56 (93%)**    |
+
+Three problems were failed by all three writers: 3763, abc392_d and arc191_c.
+
+**Cost.** Over all 60 problems Gemini averaged $0.178 per call, 25% above the demo's
+$0.142. Hard problems cost more (average $0.244) than medium ones ($0.127).
+
+**How to read this:** Gemini's drafts are new, while the Claude and GPT-5.5 drafts come
+from the paper's runs on older CLI versions, and the GPT drafts were written with a
+shell available. So this table compares the drafts going into review. It is not a clean
+head-to-head of the three models.
+
+## Stage 2: reviews
+
+**Passing drafts going into review: 162** (Claude 54, GPT-5.5 52, Gemini 56), so 486 passing-draft
+reviews in total, 162 per reviewer.
+
+**Projected cost, computed before starting (Step 6):**
+
+| Account | Remaining before Stage 2 | Projection at demo rates   | Spending cap set |
+|---------|--------------------------|----------------------------|------------------|
+| Gemini  | about $79                | 162 × $0.260 = **$42**     | $77              |
+| OpenAI  | about $44.60             | 162 × $0.123 = **$20**     | $42.50           |
+| Claude  | Pro plan                 | $0                         | n/a              |
+
+Even at 25% above the demo's rate (as happened with Gemini solo), Gemini would cost
+about $53. GPT calls are now about 38% smaller than in the demo, so its projection is
+likely high.
+
+**What was run.** Every draft was reviewed once by each of the 3 reviewers, including
+each model reviewing its own drafts: 162 passing drafts (regressions) and 18 failing
+drafts (fixes), so 180 reviews per reviewer and **540 in total**.
+
+| Reviewer | Reviews | Valid | Parse failures | Errors | Tool calls | Usage-limit waits |
+|----------|---------|-------|----------------|--------|------------|-------------------|
+| Claude   | 180     | 180   | 0              | 0      | n/a        | 12 short waits    |
+| GPT-5.5  | 180     | 180   | 0              | 0      | 0          | 0                 |
+| Gemini   | 180     | 180   | 0              | 0      | 0          | 0                 |
+
+The Claude reviews finished in a few hours on the Pro plan, not days as feared.
+
+### Regression results (breaking working code)
+
+**By reviewer** (all writers pooled; 95% Clopper–Pearson intervals):
+
+| Reviewer | Regressions   | Rate     | 95% interval  | Unchanged | Edit size (mean / median lines) |
+|----------|---------------|----------|---------------|-----------|---------------------------------|
+| Claude   | 1 / 162       | 0.6%     | 0.0% – 3.4%   | 22%       | 15.0 / 7.5                      |
+| GPT-5.5  | **9 / 162**   | **5.6%** | 2.6% – 10.3%  | 7%        | 46.9 / 37.5                     |
+| Gemini   | 0 / 162       | 0.0%     | 0.0% – 2.3%   | 29%       | 26.3 / 14.5                     |
+
+
+**Are the differences real?** All three reviewers saw the same 162 drafts, so they can
+be compared draft by draft (exact McNemar test):
+
+| Comparison          | Drafts only the first broke | Only the second broke | p      | After Holm correction (6 tests) |
+|---------------------|-----------------------------|-----------------------|--------|---------------------------------|
+| GPT-5.5 vs Gemini   | 9                           | 0                     | 0.004  | 0.023, significant              |
+| GPT-5.5 vs Claude   | 9                           | 1                     | 0.021  | 0.11, not significant           |
+| Claude vs Gemini    | 1                           | 0                     | 1.0    | 1.0                             |
+
+None of the fix-rate comparisons differ (all p = 1.0).
+
+**By pair** (writer → reviewer):
+
+| Writer  | Reviewer | Regressions | Rate  | 95% interval  | Fixes | Unchanged | Median edit | $/review | Pair total |
+|---------|----------|-------------|-------|---------------|-------|-----------|-------------|----------|------------|
+| Claude  | Claude   | 0 / 54      | 0%    | 0 – 6.6%      | 2 / 6 | 27%       | 3           | $0.188   | $11.30     |
+| Claude  | GPT-5.5  | **5 / 54**  | 9.3%  | 3.1 – 20.3%   | 3 / 6 | 0%        | 45.5        | $0.050   | $3.02      |
+| Claude  | Gemini   | 0 / 54      | 0%    | 0 – 6.6%      | 2 / 6 | 7%        | 29          | $0.184   | $11.03     |
+| GPT-5.5 | Claude   | 0 / 52      | 0%    | 0 – 6.9%      | 4 / 8 | 35%       | 4           | $0.245   | $14.68     |
+| GPT-5.5 | GPT-5.5  | 2 / 52      | 3.8%  | 0.5 – 13.2%   | 2 / 8 | 22%       | 8.5         | $0.042   | $2.53      |
+| GPT-5.5 | Gemini   | 0 / 52      | 0%    | 0 – 6.9%      | 4 / 8 | 25%       | 17.5        | $0.177   | $10.59     |
+| Gemini  | Claude   | 1 / 56      | 1.8%  | 0.05 – 9.6%   | 0 / 4 | 3%        | 20          | $0.210   | $12.57     |
+| Gemini  | GPT-5.5  | 2 / 56      | 3.6%  | 0.4 – 12.3%   | 0 / 4 | 0%        | 61.5        | $0.047   | $2.81      |
+| Gemini  | Gemini   | 0 / 56      | 0%    | 0 – 6.4%      | 0 / 4 | 55%       | 0           | $0.173   | $10.38     |
+
+Costs are at API rates from `experiments/configs/pricing.yaml`; Claude's are the
+API-equivalent (it ran on Pro at $0). Pair totals include the failing-draft reviews.
+GPT-5.5 costs were corrected for a cached-token double count (see "Cost: actual spend").
+
+**Self-review vs. cross-model review** (all reviewers pooled):
+
+| Setting      | Regressions     | 95% interval  | Fixes   | Unchanged | Median edit |
+|--------------|-----------------|---------------|---------|-----------|-------------|
+| Self-review  | 2 / 162 (1.2%)  | 0.1% – 4.4%   | 4 / 18  | 34%       | 3           |
+| Cross-model  | 8 / 324 (2.5%)  | 1.1% – 4.8%   | 13 / 36 | 12%       | 28.5        |
+
+This gap comes almost entirely from GPT-5.5 reviewing other models' code: 7 of the 8
+cross-model regressions are by GPT-5.5.
+
+### Every regression
+
+| Problem  | Writer  | Reviewer | Edit size (lines) |
+|----------|---------|----------|-------------------|
+| 3688     | Gemini  | GPT-5.5  | 114               |
+| 3714     | Gemini  | GPT-5.5  | 57                |
+| 3715     | Claude  | GPT-5.5  | 22                |
+| 3784     | Gemini  | Claude   | 53                |
+| abc388_f | Claude  | GPT-5.5  | 106               |
+| abc389_e | Claude  | GPT-5.5  | 62                |
+| abc396_g | Claude  | GPT-5.5  | 55                |
+| abc399_d | Claude  | GPT-5.5  | 76                |
+| abc399_e | GPT-5.5 | GPT-5.5  | 81                |
+| abc388_f | GPT-5.5 | GPT-5.5  | 68 (time limit)   |
+
+The abc388_f review by GPT-5.5 of its own draft produced a program that did not finish
+the hidden tests even with a 1-hour limit (graded alone), so it counts as a fail: the
+rewrite made the solution too slow.
+
+Every regression came with a large rewrite (22 to 114 changed lines). No small edit
+broke working code.
+
+### Every fix
+
+| Problem  | Writer  | Fixed by (edit size in lines)                       |
+|----------|---------|-----------------------------------------------------|
+| 3688     | Claude  | Claude (29), Gemini (12), GPT-5.5 (108)             |
+| 3754     | GPT-5.5 | Claude (13), Gemini (4), GPT-5.5 (13)               |
+| 3762     | GPT-5.5 | Claude (15), Gemini (4)                             |
+| abc396_c | GPT-5.5 | Claude (24), Gemini (36)                            |
+| abc399_e | Claude  | GPT-5.5 (97)                                        |
+| arc194_b | GPT-5.5 | Claude (55), Gemini (50), GPT-5.5 (14)              |
+| arc195_e | Claude  | Claude (9), Gemini (20), GPT-5.5 (89)               |
+
+No reviewer fixed any of Gemini's 4 failing drafts. Three of those (3763, abc392_d,
+arc191_c) were failed by every writer.
+
+### What stands out
+
+- **GPT-5.5 is the reviewer that breaks working code.** It caused 9 of the 10
+  regressions (5.6% of its reviews, against 0.6% for Claude and 0% for Gemini).
+  The GPT-5.5 vs Gemini difference survives correction for multiple tests.
+- **GPT-5.5 rewrites other models' code heavily.** It returned another model's draft
+  unchanged 0 times out of 110, with a median edit of 54.5 lines. On its own drafts it
+  edits far less (median 8.5 lines, 22% unchanged), though 2 of its 52 own passing
+  drafts still broke. It is also the cheapest and fastest
+  reviewer (about $0.05 and 14 s per review).
+- **Gemini is the most conservative reviewer.** It broke nothing, but returned its own
+  drafts unchanged 55% of the time, and did not fix any of its own 4 failing drafts.
+- **Fixing is similar across reviewers:** Claude 6 / 18, Gemini 6 / 18, GPT-5.5 5 / 18.
+  With only 18 failing drafts, these rates are very uncertain.
+- **GPT drafts written with tools.** Dropping the 5 GPT-5.5 drafts written with tool use
+  does not change the conclusions: both GPT-draft regressions (abc399_e and abc388_f,
+  GPT reviewing GPT) are among those 5, so GPT-draft regressions go from 2 / 52 to 0 / 47.
+  The reviewers' own regression rates are barely affected.
+
+**How to read this:** each draft was reviewed once, so a single regression can be
+ordinary run-to-run variation. Pair-level rates rest on about 50 drafts and have wide
+intervals; the per-reviewer totals (about 160 drafts each) are the more reliable
+numbers.
+
+## FURTHER EXPERIMENTATION
+
+*Added 2026-11-21, after the main run. Nothing in this section has been run yet unless it
+says so. Each item says why it is being done and what it would add to a paper.*
+
+### Why do more
+
+The main run gives a clear, publishable-looking result: GPT-5.5 breaks working code
+(9 / 162) far more often than Gemini (0 / 162), and the difference survives correction
+for multiple tests. Before it can stand in an academic paper, it needs to survive the
+questions a reviewer will ask:
+
+1. **Is the original paper's data sound?** We found grader drift (8 GPT-5.5 drafts scored
+   as failing now pass), GPT-5.5 having a shell and web search despite a "no tool use"
+   description, and a cost double count.
+2. **Is the GPT-5.5 result consistent, and why does it happen?** Each draft was reviewed
+   once, so the 9 breaks could partly be chance.
+3. **Does it generalize?** Everything so far is competitive-programming puzzles from one
+   benchmark.
+4. **Contamination?** The problems (Jan–Apr 2025) predate Claude's and GPT-5.5's
+   training cutoffs.
+
+### The plan
+
+| # | Experiment | Cost | Why | Would it help? | Status |
+|---|------------|------|-----|----------------|--------|
+| 1 | **Regrade all 116 paper problems × 6 conditions** with the current grader | Free | Checks whether the grader drift we saw on 60 problems affects the paper's published pass rates (GPT-5.5 solo: 71.6%) | **Yes, essential.** If the paper's numbers are off, it must be corrected before anything else; a referee finding it first would damage credibility | Running |
+| 2 | **Recheck the paper's GPT-5.5 costs** for the cached-token double count | Free | The same pricing code produced the paper's cost tables | **Yes.** A cost claim that is 2× off undermines any cost-effectiveness argument | To do |
+| 3 | **Classify every break**: wrong answer, too slow, or crash; test whether edit size predicts breaking | Free | Explains *how* review breaks code (e.g. abc388_f was a rewrite that made the program too slow) | **Yes.** A mechanism makes the finding more convincing and more useful | To do |
+| 4 | **Repeat GPT-5.5's 180 reviews** (same prompt, fresh calls) | ≈ $8 OpenAI | Shows whether GPT breaks the *same* drafts again or different ones | **Yes.** Separates a consistent weakness from run-to-run noise, the most likely referee objection | Approved, not started |
+| 5 | **"Change as little as possible" prompt** for GPT-5.5's 180 reviews (one added line: `harness/prompts/reviewer_lcb_minimal_edit.txt`) | ≈ $8 OpenAI | Tests whether GPT's heavy rewriting is what causes the breaks | **Yes.** If one line removes most breaks, that is a practical, citable contribution | Approved, not started |
+| 6 | **BigCodeBench grader check**: install it and grade its own reference solutions twice | Free | BigCodeBench tests depend on pinned libraries and sometimes files or network; a flaky grader would make break counts meaningless | **Decides #7.** Only worth adding BigCodeBench if the grader is reliable | To do |
+| 7a | **If #6 passes: BigCodeBench**, about 60 tasks sampled from the full set (not Hard), all 9 pairings | ≈ $25–35 Gemini, ≈ $5 OpenAI, Claude free | Real-world library code (pandas, files, APIs) instead of puzzles | **Yes, most for the paper.** Answers "does this only apply to competitive programming?"; the full set gives enough passing drafts | Decided by #6 |
+| 7b | **If #6 fails: the other 56 LiveCodeBench problems**, all 9 pairings | ≈ $40 Gemini, ≈ $8 OpenAI, Claude free | About twice the data on the same problems; full coverage of the paper's 116 | **Somewhat.** Tightens GPT-5.5 vs Claude (now 9 vs 1, not significant after correction) but does not address generality | Fallback |
+
+Only one of 7a and 7b fits the remaining Gemini credit ($48).
+
+### Considered and set aside
+
+- **Fresh problems from after the models' training cutoffs.** This is the cleanest answer
+  to contamination, but no ready source exists: the newest LiveCodeBench release (v6)
+  ends on 2025-04-06, which is what we already used, and AtCoder's official test cases
+  are no longer public. Building tests ourselves (inputs generated within each problem's
+  limits, expected outputs from several independent accepted solutions) is possible but
+  is roughly a week of careful work. Deferred unless the paper targets a main conference.
+- **Contamination is partly addressed already for free.** Gemini's training cutoff
+  (January 2025) predates every problem, so Gemini likely never saw them; it broke 0
+  drafts. GPT-5.5, which may have seen them, broke 9. Prior exposure clearly does not
+  stop a reviewer from breaking code.
+
+### How these feed the paper
+
+- Items 1–3 correct and explain what we already have, and should be done regardless.
+- Items 4–5 turn "GPT-5.5 breaks code" into "GPT-5.5 breaks code consistently, because
+  it rewrites, and here is a one-line fix", or show that it does not.
+- Item 7 tests whether the finding holds beyond one benchmark.
+
+## Cost: actual spend
+
+| Part                                   | Gemini       | OpenAI (GPT-5.5) | Claude (API-equivalent) |
+|----------------------------------------|--------------|------------------|-------------------------|
+| Preflight and test calls               | about $0.03  | about $0.40      | $0                      |
+| Gemini solo drafts (60)                | $10.66       | n/a              | n/a                     |
+| Reviews of passing drafts (162 each)   | ┐            | ┐                | ┐                       |
+| Reviews of failing drafts (18 each)    | ┘ $32.01     | ┘ $8.36          | ┘ ($38.56)              |
+| **Total**                              | **≈ $42.70** | **≈ $8.40**      | **$0** (Pro plan)       |
+| Credits loaded                         | $90          | $45              | Pro                     |
+| **Left, per the billing pages**        | **$48**      | **$37**          | n/a                     |
+
+Total actual spend: **about $51**, under the $80 target. Costs are computed from token
+counts at the rates in `experiments/configs/pricing.yaml`, and match the balances
+reported on the provider billing pages after the run.
+
+**Correction: GPT-5.5 cost was first overstated by about 2×.** Codex reports
+`input_tokens` *including* the cached tokens, and the harness priced the cached tokens
+twice (once at the full rate, once at the cached rate). The first version of this table
+said $16.60; the corrected figure, $8.40, matches the OpenAI billing page. The harness is
+fixed (new Codex records store only uncached input tokens, flagged
+`input_tokens_exclude_cached`), and the analysis corrects older records. **The paper's
+own GPT-5.5 cost figures were computed the same way and are likely overstated too.**
+
+**Claude's API-equivalent** is $38.56 from `pricing.yaml`, as the run spec asks. Claude
+Code itself reports $49.46 for the same reviews; the difference is how it prices cache
+writes.
+
+**Per review** (average): Claude $0.214 (API-equivalent), GPT-5.5 $0.046, Gemini $0.178.
+**Time per review** (median): Claude 21 s, GPT-5.5 14 s, Gemini 82 s.
+
+### Budget history
+
+| Account | Credits loaded           | Spent before Stage 2 |
+|---------|--------------------------|----------------------|
+| Gemini  | $90 ($70 + $20 top-up)   | about $10.70         |
+| OpenAI  | $45 ($30 + $15 top-up)   | about $0.40          |
+| Claude  | Pro plan                 | $0                   |
+
+**Earlier projection after Stage 1a** (kept for the record), assuming about 156 passing
+drafts. This led to the credit top-ups:
+
+| Account | If review costs match the demo | If reviews are also 48% higher |
+|---------|--------------------------------|--------------------------------|
+| Gemini  | about $53                      | about $73 (over the limit)     |
+| OpenAI  | about $19                      | about $28 (tight)              |
+
+The OpenAI numbers should come in lower, because GPT calls are now about 38% smaller
+(see "GPT-5.5 reviews without tools"). The exact Stage 2 cost will be computed from the
+real number of passing drafts before Stage 2 starts. The Stage 2 runner can also stop
+each account at a spending cap (`--max-spend`).
+
+## Limitations and caveats
+
+- **Drafts and reviews come from different CLI versions.** The Claude and GPT-5.5 drafts
+  come from the paper's original runs on older CLI versions (Claude Code 2.1.50, Codex
+  CLI 0.125.0-alpha.3). All reviews, and the Gemini drafts, use current versions.
+- **The paper's GPT-5.5 drafts were written with tools.** The frozen records show the
+  GPT writer ran 562 shell commands and 40 web searches across the paper's 685 Codex
+  calls, and the GPT reviewer ran 2 shell commands. This conflicts with the paper's
+  "no tool use" description and is worth raising with the coauthors. **In this run's
+  sample, only 5 of the 60 GPT-5.5 drafts were written with tool use.** The analysis
+  reports GPT-draft results with and without those 5 drafts. Claude barely used tools
+  in the paper: 9 of its 369 writer calls took 2–3 turns, and the rest took 1.
+- **GPT reviews here differ from the demo.** The demo's GPT reviewer loaded the user's
+  Codex settings, including tools. This run's GPT reviewer has no tools.
+- **Grader drift.** 8 of the paper's GPT-5.5 "failing" drafts pass today (see Step 2).
+- **Few failing drafts.** Only 18 drafts failed (Claude 6, GPT-5.5 8, Gemini 4), so the
+  fix rates are very rough. Gemini's 4 failing drafts include 3 problems no writer solved.
+- **One review per draft.** Each draft was reviewed once per reviewer, so run-to-run
+  variation is not measured.
+- **Not a pre-registered test.** The significance tests were chosen after seeing the
+  data; treat them as a guide, not a confirmed finding.
+- **Possible contamination.** The 60 problems come from the newest LiveCodeBench release
+  (v6) and are dated Jan 4 – Apr 5, 2025. Published training cutoffs: Claude Opus 4.7,
+  January 2026; GPT-5.5, December 2025; Gemini 3.1 Pro, January 2025. So the problems are
+  **before** Claude's and GPT-5.5's cutoffs (they may have seen them, and their public
+  solutions) but **after** Gemini's. Solo pass rates for Claude and GPT-5.5 may be
+  inflated. The regression measurement is less affected, since it asks what a reviewer
+  does to a fixed draft. Gemini, the one reviewer that likely had not seen the problems,
+  broke none of the drafts.
+- **Gemini is a preview model,** and its behavior may change.
+- **Claude cost.** Claude runs on a Pro subscription, so it costs nothing. Its cost at
+  API prices is recorded for comparison.
+- **Gemini's cost varies a lot by problem,** from $0.05 to $0.40 per call in Stage 1a,
+  so early averages are a rough guide.
+
+## Files
+
+- **Task lists:** `experiments/task_lists/lcb_regression_60.txt` and
+  `lcb_regression_60_first10.txt`.
+- **Sample log:** `results/processed/regression60_sample_log.json` (seed, full seeded
+  order, replacements, slice of each problem).
+- **Draft inventory:** `results/processed/regression60_draft_inventory.csv`.
+- **Raw records:** `results/raw/regression60_gemini_solo/`,
+  `results/raw/regression60_preflight/`, and later `results/raw/regression60_reviews/`.
+- **Scripts:** `scripts/regression60_sample.py`, `scripts/regression60_inventory.py`,
+  `scripts/regression60_grade_solo.py`, and the Stage 2 runner
+  `experiments/run_regression60_reviews.py`.
+- **Harness changes:** `harness/core/cli_runner.py` (out-of-credits stop, isolated Codex
+  settings), `harness/core/pipeline.py`, `experiments/run_experiment.py`,
+  `experiments/run_label_study.py`.
+- **Tests:** `tests/test_out_of_credits.py`, `tests/test_regression60_reviews.py`.
+- **Tables:** `results/processed/regression60_metrics.csv` (by reviewer, own vs other
+  models' drafts, self vs cross), `regression60_by_pair.csv` (by pair, with a
+  `no_tool_drafts` row for GPT-5.5 drafts), `regression60_transitions.csv` (every
+  regression and fix).
+- **Review records:** `results/raw/regression60_reviews/R_<writer>_by_<reviewer>/`.
+- **Analysis:** `scripts/regression60_analyze.py`.
+
+---
+
+## For Miles: questions your professor may ask
+
+**"What is a regression here?"**
+A draft that passed the hidden tests before review and fails them after review. Only
+passing drafts are reviewed, so every such failure is caused by the reviewer.
+
+**"Why regrade the original drafts?"**
+So "before" and "after" are scored by the same grader. Otherwise a regression could just
+be grader drift.
+
+**"Why do 8 GPT-5.5 drafts disagree with the paper?"**
+They pass every time today but were scored as failing in the original run. The cause is
+not confirmed. It is worth checking across all 116 problems, because it may mean the
+paper understates GPT-5.5's solo pass rate.
+
+**"Did GPT-5.5 have tools in the paper?"**
+Yes. Codex has a built-in shell, and the paper's records show the GPT writer used it
+hundreds of times. In this run the GPT reviewer has no tools, like Claude and Gemini.
+
+**"Why is Gemini more expensive than in the demo?"**
+It thought much longer on these problems. Thinking tokens are billed as output.
+
+**"So which reviewer should you use?"**
+On this sample, GPT-5.5 is the cheapest and fastest reviewer (about $0.05 per review) but the only one that
+regularly breaks working code, by rewriting it heavily. Claude and Gemini almost never
+broke anything, and all three fixed about a third of failing drafts.
+
+**"Is GPT-5.5 significantly worse?"**
+Against Gemini, yes, even after correcting for multiple tests (9 vs 0 regressions on the
+same drafts). Against Claude, the difference (9 vs 1) is suggestive but not significant
+after correction.
+
+**"Does self-review break less?"**
+Pooled, a little (1.2% vs 2.5%), but that is mostly GPT-5.5 rewriting other models' code.
+Within each reviewer the samples are too small to say.
+
+**"Are the results comparable with the paper?"**
+Partly. The drafts are the paper's own, but the reviews use newer CLI versions, and the
+GPT reviewer has no tools.

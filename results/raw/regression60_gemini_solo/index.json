@@ -1,0 +1,39 @@
+{
+  "checkpoint_dir": "results/raw/regression60_gemini_solo",
+  "generated_at": "2026-11-22T01:16:47.087342+00:00",
+  "started_at": "2026-11-22T00:39:12.125012+00:00",
+  "updated_at": "2026-11-22T01:16:47.073169+00:00",
+  "benchmark": "livecodebench",
+  "config": "experiments/configs/three_model_conditions.yaml",
+  "benchmark_config_path": "experiments/configs/livecodebench.yaml",
+  "tasks": "experiments/task_lists/lcb_regression_60.txt",
+  "condition_settings": [
+    {
+      "id": "B3_gemini_solo",
+      "writer": {
+        "cli": "gemini",
+        "model": "gemini-3.1-pro-preview",
+        "effort": "high"
+      },
+      "reviewer": null
+    }
+  ],
+  "preflight_checked_at": "2026-11-22T00:29:08.239171+00:00",
+  "records": 60,
+  "unique_tasks": 60,
+  "conditions": [
+    {
+      "condition": "B3_gemini_solo",
+      "directory": "results/raw/regression60_gemini_solo/B3_gemini_solo",
+      "completed": 60,
+      "attempted": 60,
+      "evaluated": 10,
+      "passed": 10,
+      "parse_failed": 0,
+      "cli_error": 0,
+      "timed_out": 0,
+      "total_cost_usd": 10.657372,
+      "avg_total_latency_s": 90.34
+    }
+  ]
+}

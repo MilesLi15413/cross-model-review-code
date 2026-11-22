@@ -1,0 +1,121 @@
+{
+  "task_id": "3688",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.125.0-alpha.3",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-09T23:46:46.702665+00:00",
+  "writer_finished_at": "2026-05-09T23:50:23.325141+00:00",
+  "reviewer_started_at": "2026-11-22T02:10:27.354413+00:00",
+  "reviewer_finished_at": "2026-11-22T02:13:12.922672+00:00",
+  "writer_prompt_sha256": "6d801a0bf40e830c7ad3b6d0554e1594149fbcd9c854dc9d209c84149dc609eb",
+  "reviewer_prompt_sha256": "65958758b4fc8a453841300ec4281f94aa0afe31c30d96efa41d04b77dec4c43",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 165.56802975000028,
+  "total_latency_s": 165.56802975000028,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8791,
+  "reviewer_output_tokens": 25068,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.318398,
+  "total_cost_usd": 0.318398,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"3be7215f-cd5d-4168-815c-4c03876e6af7\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def maxSubarraySum(self, nums: List[int]) -> int:\\n        if max(nums) < 0:\\n            return max(nums)\\n\\n        cur = best = nums[0]\\n        has_negative = nums[0] < 0\\n\\n        for a in nums[1:]:\\n            has_negative |= a < 0\\n            cur = max(a, cur + a)\\n            best = max(best, cur)\\n\\n        if not has_negative:\\n            return best\\n\\n        prefix = 0\\n        gain = {}\\n        floor = 0\\n        max_gain = 0\\n        best_deleted = -(10 ** 30)\\n\\n        for a in nums:\\n            prefix += a\\n\\n            if a < 0:\\n                updated = max(gain.get(a, 0), floor) - a\\n                gain[a] = updated\\n                max_gain = max(max_gain, updated)\\n\\n            best_deleted = max(best_deleted, prefix + max_gain)\\n\\n            floor = max(floor, -prefix)\\n            max_gain = max(max_gain, floor)\\n\\n        return max(best, best_deleted)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 164775,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8791,\n          \"prompt\": 8791,\n          \"candidates\": 283,\n          \"total\": 33859,\n          \"cached\": 0,\n          \"thoughts\": 24785,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 164775,\n            \"tokens\": {\n              \"input\": 8791,\n              \"prompt\": 8791,\n              \"candidates\": 283,\n              \"total\": 33859,\n              \"cached\": 0,\n              \"thoughts\": 24785,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "```python\nfrom typing import List\n\nclass Solution:\n    def maxSubarraySum(self, nums: List[int]) -> int:\n        if max(nums) < 0:\n            return max(nums)\n\n        cur = best = nums[0]\n        has_negative = nums[0] < 0\n\n        for a in nums[1:]:\n            has_negative |= a < 0\n            cur = max(a, cur + a)\n            best = max(best, cur)\n\n        if not has_negative:\n            return best\n\n        prefix = 0\n        gain = {}\n        floor = 0\n        max_gain = 0\n        best_deleted = -(10 ** 30)\n\n        for a in nums:\n            prefix += a\n\n            if a < 0:\n                updated = max(gain.get(a, 0), floor) - a\n                gain[a] = updated\n                max_gain = max(max_gain, updated)\n\n            best_deleted = max(best_deleted, prefix + max_gain)\n\n            floor = max(floor, -prefix)\n            max_gain = max(max_gain, floor)\n\n        return max(best, best_deleted)\n```",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarraySum(self, nums: List[int]) -> int:\n        if max(nums) < 0:\n            return max(nums)\n\n        cur = best = nums[0]\n        has_negative = nums[0] < 0\n\n        for a in nums[1:]:\n            has_negative |= a < 0\n            cur = max(a, cur + a)\n            best = max(best, cur)\n\n        if not has_negative:\n            return best\n\n        prefix = 0\n        gain = {}\n        floor = 0\n        max_gain = 0\n        best_deleted = -(10 ** 30)\n\n        for a in nums:\n            prefix += a\n\n            if a < 0:\n                updated = max(gain.get(a, 0), floor) - a\n                gain[a] = updated\n                max_gain = max(max_gain, updated)\n\n            best_deleted = max(best_deleted, prefix + max_gain)\n\n            floor = max(floor, -prefix)\n            max_gain = max(max_gain, floor)\n\n        return max(best, best_deleted)",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def maxSubarraySum(self, nums: List[int]) -> int:\n        if max(nums) < 0:\n            return max(nums)\n\n        cur = best = nums[0]\n        has_negative = nums[0] < 0\n\n        for a in nums[1:]:\n            has_negative |= a < 0\n            cur = max(a, cur + a)\n            best = max(best, cur)\n\n        if not has_negative:\n            return best\n\n        prefix = 0\n        gain = {}\n        floor = 0\n        max_gain = 0\n        best_deleted = -(10 ** 30)\n\n        for a in nums:\n            prefix += a\n\n            if a < 0:\n                updated = max(gain.get(a, 0), floor) - a\n                gain[a] = updated\n                max_gain = max(max_gain, updated)\n\n            best_deleted = max(best_deleted, prefix + max_gain)\n\n            floor = max(floor, -prefix)\n            max_gain = max(max_gain, floor)\n\n        return max(best, best_deleted)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/3688__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "edd9c06062bb4b7c82b1985b586c99f95bb116c1851a94897535a4b1616285d4",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 216.619251874974,
+      "input_tokens": 161624,
+      "output_tokens": 5819,
+      "cached_input_tokens": 125952,
+      "cost_usd": 1.045666
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "edd9c06062bb4b7c82b1985b586c99f95bb116c1851a94897535a4b1616285d4",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.318398
+  }
+}

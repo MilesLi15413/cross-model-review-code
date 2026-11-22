@@ -1,0 +1,121 @@
+{
+  "task_id": "abc399_c",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.50 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T01:35:03.924467+00:00",
+  "writer_finished_at": "2026-05-18T01:35:18.972042+00:00",
+  "reviewer_started_at": "2026-11-22T01:40:31.385941+00:00",
+  "reviewer_finished_at": "2026-11-22T01:40:54.470225+00:00",
+  "writer_prompt_sha256": "ef1c9a713fa91a570dbb0c9acb8eb7493c301e676a3bf761da6b90cfdeec54cc",
+  "reviewer_prompt_sha256": "21a77d07c8060aaf83bc9438f45e3765989ab6b2e3d550ac326b1a3d71d40289",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 23.08426445799705,
+  "total_latency_s": 23.08426445799705,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8698,
+  "reviewer_output_tokens": 3722,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.06206,
+  "total_cost_usd": 0.06206,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"33b49a6d-2c80-4782-b890-433ddd385d24\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef main():\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n        \\n    idx = 0\\n    N = int(input_data[idx])\\n    idx += 1\\n    M = int(input_data[idx])\\n    idx += 1\\n    \\n    parent = list(range(N + 1))\\n    rank = [0] * (N + 1)\\n    \\n    def find(x):\\n        while parent[x] != x:\\n            parent[x] = parent[parent[x]]\\n            x = parent[x]\\n        return x\\n    \\n    def union(a, b):\\n        ra = find(a)\\n        rb = find(b)\\n        if ra == rb:\\n            return False\\n        if rank[ra] < rank[rb]:\\n            ra, rb = rb, ra\\n        parent[rb] = ra\\n        if rank[ra] == rank[rb]:\\n            rank[ra] += 1\\n        return True\\n    \\n    redundant = 0\\n    for _ in range(M):\\n        u = int(input_data[idx])\\n        idx += 1\\n        v = int(input_data[idx])\\n        idx += 1\\n        if not union(u, v):\\n            redundant += 1\\n            \\n    print(redundant)\\n\\nif __name__ == '__main__':\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 22275,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8698,\n          \"prompt\": 8698,\n          \"candidates\": 341,\n          \"total\": 12420,\n          \"cached\": 0,\n          \"thoughts\": 3381,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 22275,\n            \"tokens\": {\n              \"input\": 8698,\n              \"prompt\": 8698,\n              \"candidates\": 341,\n              \"total\": 12420,\n              \"cached\": 0,\n              \"thoughts\": 3381,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\nfrom sys import setrecursionlimit\n\ndef main():\n    input_data = sys.stdin.buffer.read().split()\n    idx = 0\n    N = int(input_data[idx]); idx += 1\n    M = int(input_data[idx]); idx += 1\n    \n    parent = list(range(N + 1))\n    rank_ = [0] * (N + 1)\n    \n    def find(x):\n        while parent[x] != x:\n            parent[x] = parent[parent[x]]\n            x = parent[x]\n        return x\n    \n    def union(a, b):\n        ra, rb = find(a), find(b)\n        if ra == rb:\n            return False\n        if rank_[ra] < rank_[rb]:\n            ra, rb = rb, ra\n        parent[rb] = ra\n        if rank_[ra] == rank_[rb]:\n            rank_[ra] += 1\n        return True\n    \n    redundant = 0\n    for _ in range(M):\n        u = int(input_data[idx]); idx += 1\n        v = int(input_data[idx]); idx += 1\n        if not union(u, v):\n            redundant += 1\n    \n    print(redundant)\n\nmain()",
+  "reviewer_artifact": "import sys\n\ndef main():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n        \n    idx = 0\n    N = int(input_data[idx])\n    idx += 1\n    M = int(input_data[idx])\n    idx += 1\n    \n    parent = list(range(N + 1))\n    rank = [0] * (N + 1)\n    \n    def find(x):\n        while parent[x] != x:\n            parent[x] = parent[parent[x]]\n            x = parent[x]\n        return x\n    \n    def union(a, b):\n        ra = find(a)\n        rb = find(b)\n        if ra == rb:\n            return False\n        if rank[ra] < rank[rb]:\n            ra, rb = rb, ra\n        parent[rb] = ra\n        if rank[ra] == rank[rb]:\n            rank[ra] += 1\n        return True\n    \n    redundant = 0\n    for _ in range(M):\n        u = int(input_data[idx])\n        idx += 1\n        v = int(input_data[idx])\n        idx += 1\n        if not union(u, v):\n            redundant += 1\n            \n    print(redundant)\n\nif __name__ == '__main__':\n    main()",
+  "final_artifact": "import sys\n\ndef main():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n        \n    idx = 0\n    N = int(input_data[idx])\n    idx += 1\n    M = int(input_data[idx])\n    idx += 1\n    \n    parent = list(range(N + 1))\n    rank = [0] * (N + 1)\n    \n    def find(x):\n        while parent[x] != x:\n            parent[x] = parent[parent[x]]\n            x = parent[x]\n        return x\n    \n    def union(a, b):\n        ra = find(a)\n        rb = find(b)\n        if ra == rb:\n            return False\n        if rank[ra] < rank[rb]:\n            ra, rb = rb, ra\n        parent[rb] = ra\n        if rank[ra] == rank[rb]:\n            rank[ra] += 1\n        return True\n    \n    redundant = 0\n    for _ in range(M):\n        u = int(input_data[idx])\n        idx += 1\n        v = int(input_data[idx])\n        idx += 1\n        if not union(u, v):\n            redundant += 1\n            \n    print(redundant)\n\nif __name__ == '__main__':\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B1_claude_solo/abc399_c__B1_claude_solo.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "f6c5d18780ae5ea0d06b26a35625bb4bbb6e34acf637b595f464a08e2b08e301",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 15.047348082996905,
+      "input_tokens": 5,
+      "output_tokens": 664,
+      "cached_input_tokens": 31052,
+      "cost_usd": 0.16340925
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "9c3b13cb2d77b17f8faa8678aec211f70cdeef07591ae13f6418b24ea36c379b",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 34,
+    "reviewer_cost_all_attempts": 0.06206
+  }
+}

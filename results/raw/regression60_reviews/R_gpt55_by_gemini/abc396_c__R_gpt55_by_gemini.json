@@ -1,0 +1,121 @@
+{
+  "task_id": "abc396_c",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T00:02:50.044352+00:00",
+  "writer_finished_at": "2026-05-18T00:03:10.090402+00:00",
+  "reviewer_started_at": "2026-11-22T01:49:30.170963+00:00",
+  "reviewer_finished_at": "2026-11-22T01:50:35.781290+00:00",
+  "writer_prompt_sha256": "a74f6ebe5133d010fa51a08069dac7705c4888bc6aa3e509df90bf33183082c8",
+  "reviewer_prompt_sha256": "bb522d90ae071230e8c74130c715eee81843c8e88d6f3bdf4006051c2aba1e38",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 65.61021620800602,
+  "total_latency_s": 65.61021620800602,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8778,
+  "reviewer_output_tokens": 10016,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.137748,
+  "total_cost_usd": 0.137748,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"0cd5b410-8e6b-46bd-bf9a-a00f45a8f568\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef main():\\n    # Read all input from standard input efficiently\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n\\n    N = int(input_data[0])\\n    M = int(input_data[1])\\n\\n    # Extract the B and W arrays\\n    B = [int(x) for x in input_data[2:2+N]]\\n    W = [int(x) for x in input_data[2+N:2+N+M]]\\n\\n    # Sort both arrays in descending order since we want to greedily pick the maximum values available\\n    B.sort(reverse=True)\\n    W.sort(reverse=True)\\n\\n    # Compute prefix sums for black balls\\n    black_prefix = [0] * (N + 1)\\n    for i in range(N):\\n        black_prefix[i + 1] = black_prefix[i] + B[i]\\n\\n    # Compute prefix sums for white balls\\n    white_prefix = [0] * (M + 1)\\n    for i in range(M):\\n        white_prefix[i + 1] = white_prefix[i] + W[i]\\n\\n    # best_black_from[k] will store the maximum possible sum of black balls we can get \\n    # if we choose c >= k black balls. (c is the number of chosen black balls)\\n    best_black_from = [0] * (N + 1)\\n    best_black_from[N] = black_prefix[N]\\n    for i in range(N - 1, -1, -1):\\n        best_black_from[i] = max(black_prefix[i], best_black_from[i + 1])\\n\\n    # Find the optimal combination of chosen white balls and black balls\\n    ans = 0\\n    for whites in range(min(N, M) + 1):\\n        # By taking `whites` white balls, we MUST take at least `whites` black balls.\\n        # So we can safely take the maximum black prefix sum available from indices >= whites.\\n        current_sum = white_prefix[whites] + best_black_from[whites]\\n        if current_sum > ans:\\n            ans = current_sum\\n\\n    print(ans)\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 64822,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8778,\n          \"prompt\": 8778,\n          \"candidates\": 547,\n          \"total\": 18794,\n          \"cached\": 0,\n          \"thoughts\": 9469,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 64822,\n            \"tokens\": {\n              \"input\": 8778,\n              \"prompt\": 8778,\n              \"candidates\": 547,\n              \"total\": 18794,\n              \"cached\": 0,\n              \"thoughts\": 9469,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef main():\n    input = sys.stdin.buffer.readline\n\n    N, M = map(int, input().split())\n    B = list(map(int, input().split()))\n    W = list(map(int, input().split()))\n\n    B.sort(reverse=True)\n    W.sort(reverse=True)\n\n    black_prefix = [0] * (N + 1)\n    for i, x in enumerate(B, 1):\n        black_prefix[i] = black_prefix[i - 1] + x\n\n    white_prefix = [0] * (M + 1)\n    for i, x in enumerate(W, 1):\n        white_prefix[i] = white_prefix[i - 1] + x\n\n    best_black_from = [0] * (N + 2)\n    best_black_from[N] = black_prefix[N]\n    for i in range(N - 1, -1, -1):\n        best_black_from[i] = max(black_prefix[i], best_black_from[i + 1])\n\n    ans = 0\n    for whites in range(min(N, M) + 1):\n        ans = max(ans, white_prefix[whites] + best_black_from[whites])\n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "reviewer_artifact": "import sys\n\ndef main():\n    # Read all input from standard input efficiently\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n\n    N = int(input_data[0])\n    M = int(input_data[1])\n\n    # Extract the B and W arrays\n    B = [int(x) for x in input_data[2:2+N]]\n    W = [int(x) for x in input_data[2+N:2+N+M]]\n\n    # Sort both arrays in descending order since we want to greedily pick the maximum values available\n    B.sort(reverse=True)\n    W.sort(reverse=True)\n\n    # Compute prefix sums for black balls\n    black_prefix = [0] * (N + 1)\n    for i in range(N):\n        black_prefix[i + 1] = black_prefix[i] + B[i]\n\n    # Compute prefix sums for white balls\n    white_prefix = [0] * (M + 1)\n    for i in range(M):\n        white_prefix[i + 1] = white_prefix[i] + W[i]\n\n    # best_black_from[k] will store the maximum possible sum of black balls we can get \n    # if we choose c >= k black balls. (c is the number of chosen black balls)\n    best_black_from = [0] * (N + 1)\n    best_black_from[N] = black_prefix[N]\n    for i in range(N - 1, -1, -1):\n        best_black_from[i] = max(black_prefix[i], best_black_from[i + 1])\n\n    # Find the optimal combination of chosen white balls and black balls\n    ans = 0\n    for whites in range(min(N, M) + 1):\n        # By taking `whites` white balls, we MUST take at least `whites` black balls.\n        # So we can safely take the maximum black prefix sum available from indices >= whites.\n        current_sum = white_prefix[whites] + best_black_from[whites]\n        if current_sum > ans:\n            ans = current_sum\n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "final_artifact": "import sys\n\ndef main():\n    # Read all input from standard input efficiently\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n\n    N = int(input_data[0])\n    M = int(input_data[1])\n\n    # Extract the B and W arrays\n    B = [int(x) for x in input_data[2:2+N]]\n    W = [int(x) for x in input_data[2+N:2+N+M]]\n\n    # Sort both arrays in descending order since we want to greedily pick the maximum values available\n    B.sort(reverse=True)\n    W.sort(reverse=True)\n\n    # Compute prefix sums for black balls\n    black_prefix = [0] * (N + 1)\n    for i in range(N):\n        black_prefix[i + 1] = black_prefix[i] + B[i]\n\n    # Compute prefix sums for white balls\n    white_prefix = [0] * (M + 1)\n    for i in range(M):\n        white_prefix[i + 1] = white_prefix[i] + W[i]\n\n    # best_black_from[k] will store the maximum possible sum of black balls we can get \n    # if we choose c >= k black balls. (c is the number of chosen black balls)\n    best_black_from = [0] * (N + 1)\n    best_black_from[N] = black_prefix[N]\n    for i in range(N - 1, -1, -1):\n        best_black_from[i] = max(black_prefix[i], best_black_from[i + 1])\n\n    # Find the optimal combination of chosen white balls and black balls\n    ans = 0\n    for whites in range(min(N, M) + 1):\n        # By taking `whites` white balls, we MUST take at least `whites` black balls.\n        # So we can safely take the maximum black prefix sum available from indices >= whites.\n        current_sum = white_prefix[whites] + best_black_from[whites]\n        if current_sum > ans:\n            ans = current_sum\n\n    print(ans)\n\nif __name__ == \"__main__\":\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/abc396_c__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "ce8a7cd749da29aad1fccc4a0b66e8b1cc98399cf136bb609d0cd55857136607",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 20.04575529100839,
+      "input_tokens": 20490,
+      "output_tokens": 654,
+      "cached_input_tokens": 3456,
+      "cost_usd": 0.123798
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "8ed0d2bc0185a7ece0f052990dc67afb602dc990773d8a963926e7d5594cfabf",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 36,
+    "reviewer_cost_all_attempts": 0.137748
+  }
+}

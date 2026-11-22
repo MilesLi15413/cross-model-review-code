@@ -112,6 +112,7 @@ class TwoPassPipeline:
             cli_version=runner.get_version(),
             status_callback=runner.status_callback,
             stop_on_limit=runner.stop_on_limit,
+            codex_home=runner.codex_home,
         )
 
     def _apply_writer_result(

@@ -1,0 +1,121 @@
+{
+  "task_id": "abc391_f",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.125.0-alpha.3",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-10T03:39:26.824704+00:00",
+  "writer_finished_at": "2026-05-10T03:41:46.660530+00:00",
+  "reviewer_started_at": "2026-11-22T02:25:16.160792+00:00",
+  "reviewer_finished_at": "2026-11-22T02:26:52.631193+00:00",
+  "writer_prompt_sha256": "f5ac187de199fbef38a6c9fdb0f18e68a9b224759b639a8b31f3d5f113de06e8",
+  "reviewer_prompt_sha256": "1ba24818861abb80540e36b1937e9e8aa6f59f19490ea7aab50711c1b79b6349",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 96.47013325000444,
+  "total_latency_s": 96.47013325000444,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9679,
+  "reviewer_output_tokens": 15023,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.199634,
+  "total_cost_usd": 0.199634,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"dce34d77-0c97-46b3-af1a-30fae728f5c4\",\n  \"response\": \"<solution>\\nimport sys\\nimport heapq\\n\\ndef compress_desc(arr):\\n    arr.sort(reverse=True)\\n    vals = []\\n    cnts = []\\n    for x in arr:\\n        if vals and vals[-1] == x:\\n            cnts[-1] += 1\\n        else:\\n            vals.append(x)\\n            cnts.append(1)\\n    return vals, cnts\\n\\ndef main():\\n    # Fast I/O reading all input at once\\n    data = list(map(int, sys.stdin.buffer.read().split()))\\n    if not data:\\n        return\\n    N, K = data[0], data[1]\\n    \\n    A = data[2 : 2 + N]\\n    B = data[2 + N : 2 + 2 * N]\\n    C = data[2 + 2 * N : 2 + 3 * N]\\n\\n    # Compress arrays to group identical values and sort descending\\n    A, ca = compress_desc(A)\\n    B, cb = compress_desc(B)\\n    C, cc = compress_desc(C)\\n\\n    na, nb, nc = len(A), len(B), len(C)\\n    base_i = nb * nc\\n\\n    # Initialize max-heap with the largest possible element combination\\n    a0, b0, c0 = A[0], B[0], C[0]\\n    heap = [(-(a0 * b0 + b0 * c0 + c0 * a0), 0)]\\n\\n    while heap:\\n        neg_v, code = heapq.heappop(heap)\\n        \\n        # Decode state (i, j, k)\\n        i, rem = divmod(code, base_i)\\n        j, k = divmod(rem, nc)\\n\\n        # Decrease K by the number of times this specific value occurs\\n        K -= ca[i] * cb[j] * cc[k]\\n        if K <= 0:\\n            print(-neg_v)\\n            return\\n\\n        a, b, c = A[i], B[j], C[k]\\n\\n        # Monotonic tree generation without duplication\\n        if k + 1 < nc:\\n            c2 = C[k + 1]\\n            heapq.heappush(heap, (-(a * b + c2 * (a + b)), code + 1))\\n\\n        if k == 0 and j + 1 < nb:\\n            b2 = B[j + 1]\\n            heapq.heappush(heap, (-(c * a + b2 * (c + a)), code + nc))\\n\\n        if j == 0 and k == 0 and i + 1 < na:\\n            a2 = A[i + 1]\\n            heapq.heappush(heap, (-(b * c + a2 * (b + c)), code + base_i))\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 95652,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9679,\n          \"prompt\": 9679,\n          \"candidates\": 679,\n          \"total\": 24702,\n          \"cached\": 0,\n          \"thoughts\": 14344,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 95652,\n            \"tokens\": {\n              \"input\": 9679,\n              \"prompt\": 9679,\n              \"candidates\": 679,\n              \"total\": 24702,\n              \"cached\": 0,\n              \"thoughts\": 14344,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\nimport heapq\n\ndef compress_desc(arr):\n    arr.sort(reverse=True)\n    vals = []\n    cnts = []\n    for x in arr:\n        if vals and vals[-1] == x:\n            cnts[-1] += 1\n        else:\n            vals.append(x)\n            cnts.append(1)\n    return vals, cnts\n\ndef main():\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    N, K = data[0], data[1]\n    A = data[2:2 + N]\n    B = data[2 + N:2 + 2 * N]\n    C = data[2 + 2 * N:2 + 3 * N]\n\n    A, ca = compress_desc(A)\n    B, cb = compress_desc(B)\n    C, cc = compress_desc(C)\n\n    na, nb, nc = len(A), len(B), len(C)\n    base_i = nb * nc\n\n    def value(i, j, k):\n        a, b, c = A[i], B[j], C[k]\n        return a * b + b * c + c * a\n\n    heap = [(-value(0, 0, 0), 0)]\n\n    while heap:\n        neg_v, code = heapq.heappop(heap)\n        i, rem = divmod(code, base_i)\n        j, k = divmod(rem, nc)\n\n        K -= ca[i] * cb[j] * cc[k]\n        if K <= 0:\n            print(-neg_v)\n            return\n\n        a, b, c = A[i], B[j], C[k]\n\n        if k + 1 < nc:\n            nk = k + 1\n            c2 = C[nk]\n            heapq.heappush(heap, (-(a * b + b * c2 + c2 * a), code + 1))\n\n        if k == 0 and j + 1 < nb:\n            nj = j + 1\n            b2 = B[nj]\n            heapq.heappush(heap, (-(a * b2 + b2 * c + c * a), code + nc))\n\n        if j == 0 and k == 0 and i + 1 < na:\n            ni = i + 1\n            a2 = A[ni]\n            heapq.heappush(heap, (-(a2 * b + b * c + c * a2), code + base_i))\n\nif __name__ == \"__main__\":\n    main()",
+  "reviewer_artifact": "import sys\nimport heapq\n\ndef compress_desc(arr):\n    arr.sort(reverse=True)\n    vals = []\n    cnts = []\n    for x in arr:\n        if vals and vals[-1] == x:\n            cnts[-1] += 1\n        else:\n            vals.append(x)\n            cnts.append(1)\n    return vals, cnts\n\ndef main():\n    # Fast I/O reading all input at once\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n    N, K = data[0], data[1]\n    \n    A = data[2 : 2 + N]\n    B = data[2 + N : 2 + 2 * N]\n    C = data[2 + 2 * N : 2 + 3 * N]\n\n    # Compress arrays to group identical values and sort descending\n    A, ca = compress_desc(A)\n    B, cb = compress_desc(B)\n    C, cc = compress_desc(C)\n\n    na, nb, nc = len(A), len(B), len(C)\n    base_i = nb * nc\n\n    # Initialize max-heap with the largest possible element combination\n    a0, b0, c0 = A[0], B[0], C[0]\n    heap = [(-(a0 * b0 + b0 * c0 + c0 * a0), 0)]\n\n    while heap:\n        neg_v, code = heapq.heappop(heap)\n        \n        # Decode state (i, j, k)\n        i, rem = divmod(code, base_i)\n        j, k = divmod(rem, nc)\n\n        # Decrease K by the number of times this specific value occurs\n        K -= ca[i] * cb[j] * cc[k]\n        if K <= 0:\n            print(-neg_v)\n            return\n\n        a, b, c = A[i], B[j], C[k]\n\n        # Monotonic tree generation without duplication\n        if k + 1 < nc:\n            c2 = C[k + 1]\n            heapq.heappush(heap, (-(a * b + c2 * (a + b)), code + 1))\n\n        if k == 0 and j + 1 < nb:\n            b2 = B[j + 1]\n            heapq.heappush(heap, (-(c * a + b2 * (c + a)), code + nc))\n\n        if j == 0 and k == 0 and i + 1 < na:\n            a2 = A[i + 1]\n            heapq.heappush(heap, (-(b * c + a2 * (b + c)), code + base_i))\n\nif __name__ == \"__main__\":\n    main()",
+  "final_artifact": "import sys\nimport heapq\n\ndef compress_desc(arr):\n    arr.sort(reverse=True)\n    vals = []\n    cnts = []\n    for x in arr:\n        if vals and vals[-1] == x:\n            cnts[-1] += 1\n        else:\n            vals.append(x)\n            cnts.append(1)\n    return vals, cnts\n\ndef main():\n    # Fast I/O reading all input at once\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n    N, K = data[0], data[1]\n    \n    A = data[2 : 2 + N]\n    B = data[2 + N : 2 + 2 * N]\n    C = data[2 + 2 * N : 2 + 3 * N]\n\n    # Compress arrays to group identical values and sort descending\n    A, ca = compress_desc(A)\n    B, cb = compress_desc(B)\n    C, cc = compress_desc(C)\n\n    na, nb, nc = len(A), len(B), len(C)\n    base_i = nb * nc\n\n    # Initialize max-heap with the largest possible element combination\n    a0, b0, c0 = A[0], B[0], C[0]\n    heap = [(-(a0 * b0 + b0 * c0 + c0 * a0), 0)]\n\n    while heap:\n        neg_v, code = heapq.heappop(heap)\n        \n        # Decode state (i, j, k)\n        i, rem = divmod(code, base_i)\n        j, k = divmod(rem, nc)\n\n        # Decrease K by the number of times this specific value occurs\n        K -= ca[i] * cb[j] * cc[k]\n        if K <= 0:\n            print(-neg_v)\n            return\n\n        a, b, c = A[i], B[j], C[k]\n\n        # Monotonic tree generation without duplication\n        if k + 1 < nc:\n            c2 = C[k + 1]\n            heapq.heappush(heap, (-(a * b + c2 * (a + b)), code + 1))\n\n        if k == 0 and j + 1 < nb:\n            b2 = B[j + 1]\n            heapq.heappush(heap, (-(c * a + b2 * (c + a)), code + nc))\n\n        if j == 0 and k == 0 and i + 1 < na:\n            a2 = A[i + 1]\n            heapq.heappush(heap, (-(b * c + a2 * (b + c)), code + base_i))\n\nif __name__ == \"__main__\":\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/abc391_f__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "368f2575f6d28a822e3bdf2dd2d56a0714c51bb28786b785ffab0c20e31691d1",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 139.83451687498018,
+      "input_tokens": 39969,
+      "output_tokens": 7065,
+      "cached_input_tokens": 32512,
+      "cost_usd": 0.428051
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "5d91b197b0432a4a710840ba785152b29d7f91332dfac55e0209e753c4117b79",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 38,
+    "reviewer_cost_all_attempts": 0.199634
+  }
+}

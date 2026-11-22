@@ -1,0 +1,121 @@
+{
+  "task_id": "arc191_c",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.125.0-alpha.3",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-10T02:06:23.858614+00:00",
+  "writer_finished_at": "2026-05-10T02:07:24.966878+00:00",
+  "reviewer_started_at": "2026-11-22T01:50:36.421717+00:00",
+  "reviewer_finished_at": "2026-11-22T01:52:51.653324+00:00",
+  "writer_prompt_sha256": "794f8a247e00370fb1f288801c786d2e936930809c813325542805f96623acde",
+  "reviewer_prompt_sha256": "b88f1b7f10fe05511f30061080bec579d9a7f6094205e235db1a54c9e7e104e1",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 135.23141208299785,
+  "total_latency_s": 135.23141208299785,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9065,
+  "reviewer_output_tokens": 22441,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.287422,
+  "total_cost_usd": 0.287422,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"0058ccb2-0ee0-4cbc-bd26-1a415f325959\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef build_primes(limit: int):\\n    sieve = bytearray(b\\\"\\\\x01\\\") * (limit + 1)\\n    sieve[0:2] = b\\\"\\\\x00\\\\x00\\\"\\n    for i in range(2, int(limit ** 0.5) + 1):\\n        if sieve[i]:\\n            start = i * i\\n            sieve[start:limit + 1:i] = b\\\"\\\\x00\\\" * (((limit - start) // i) + 1)\\n    # Pre-calculate (p, p^2) to avoid repeated multiplications in the hot loop\\n    return [(i, i * i) for i in range(limit + 1) if sieve[i]]\\n\\n# 31623 is enough since sqrt(10^9) \u2248 31622.77\\nPRIMES = build_primes(31623)\\n\\ndef solve_one(n: int):\\n    if n == 1:\\n        return 1, 1\\n\\n    x, mod = 0, 1\\n    temp_n = n\\n\\n    for p, p2 in PRIMES:\\n        if p2 > temp_n:\\n            break\\n        if temp_n % p == 0:\\n            e = 0\\n            while temp_n % p == 0:\\n                temp_n //= p\\n                e += 1\\n            \\n            # Construct (m, r) such that the multiplicative order of r modulo m is exactly p^e\\n            if p == 2:\\n                if e == 1:\\n                    m, r = 4, 3\\n                else:\\n                    m, r = 1 << (e + 2), 5\\n            else:\\n                m, r = p ** (e + 1), p + 1\\n\\n            # Chinese Remainder Theorem to combine congruences\\n            t = ((r - x) % m) * pow(mod % m, -1, m) % m\\n            x += mod * t\\n            mod *= m\\n\\n    # If n has a prime factor > 31623, it must be remaining in temp_n and have an exponent of 1\\n    if temp_n > 1:\\n        p = temp_n\\n        m, r = p * p, p + 1\\n        t = ((r - x) % m) * pow(mod % m, -1, m) % m\\n        x += mod * t\\n        mod *= m\\n\\n    return x, mod\\n\\ndef main():\\n    # Fast I/O\\n    data = list(map(int, sys.stdin.buffer.read().split()))\\n    if not data:\\n        return\\n    t = data[0]\\n    out = []\\n    \\n    # Process each query\\n    for i in range(1, t + 1):\\n        a, m = solve_one(data[i])\\n        out.append(f\\\"{a} {m}\\\")\\n        \\n    sys.stdout.write(\\\"\\\\n\\\".join(out) + \\\"\\\\n\\\")\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 134438,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9065,\n          \"prompt\": 9065,\n          \"candidates\": 717,\n          \"total\": 31506,\n          \"cached\": 0,\n          \"thoughts\": 21724,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 134438,\n            \"tokens\": {\n              \"input\": 9065,\n              \"prompt\": 9065,\n              \"candidates\": 717,\n              \"total\": 31506,\n              \"cached\": 0,\n              \"thoughts\": 21724,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\nimport math\n\ndef build_primes(limit: int):\n    sieve = bytearray(b\"\\x01\") * (limit + 1)\n    sieve[0:2] = b\"\\x00\\x00\"\n    for i in range(2, int(limit ** 0.5) + 1):\n        if sieve[i]:\n            start = i * i\n            sieve[start:limit + 1:i] = b\"\\x00\" * (((limit - start) // i) + 1)\n    return [i for i in range(limit + 1) if sieve[i]]\n\nPRIMES = build_primes(31623)\n\ndef factorize(n: int):\n    res = []\n    x = n\n    for p in PRIMES:\n        if p * p > x:\n            break\n        if x % p == 0:\n            e = 0\n            while x % p == 0:\n                x //= p\n                e += 1\n            res.append((p, e))\n    if x > 1:\n        res.append((x, 1))\n    return res\n\ndef crt_pair(x, mod, r, m):\n    t = ((r - x) % m) * pow(mod % m, -1, m) % m\n    return x + mod * t, mod * m\n\ndef solve_one(n: int):\n    if n == 1:\n        return 1, 1\n\n    x, mod = 0, 1\n\n    for p, e in factorize(n):\n        if p == 2:\n            if e == 1:\n                m, r = 4, 3\n            else:\n                m, r = 1 << (e + 2), 5\n        else:\n            m, r = p ** (e + 1), p + 1\n\n        x, mod = crt_pair(x, mod, r, m)\n\n    return x, mod\n\ndef main():\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    t = data[0]\n    out = []\n    for i in range(1, t + 1):\n        a, m = solve_one(data[i])\n        out.append(f\"{a} {m}\")\n    print(\"\\n\".join(out))\n\nif __name__ == \"__main__\":\n    main()",
+  "reviewer_artifact": "import sys\n\ndef build_primes(limit: int):\n    sieve = bytearray(b\"\\x01\") * (limit + 1)\n    sieve[0:2] = b\"\\x00\\x00\"\n    for i in range(2, int(limit ** 0.5) + 1):\n        if sieve[i]:\n            start = i * i\n            sieve[start:limit + 1:i] = b\"\\x00\" * (((limit - start) // i) + 1)\n    # Pre-calculate (p, p^2) to avoid repeated multiplications in the hot loop\n    return [(i, i * i) for i in range(limit + 1) if sieve[i]]\n\n# 31623 is enough since sqrt(10^9) \u2248 31622.77\nPRIMES = build_primes(31623)\n\ndef solve_one(n: int):\n    if n == 1:\n        return 1, 1\n\n    x, mod = 0, 1\n    temp_n = n\n\n    for p, p2 in PRIMES:\n        if p2 > temp_n:\n            break\n        if temp_n % p == 0:\n            e = 0\n            while temp_n % p == 0:\n                temp_n //= p\n                e += 1\n            \n            # Construct (m, r) such that the multiplicative order of r modulo m is exactly p^e\n            if p == 2:\n                if e == 1:\n                    m, r = 4, 3\n                else:\n                    m, r = 1 << (e + 2), 5\n            else:\n                m, r = p ** (e + 1), p + 1\n\n            # Chinese Remainder Theorem to combine congruences\n            t = ((r - x) % m) * pow(mod % m, -1, m) % m\n            x += mod * t\n            mod *= m\n\n    # If n has a prime factor > 31623, it must be remaining in temp_n and have an exponent of 1\n    if temp_n > 1:\n        p = temp_n\n        m, r = p * p, p + 1\n        t = ((r - x) % m) * pow(mod % m, -1, m) % m\n        x += mod * t\n        mod *= m\n\n    return x, mod\n\ndef main():\n    # Fast I/O\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n    t = data[0]\n    out = []\n    \n    # Process each query\n    for i in range(1, t + 1):\n        a, m = solve_one(data[i])\n        out.append(f\"{a} {m}\")\n        \n    sys.stdout.write(\"\\n\".join(out) + \"\\n\")\n\nif __name__ == \"__main__\":\n    main()",
+  "final_artifact": "import sys\n\ndef build_primes(limit: int):\n    sieve = bytearray(b\"\\x01\") * (limit + 1)\n    sieve[0:2] = b\"\\x00\\x00\"\n    for i in range(2, int(limit ** 0.5) + 1):\n        if sieve[i]:\n            start = i * i\n            sieve[start:limit + 1:i] = b\"\\x00\" * (((limit - start) // i) + 1)\n    # Pre-calculate (p, p^2) to avoid repeated multiplications in the hot loop\n    return [(i, i * i) for i in range(limit + 1) if sieve[i]]\n\n# 31623 is enough since sqrt(10^9) \u2248 31622.77\nPRIMES = build_primes(31623)\n\ndef solve_one(n: int):\n    if n == 1:\n        return 1, 1\n\n    x, mod = 0, 1\n    temp_n = n\n\n    for p, p2 in PRIMES:\n        if p2 > temp_n:\n            break\n        if temp_n % p == 0:\n            e = 0\n            while temp_n % p == 0:\n                temp_n //= p\n                e += 1\n            \n            # Construct (m, r) such that the multiplicative order of r modulo m is exactly p^e\n            if p == 2:\n                if e == 1:\n                    m, r = 4, 3\n                else:\n                    m, r = 1 << (e + 2), 5\n            else:\n                m, r = p ** (e + 1), p + 1\n\n            # Chinese Remainder Theorem to combine congruences\n            t = ((r - x) % m) * pow(mod % m, -1, m) % m\n            x += mod * t\n            mod *= m\n\n    # If n has a prime factor > 31623, it must be remaining in temp_n and have an exponent of 1\n    if temp_n > 1:\n        p = temp_n\n        m, r = p * p, p + 1\n        t = ((r - x) % m) * pow(mod % m, -1, m) % m\n        x += mod * t\n        mod *= m\n\n    return x, mod\n\ndef main():\n    # Fast I/O\n    data = list(map(int, sys.stdin.buffer.read().split()))\n    if not data:\n        return\n    t = data[0]\n    out = []\n    \n    # Process each query\n    for i in range(1, t + 1):\n        a, m = solve_one(data[i])\n        out.append(f\"{a} {m}\")\n        \n    sys.stdout.write(\"\\n\".join(out) + \"\\n\")\n\nif __name__ == \"__main__\":\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/arc191_c__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "69c7cb9f5399af00c2a5a0ad3790d8536430633e1f901e67c77a1165bd4fae62",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 61.107423249981366,
+      "input_tokens": 16466,
+      "output_tokens": 3172,
+      "cached_input_tokens": 2432,
+      "cost_usd": 0.178706
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "8b57bb5b305a1023e623e612c54fb8b6ce0b2eef84ee0f27ac4842648e32b492",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 70,
+    "reviewer_cost_all_attempts": 0.287422
+  }
+}

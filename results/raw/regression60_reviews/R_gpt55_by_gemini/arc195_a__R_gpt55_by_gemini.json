@@ -1,0 +1,121 @@
+{
+  "task_id": "arc195_a",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T00:20:07.455006+00:00",
+  "writer_finished_at": "2026-05-18T00:20:29.170814+00:00",
+  "reviewer_started_at": "2026-11-22T02:31:36.162992+00:00",
+  "reviewer_finished_at": "2026-11-22T02:31:56.137425+00:00",
+  "writer_prompt_sha256": "65c94355b692db825d4e89836988532e31bd06dd040051bbdf2538e43382f71b",
+  "reviewer_prompt_sha256": "3b14afe31b95b1ff935b8a2b74dc87ec817ec9868de9e22a1ca7f28cf58cc786",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 19.974364041998342,
+  "total_latency_s": 19.974364041998342,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8635,
+  "reviewer_output_tokens": 2986,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.053102,
+  "total_cost_usd": 0.053102,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"15b34aa4-87aa-4908-a0d3-48b4ab149fae\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef main():\\n    input = sys.stdin.readline\\n    N, M = map(int, input().split())\\n    A = list(map(int, input().split()))\\n    B = list(map(int, input().split()))\\n\\n    left = []\\n    j = 0\\n    for i, x in enumerate(A):\\n        if j < M and x == B[j]:\\n            left.append(i)\\n            j += 1\\n            if j == M:\\n                break\\n\\n    if len(left) < M:\\n        print(\\\"No\\\")\\n        return\\n\\n    right = [0] * M\\n    j = M - 1\\n    for i in range(N - 1, -1, -1):\\n        if j >= 0 and A[i] == B[j]:\\n            right[j] = i\\n            j -= 1\\n            if j < 0:\\n                break\\n\\n    print(\\\"Yes\\\" if left != right else \\\"No\\\")\\n\\nif __name__ == \\\"__main__\\\":\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 19165,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8635,\n          \"prompt\": 8635,\n          \"candidates\": 247,\n          \"total\": 11621,\n          \"cached\": 0,\n          \"thoughts\": 2739,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 19165,\n            \"tokens\": {\n              \"input\": 8635,\n              \"prompt\": 8635,\n              \"candidates\": 247,\n              \"total\": 11621,\n              \"cached\": 0,\n              \"thoughts\": 2739,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "writer_artifact": "import sys\n\ndef main():\n    input = sys.stdin.readline\n    N, M = map(int, input().split())\n    A = list(map(int, input().split()))\n    B = list(map(int, input().split()))\n\n    left = []\n    j = 0\n    for i, x in enumerate(A):\n        if j < M and x == B[j]:\n            left.append(i)\n            j += 1\n            if j == M:\n                break\n\n    if len(left) < M:\n        print(\"No\")\n        return\n\n    right = [0] * M\n    j = M - 1\n    for i in range(N - 1, -1, -1):\n        if j >= 0 and A[i] == B[j]:\n            right[j] = i\n            j -= 1\n            if j < 0:\n                break\n\n    print(\"Yes\" if left != right else \"No\")\n\nif __name__ == \"__main__\":\n    main()",
+  "reviewer_artifact": "import sys\n\ndef main():\n    input = sys.stdin.readline\n    N, M = map(int, input().split())\n    A = list(map(int, input().split()))\n    B = list(map(int, input().split()))\n\n    left = []\n    j = 0\n    for i, x in enumerate(A):\n        if j < M and x == B[j]:\n            left.append(i)\n            j += 1\n            if j == M:\n                break\n\n    if len(left) < M:\n        print(\"No\")\n        return\n\n    right = [0] * M\n    j = M - 1\n    for i in range(N - 1, -1, -1):\n        if j >= 0 and A[i] == B[j]:\n            right[j] = i\n            j -= 1\n            if j < 0:\n                break\n\n    print(\"Yes\" if left != right else \"No\")\n\nif __name__ == \"__main__\":\n    main()",
+  "final_artifact": "import sys\n\ndef main():\n    input = sys.stdin.readline\n    N, M = map(int, input().split())\n    A = list(map(int, input().split()))\n    B = list(map(int, input().split()))\n\n    left = []\n    j = 0\n    for i, x in enumerate(A):\n        if j < M and x == B[j]:\n            left.append(i)\n            j += 1\n            if j == M:\n                break\n\n    if len(left) < M:\n        print(\"No\")\n        return\n\n    right = [0] * M\n    j = M - 1\n    for i in range(N - 1, -1, -1):\n        if j >= 0 and A[i] == B[j]:\n            right[j] = i\n            j -= 1\n            if j < 0:\n                break\n\n    print(\"Yes\" if left != right else \"No\")\n\nif __name__ == \"__main__\":\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/arc195_a__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "67b5af47ef0643a66bccf19f2083f5eec7f408dd1a8a13a9684f854eab05791d",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 21.71552333398722,
+      "input_tokens": 20460,
+      "output_tokens": 743,
+      "cached_input_tokens": 3456,
+      "cost_usd": 0.126318
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "67b5af47ef0643a66bccf19f2083f5eec7f408dd1a8a13a9684f854eab05791d",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.053102
+  }
+}

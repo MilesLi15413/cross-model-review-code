@@ -1,0 +1,121 @@
+{
+  "task_id": "3677",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T00:04:12.975058+00:00",
+  "writer_finished_at": "2026-05-18T00:04:33.216879+00:00",
+  "reviewer_started_at": "2026-11-22T02:09:40.475579+00:00",
+  "reviewer_finished_at": "2026-11-22T02:11:12.085718+00:00",
+  "writer_prompt_sha256": "e7098ef00ca4057d88a992ee592d01384174e4fc66d4f2d91eeaf433e77c3bd5",
+  "reviewer_prompt_sha256": "a3d22f462998da833a7d25be165a7e5b0f72e6bf5f01df95d2c189c36d382c6c",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 91.61000654100644,
+  "total_latency_s": 91.61000654100644,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8977,
+  "reviewer_output_tokens": 15661,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.205886,
+  "total_cost_usd": 0.205886,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"45bf50bd-57a5-4ab0-8c82-5b1dbdbffe1a\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def maximumAmount(self, coins: List[List[int]]) -> int:\\n        m, n = len(coins), len(coins[0])\\n        NEG_INF = -10**15\\n\\n        # Use two arrays to store the DP state of the current and previous rows\\n        # Each cell contains [used_0, used_1, used_2] powers\\n        prev = [[NEG_INF] * 3 for _ in range(n)]\\n        curr = [[NEG_INF] * 3 for _ in range(n)]\\n\\n        for i in range(m):\\n            for j in range(n):\\n                value = coins[i][j]\\n\\n                # Reset the current cell's states\\n                curr[j][0] = NEG_INF\\n                curr[j][1] = NEG_INF\\n                curr[j][2] = NEG_INF\\n\\n                # Base case for the starting cell\\n                if i == 0 and j == 0:\\n                    if value >= 0:\\n                        curr[j][0] = value\\n                    else:\\n                        curr[j][0] = value\\n                        curr[j][1] = 0  # Use 1 neutralization here\\n                    continue\\n\\n                best0 = best1 = best2 = NEG_INF\\n\\n                # Get the maximum values from the cell above\\n                if i > 0:\\n                    best0, best1, best2 = prev[j]\\n                \\n                # Compare and get the maximums from the cell to the left\\n                if j > 0:\\n                    cj_1 = curr[j - 1]\\n                    if cj_1[0] > best0: best0 = cj_1[0]\\n                    if cj_1[1] > best1: best1 = cj_1[1]\\n                    if cj_1[2] > best2: best2 = cj_1[2]\\n\\n                # State transitions\\n                if best0 != NEG_INF:\\n                    curr[j][0] = best0 + value\\n                    if value < 0:\\n                        curr[j][1] = best0  # Transition to using 1 power\\n                \\n                if best1 != NEG_INF:\\n                    v1 = best1 + value\\n                    if v1 > curr[j][1]:\\n                        curr[j][1] = v1\\n                    if value < 0:\\n                        curr[j][2] = best1  # Transition to using 2 powers\\n                \\n                if best2 != NEG_INF:\\n                    v2 = best2 + value\\n                    if v2 > curr[j][2]:\\n                        curr[j][2] = v2\\n\\n            # Swap curr and prev for the next row to save space and allocation overhead\\n            prev, curr = curr, prev\\n\\n        # After swapping, the final row's result is in 'prev'\\n        return max(prev[n - 1])\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 90815,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8977,\n          \"prompt\": 8977,\n          \"candidates\": 670,\n          \"total\": 24638,\n          \"cached\": 0,\n          \"thoughts\": 14991,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 90815,\n            \"tokens\": {\n              \"input\": 8977,\n              \"prompt\": 8977,\n              \"candidates\": 670,\n              \"total\": 24638,\n              \"cached\": 0,\n              \"thoughts\": 14991,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\n\nclass Solution:\n    def maximumAmount(self, coins: List[List[int]]) -> int:\n        m, n = len(coins), len(coins[0])\n        NEG_INF = -10**15\n\n        prev = [[NEG_INF] * 3 for _ in range(n)]\n\n        for i in range(m):\n            curr = [[NEG_INF] * 3 for _ in range(n)]\n\n            for j in range(n):\n                value = coins[i][j]\n\n                if i == 0 and j == 0:\n                    if value >= 0:\n                        curr[j][0] = value\n                    else:\n                        curr[j][0] = value\n                        curr[j][1] = 0\n                    continue\n\n                for used in range(3):\n                    best_prev = NEG_INF\n\n                    if i > 0:\n                        best_prev = max(best_prev, prev[j][used])\n                    if j > 0:\n                        best_prev = max(best_prev, curr[j - 1][used])\n\n                    if best_prev == NEG_INF:\n                        continue\n\n                    curr[j][used] = max(curr[j][used], best_prev + value)\n\n                    if value < 0 and used < 2:\n                        curr[j][used + 1] = max(curr[j][used + 1], best_prev)\n\n            prev = curr\n\n        return max(prev[n - 1])",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def maximumAmount(self, coins: List[List[int]]) -> int:\n        m, n = len(coins), len(coins[0])\n        NEG_INF = -10**15\n\n        # Use two arrays to store the DP state of the current and previous rows\n        # Each cell contains [used_0, used_1, used_2] powers\n        prev = [[NEG_INF] * 3 for _ in range(n)]\n        curr = [[NEG_INF] * 3 for _ in range(n)]\n\n        for i in range(m):\n            for j in range(n):\n                value = coins[i][j]\n\n                # Reset the current cell's states\n                curr[j][0] = NEG_INF\n                curr[j][1] = NEG_INF\n                curr[j][2] = NEG_INF\n\n                # Base case for the starting cell\n                if i == 0 and j == 0:\n                    if value >= 0:\n                        curr[j][0] = value\n                    else:\n                        curr[j][0] = value\n                        curr[j][1] = 0  # Use 1 neutralization here\n                    continue\n\n                best0 = best1 = best2 = NEG_INF\n\n                # Get the maximum values from the cell above\n                if i > 0:\n                    best0, best1, best2 = prev[j]\n                \n                # Compare and get the maximums from the cell to the left\n                if j > 0:\n                    cj_1 = curr[j - 1]\n                    if cj_1[0] > best0: best0 = cj_1[0]\n                    if cj_1[1] > best1: best1 = cj_1[1]\n                    if cj_1[2] > best2: best2 = cj_1[2]\n\n                # State transitions\n                if best0 != NEG_INF:\n                    curr[j][0] = best0 + value\n                    if value < 0:\n                        curr[j][1] = best0  # Transition to using 1 power\n                \n                if best1 != NEG_INF:\n                    v1 = best1 + value\n                    if v1 > curr[j][1]:\n                        curr[j][1] = v1\n                    if value < 0:\n                        curr[j][2] = best1  # Transition to using 2 powers\n                \n                if best2 != NEG_INF:\n                    v2 = best2 + value\n                    if v2 > curr[j][2]:\n                        curr[j][2] = v2\n\n            # Swap curr and prev for the next row to save space and allocation overhead\n            prev, curr = curr, prev\n\n        # After swapping, the final row's result is in 'prev'\n        return max(prev[n - 1])",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def maximumAmount(self, coins: List[List[int]]) -> int:\n        m, n = len(coins), len(coins[0])\n        NEG_INF = -10**15\n\n        # Use two arrays to store the DP state of the current and previous rows\n        # Each cell contains [used_0, used_1, used_2] powers\n        prev = [[NEG_INF] * 3 for _ in range(n)]\n        curr = [[NEG_INF] * 3 for _ in range(n)]\n\n        for i in range(m):\n            for j in range(n):\n                value = coins[i][j]\n\n                # Reset the current cell's states\n                curr[j][0] = NEG_INF\n                curr[j][1] = NEG_INF\n                curr[j][2] = NEG_INF\n\n                # Base case for the starting cell\n                if i == 0 and j == 0:\n                    if value >= 0:\n                        curr[j][0] = value\n                    else:\n                        curr[j][0] = value\n                        curr[j][1] = 0  # Use 1 neutralization here\n                    continue\n\n                best0 = best1 = best2 = NEG_INF\n\n                # Get the maximum values from the cell above\n                if i > 0:\n                    best0, best1, best2 = prev[j]\n                \n                # Compare and get the maximums from the cell to the left\n                if j > 0:\n                    cj_1 = curr[j - 1]\n                    if cj_1[0] > best0: best0 = cj_1[0]\n                    if cj_1[1] > best1: best1 = cj_1[1]\n                    if cj_1[2] > best2: best2 = cj_1[2]\n\n                # State transitions\n                if best0 != NEG_INF:\n                    curr[j][0] = best0 + value\n                    if value < 0:\n                        curr[j][1] = best0  # Transition to using 1 power\n                \n                if best1 != NEG_INF:\n                    v1 = best1 + value\n                    if v1 > curr[j][1]:\n                        curr[j][1] = v1\n                    if value < 0:\n                        curr[j][2] = best1  # Transition to using 2 powers\n                \n                if best2 != NEG_INF:\n                    v2 = best2 + value\n                    if v2 > curr[j][2]:\n                        curr[j][2] = v2\n\n            # Swap curr and prev for the next row to save space and allocation overhead\n            prev, curr = curr, prev\n\n        # After swapping, the final row's result is in 'prev'\n        return max(prev[n - 1])",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/3677__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "620520afd264f2a978dead430317c7acc856afc5b7b82e59b0930e63607d658e",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 20.241011291975155,
+      "input_tokens": 20638,
+      "output_tokens": 832,
+      "cached_input_tokens": 19840,
+      "cost_usd": 0.13807
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "d087022bfc1cb6e6f20b3ac20c44bc30ec478a4ac389fb1c9ea95ad90dbc8a94",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 58,
+    "reviewer_cost_all_attempts": 0.205886
+  }
+}

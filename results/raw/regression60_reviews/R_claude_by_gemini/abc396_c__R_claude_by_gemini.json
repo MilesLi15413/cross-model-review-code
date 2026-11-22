@@ -1,0 +1,121 @@
+{
+  "task_id": "abc396_c",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.50 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T00:02:34.863540+00:00",
+  "writer_finished_at": "2026-05-18T00:03:13.343896+00:00",
+  "reviewer_started_at": "2026-11-22T01:38:42.894967+00:00",
+  "reviewer_finished_at": "2026-11-22T01:39:40.471174+00:00",
+  "writer_prompt_sha256": "a74f6ebe5133d010fa51a08069dac7705c4888bc6aa3e509df90bf33183082c8",
+  "reviewer_prompt_sha256": "411db2fd3d9ba4c3cbbe7cbd08e54f56c1773de11c259568a273509fd89bd745",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 57.57619279199935,
+  "total_latency_s": 57.57619279199935,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8880,
+  "reviewer_output_tokens": 7941,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.113052,
+  "total_cost_usd": 0.113052,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"35d1607f-bb6b-4d5d-ae5d-1536fbfcf611\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef main():\\n    # Read all tokens from standard input\\n    data = sys.stdin.buffer.read().split()\\n    if not data:\\n        return\\n    idx = 0\\n    N = int(data[idx]); idx += 1\\n    M = int(data[idx]); idx += 1\\n    B = [int(x) for x in data[idx:idx+N]]; idx += N\\n    W = [int(x) for x in data[idx:idx+M]]; idx += M\\n\\n    # To maximize the sum, we greedily pick the largest available values\\n    B.sort(reverse=True)\\n    W.sort(reverse=True)\\n\\n    # Prefix sums of sorted descending black balls\\n    # PB[i] is the sum of the top i black balls\\n    PB = [0] * (N + 1)\\n    for i in range(N):\\n        PB[i + 1] = PB[i] + B[i]\\n\\n    # Suffix max of PB: suf[i] = max(PB[i], PB[i+1], ..., PB[N])\\n    # suf[i] represents the maximum sum of black balls we can get if we MUST pick at least i black balls.\\n    NEG_INF = -(10 ** 30)\\n    suf = [NEG_INF] * (N + 2)\\n    for i in range(N, -1, -1):\\n        suf[i] = PB[i] if PB[i] > suf[i + 1] else suf[i + 1]\\n\\n    ans = 0  # Choosing zero balls gives a sum of 0, which is always allowed.\\n    \\n    # w = 0: no white balls chosen, best choice of b >= 0 black balls\\n    if suf[0] > ans:\\n        ans = suf[0]\\n\\n    sum_w = 0\\n    for w in range(1, M + 1):\\n        # We never want to pick a non-positive white ball because it decreases the total sum\\n        # and restricts our choice of black balls (b >= w).\\n        if W[w - 1] <= 0:\\n            break\\n        \\n        sum_w += W[w - 1]\\n        \\n        # If the number of chosen white balls exceeds the total number of black balls,\\n        # we can no longer satisfy the condition b >= w.\\n        if w > N:\\n            break  \\n            \\n        total = sum_w + suf[w]\\n        if total > ans:\\n            ans = total\\n\\n    print(ans)\\n\\nif __name__ == '__main__':\\n    main()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 56765,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8880,\n          \"prompt\": 8880,\n          \"candidates\": 611,\n          \"total\": 16821,\n          \"cached\": 0,\n          \"thoughts\": 7330,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 56765,\n            \"tokens\": {\n              \"input\": 8880,\n              \"prompt\": 8880,\n              \"candidates\": 611,\n              \"total\": 16821,\n              \"cached\": 0,\n              \"thoughts\": 7330,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    idx = 0\n    N = int(data[idx]); idx += 1\n    M = int(data[idx]); idx += 1\n    B = [int(x) for x in data[idx:idx+N]]; idx += N\n    W = [int(x) for x in data[idx:idx+M]]; idx += M\n\n    B.sort(reverse=True)\n    W.sort(reverse=True)\n\n    # Prefix sums of sorted-desc blacks\n    PB = [0] * (N + 1)\n    for i in range(N):\n        PB[i + 1] = PB[i] + B[i]\n\n    # Suffix max of PB: suf[i] = max(PB[i], PB[i+1], ..., PB[N])\n    NEG_INF = -(10 ** 30)\n    suf = [NEG_INF] * (N + 2)\n    for i in range(N, -1, -1):\n        suf[i] = PB[i] if PB[i] > suf[i + 1] else suf[i + 1]\n\n    ans = 0  # choosing nothing is always allowed\n    # w = 0: no whites, best blacks with b >= 0\n    if suf[0] > ans:\n        ans = suf[0]\n\n    sum_w = 0\n    for w in range(1, M + 1):\n        if W[w - 1] <= 0:\n            break\n        sum_w += W[w - 1]\n        if w > N:\n            break  # cannot satisfy b >= w\n        total = sum_w + suf[w]\n        if total > ans:\n            ans = total\n\n    print(ans)\n\nmain()",
+  "reviewer_artifact": "import sys\n\ndef main():\n    # Read all tokens from standard input\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    idx = 0\n    N = int(data[idx]); idx += 1\n    M = int(data[idx]); idx += 1\n    B = [int(x) for x in data[idx:idx+N]]; idx += N\n    W = [int(x) for x in data[idx:idx+M]]; idx += M\n\n    # To maximize the sum, we greedily pick the largest available values\n    B.sort(reverse=True)\n    W.sort(reverse=True)\n\n    # Prefix sums of sorted descending black balls\n    # PB[i] is the sum of the top i black balls\n    PB = [0] * (N + 1)\n    for i in range(N):\n        PB[i + 1] = PB[i] + B[i]\n\n    # Suffix max of PB: suf[i] = max(PB[i], PB[i+1], ..., PB[N])\n    # suf[i] represents the maximum sum of black balls we can get if we MUST pick at least i black balls.\n    NEG_INF = -(10 ** 30)\n    suf = [NEG_INF] * (N + 2)\n    for i in range(N, -1, -1):\n        suf[i] = PB[i] if PB[i] > suf[i + 1] else suf[i + 1]\n\n    ans = 0  # Choosing zero balls gives a sum of 0, which is always allowed.\n    \n    # w = 0: no white balls chosen, best choice of b >= 0 black balls\n    if suf[0] > ans:\n        ans = suf[0]\n\n    sum_w = 0\n    for w in range(1, M + 1):\n        # We never want to pick a non-positive white ball because it decreases the total sum\n        # and restricts our choice of black balls (b >= w).\n        if W[w - 1] <= 0:\n            break\n        \n        sum_w += W[w - 1]\n        \n        # If the number of chosen white balls exceeds the total number of black balls,\n        # we can no longer satisfy the condition b >= w.\n        if w > N:\n            break  \n            \n        total = sum_w + suf[w]\n        if total > ans:\n            ans = total\n\n    print(ans)\n\nif __name__ == '__main__':\n    main()",
+  "final_artifact": "import sys\n\ndef main():\n    # Read all tokens from standard input\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    idx = 0\n    N = int(data[idx]); idx += 1\n    M = int(data[idx]); idx += 1\n    B = [int(x) for x in data[idx:idx+N]]; idx += N\n    W = [int(x) for x in data[idx:idx+M]]; idx += M\n\n    # To maximize the sum, we greedily pick the largest available values\n    B.sort(reverse=True)\n    W.sort(reverse=True)\n\n    # Prefix sums of sorted descending black balls\n    # PB[i] is the sum of the top i black balls\n    PB = [0] * (N + 1)\n    for i in range(N):\n        PB[i + 1] = PB[i] + B[i]\n\n    # Suffix max of PB: suf[i] = max(PB[i], PB[i+1], ..., PB[N])\n    # suf[i] represents the maximum sum of black balls we can get if we MUST pick at least i black balls.\n    NEG_INF = -(10 ** 30)\n    suf = [NEG_INF] * (N + 2)\n    for i in range(N, -1, -1):\n        suf[i] = PB[i] if PB[i] > suf[i + 1] else suf[i + 1]\n\n    ans = 0  # Choosing zero balls gives a sum of 0, which is always allowed.\n    \n    # w = 0: no white balls chosen, best choice of b >= 0 black balls\n    if suf[0] > ans:\n        ans = suf[0]\n\n    sum_w = 0\n    for w in range(1, M + 1):\n        # We never want to pick a non-positive white ball because it decreases the total sum\n        # and restricts our choice of black balls (b >= w).\n        if W[w - 1] <= 0:\n            break\n        \n        sum_w += W[w - 1]\n        \n        # If the number of chosen white balls exceeds the total number of black balls,\n        # we can no longer satisfy the condition b >= w.\n        if w > N:\n            break  \n            \n        total = sum_w + suf[w]\n        if total > ans:\n            ans = total\n\n    print(ans)\n\nif __name__ == '__main__':\n    main()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B1_claude_solo/abc396_c__B1_claude_solo.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "6f5df3e822c6e94ebcdc46ecc06a7acabdbaececb124025afe726a6e0d5c1cc9",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 38.479891458991915,
+      "input_tokens": 5,
+      "output_tokens": 2975,
+      "cached_input_tokens": 31052,
+      "cost_usd": 0.338028
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "0f387b738e88d93d159770c09b8b5fe6758e1f993b03b9c5c962df1103e1b922",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 25,
+    "reviewer_cost_all_attempts": 0.113052
+  }
+}

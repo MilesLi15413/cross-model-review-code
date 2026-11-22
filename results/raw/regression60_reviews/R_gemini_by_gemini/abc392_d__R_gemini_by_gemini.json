@@ -1,0 +1,121 @@
+{
+  "task_id": "abc392_d",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T01:06:02.821830+00:00",
+  "writer_finished_at": "2026-11-22T01:06:36.292944+00:00",
+  "reviewer_started_at": "2026-11-22T01:37:27.948163+00:00",
+  "reviewer_finished_at": "2026-11-22T01:38:40.523397+00:00",
+  "writer_prompt_sha256": "24357ecd051be1fe45acf7eb80c900023c771bfd75f56a34271585fa93d6ad2e",
+  "reviewer_prompt_sha256": "8789ecbaaee5e477dc44f3e5a5654d63ea10ec2d5a1f82177bb24cfbcac59c30",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 72.57523037500141,
+  "total_latency_s": 72.57523037500141,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9000,
+  "reviewer_output_tokens": 10714,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.146568,
+  "total_cost_usd": 0.146568,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"526c700d-bc15-4ee0-872e-5d6185b3ba01\",\n  \"response\": \"<solution>\\nimport sys\\n\\ndef solve():\\n    # Read all tokens from standard input\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n    \\n    N = int(input_data[0])\\n    idx = 1\\n    \\n    dice = []\\n    K_list = []\\n    \\n    # Parse the dice configurations\\n    for _ in range(N):\\n        K = int(input_data[idx])\\n        K_list.append(K)\\n        idx += 1\\n        \\n        freq = {}\\n        for k in range(idx, idx + K):\\n            val = int(input_data[k])\\n            freq[val] = freq.get(val, 0) + 1\\n        idx += K\\n        dice.append(freq)\\n        \\n    # Track the maximum probability using a fraction (max_num / max_den)\\n    # to avoid any possible floating-point precision issues during comparisons.\\n    max_num = 0\\n    max_den = 1\\n    \\n    # Compare every pair of dice to find the maximum probability\\n    for i in range(N):\\n        dict1 = dice[i]\\n        k1 = K_list[i]\\n        for j in range(i + 1, N):\\n            dict2 = dice[j]\\n            k2 = K_list[j]\\n            \\n            # To optimize the intersection, iterate over the smaller dictionary\\n            if len(dict1) > len(dict2):\\n                d1, d2 = dict2, dict1\\n            else:\\n                d1, d2 = dict1, dict2\\n                \\n            match_sum = 0\\n            for val, count in d1.items():\\n                if val in d2:\\n                    match_sum += count * d2[val]\\n                    \\n            # The probability of rolling the same number is match_sum / (k1 * k2)\\n            # Use cross-multiplication for exact comparison\\n            if match_sum * max_den > max_num * (k1 * k2):\\n                max_num = match_sum\\n                max_den = k1 * k2\\n                \\n    # Output the exact maximum probability found as a float\\n    print(max_num / max_den)\\n\\nif __name__ == '__main__':\\n    solve()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 71776,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9000,\n          \"prompt\": 9000,\n          \"candidates\": 540,\n          \"total\": 19714,\n          \"cached\": 0,\n          \"thoughts\": 10174,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 71776,\n            \"tokens\": {\n              \"input\": 9000,\n              \"prompt\": 9000,\n              \"candidates\": 540,\n              \"total\": 19714,\n              \"cached\": 0,\n              \"thoughts\": 10174,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef solve():\n    # Read all tokens from standard input\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    N = int(input_data[0])\n    idx = 1\n    \n    dice = []\n    K_list = []\n    \n    # Parse the dice configurations\n    for _ in range(N):\n        K = int(input_data[idx])\n        K_list.append(K)\n        idx += 1\n        \n        freq = {}\n        for _ in range(K):\n            val = int(input_data[idx])\n            freq[val] = freq.get(val, 0) + 1\n            idx += 1\n        dice.append(freq)\n        \n    max_prob = 0.0\n    \n    # Compare every pair of dice to find the maximum probability\n    for i in range(N):\n        dict1 = dice[i]\n        k1 = K_list[i]\n        for j in range(i + 1, N):\n            dict2 = dice[j]\n            k2 = K_list[j]\n            \n            # To optimize the intersection, iterate over the smaller dictionary\n            if len(dict1) > len(dict2):\n                d1, d2 = dict2, dict1\n            else:\n                d1, d2 = dict1, dict2\n                \n            match_sum = 0\n            for val, count in d1.items():\n                if val in d2:\n                    match_sum += count * d2[val]\n                    \n            # The probability of rolling the same number is the sum of (count1 * count2) / (K1 * K2)\n            prob = match_sum / (k1 * k2)\n            if prob > max_prob:\n                max_prob = prob\n                \n    print(max_prob)\n\nif __name__ == '__main__':\n    solve()",
+  "reviewer_artifact": "import sys\n\ndef solve():\n    # Read all tokens from standard input\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    N = int(input_data[0])\n    idx = 1\n    \n    dice = []\n    K_list = []\n    \n    # Parse the dice configurations\n    for _ in range(N):\n        K = int(input_data[idx])\n        K_list.append(K)\n        idx += 1\n        \n        freq = {}\n        for k in range(idx, idx + K):\n            val = int(input_data[k])\n            freq[val] = freq.get(val, 0) + 1\n        idx += K\n        dice.append(freq)\n        \n    # Track the maximum probability using a fraction (max_num / max_den)\n    # to avoid any possible floating-point precision issues during comparisons.\n    max_num = 0\n    max_den = 1\n    \n    # Compare every pair of dice to find the maximum probability\n    for i in range(N):\n        dict1 = dice[i]\n        k1 = K_list[i]\n        for j in range(i + 1, N):\n            dict2 = dice[j]\n            k2 = K_list[j]\n            \n            # To optimize the intersection, iterate over the smaller dictionary\n            if len(dict1) > len(dict2):\n                d1, d2 = dict2, dict1\n            else:\n                d1, d2 = dict1, dict2\n                \n            match_sum = 0\n            for val, count in d1.items():\n                if val in d2:\n                    match_sum += count * d2[val]\n                    \n            # The probability of rolling the same number is match_sum / (k1 * k2)\n            # Use cross-multiplication for exact comparison\n            if match_sum * max_den > max_num * (k1 * k2):\n                max_num = match_sum\n                max_den = k1 * k2\n                \n    # Output the exact maximum probability found as a float\n    print(max_num / max_den)\n\nif __name__ == '__main__':\n    solve()",
+  "final_artifact": "import sys\n\ndef solve():\n    # Read all tokens from standard input\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    N = int(input_data[0])\n    idx = 1\n    \n    dice = []\n    K_list = []\n    \n    # Parse the dice configurations\n    for _ in range(N):\n        K = int(input_data[idx])\n        K_list.append(K)\n        idx += 1\n        \n        freq = {}\n        for k in range(idx, idx + K):\n            val = int(input_data[k])\n            freq[val] = freq.get(val, 0) + 1\n        idx += K\n        dice.append(freq)\n        \n    # Track the maximum probability using a fraction (max_num / max_den)\n    # to avoid any possible floating-point precision issues during comparisons.\n    max_num = 0\n    max_den = 1\n    \n    # Compare every pair of dice to find the maximum probability\n    for i in range(N):\n        dict1 = dice[i]\n        k1 = K_list[i]\n        for j in range(i + 1, N):\n            dict2 = dice[j]\n            k2 = K_list[j]\n            \n            # To optimize the intersection, iterate over the smaller dictionary\n            if len(dict1) > len(dict2):\n                d1, d2 = dict2, dict1\n            else:\n                d1, d2 = dict1, dict2\n                \n            match_sum = 0\n            for val, count in d1.items():\n                if val in d2:\n                    match_sum += count * d2[val]\n                    \n            # The probability of rolling the same number is match_sum / (k1 * k2)\n            # Use cross-multiplication for exact comparison\n            if match_sum * max_den > max_num * (k1 * k2):\n                max_num = match_sum\n                max_den = k1 * k2\n                \n    # Output the exact maximum probability found as a float\n    print(max_num / max_den)\n\nif __name__ == '__main__':\n    solve()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/abc392_d__B3_gemini_solo.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "c029012010f2a7f0d42ff50b1c9cebc7316c106aa3560eb49330c6e25be6effb",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 33.47111141699861,
+      "input_tokens": 8523,
+      "output_tokens": 4569,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.071874
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "376690702295007bc54437513d45eae1f0b472592affda85a6d9c3d893b58841",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 23,
+    "reviewer_cost_all_attempts": 0.146568
+  }
+}

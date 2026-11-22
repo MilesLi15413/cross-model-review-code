@@ -50,6 +50,25 @@ AUTH_PATTERNS = [
     "gemini_api_key",
 ]
 
+# Out of credits / payment required is a hard stop: never retried, never saved as a
+# model failure. Checked only on failed calls, before the rate-limit patterns, because
+# OpenAI reports an empty balance as HTTP 429 "insufficient_quota".
+OUT_OF_CREDITS_PATTERNS = [
+    r"\b402\b\W{0,3}payment",
+    r"(status|code|http|error)\W{0,12}402\b",
+    r"payment.?required",
+    r"insufficient_quota",
+    r"insufficient.?credits?",
+    r"out of credits",
+    r"credit balance is too low",
+    r"prepayment credits",
+    r"credits? (are|have been|is) (depleted|exhausted)",
+    r"billing.?hard.?limit",
+]
+# Gemini also says "exceeded your current quota" for ordinary per-minute limits, so
+# this phrase means an empty balance only for Codex (OpenAI).
+CODEX_OUT_OF_CREDITS_PATTERNS = [r"exceeded your current quota"]
+
 RATE_LIMIT_RETRY_DELAYS = [60, 120, 300, 600, 900]
 GEMINI_THINKING_LEVELS = {"low": "LOW", "medium": "MEDIUM", "high": "HIGH"}
 GEMINI_NO_MCP_SERVER = "__no_mcp_servers__"
@@ -101,6 +120,14 @@ class UsageLimitError(CLIError):
         self.pause_info = pause_info or {}
 
 
+class OutOfCreditsError(UsageLimitError):
+    """HTTP 402 or an empty API balance: stop the whole run, retry nothing, save nothing.
+
+    A subclass of UsageLimitError so every existing `except UsageLimitError: raise`
+    propagates it instead of recording the call as a model failure.
+    """
+
+
 @dataclass
 class RunResult:
     response_text: str
@@ -132,6 +159,7 @@ class CLIRunner:
         cli_version: str = "",
         status_callback: Optional[Callable[[Dict[str, object]], None]] = None,
         stop_on_limit: bool = False,
+        codex_home: Optional[str] = None,
     ):
         self.cli = cli
         self.model = model
@@ -142,6 +170,9 @@ class CLIRunner:
         self._resolved_executable: Optional[str] = None
         self.status_callback = status_callback
         self.stop_on_limit = stop_on_limit
+        # Isolated CODEX_HOME (login only): no user MCP servers, memories, skills,
+        # plugins or hooks reach the model. None keeps the user's ~/.codex.
+        self.codex_home = codex_home
 
     def _resolve_executable(self) -> str:
         if self._resolved_executable:
@@ -286,6 +317,16 @@ class CLIRunner:
             env["GEMINI_CLI_TRUST_WORKSPACE"] = "true"
             return env
 
+        if self.cli == "codex":
+            if not self.codex_home:
+                return None
+            home = Path(self.codex_home).expanduser()
+            if not (home / "auth.json").exists():
+                raise AuthenticationError(f"Isolated CODEX_HOME {home} has no auth.json")
+            env = os.environ.copy()
+            env["CODEX_HOME"] = str(home)
+            return env
+
         if self.cli != "claude":
             return None
 
@@ -326,6 +367,27 @@ class CLIRunner:
         sentinel_path = Path(self.paused_sentinel_path)
         sentinel_path.parent.mkdir(parents=True, exist_ok=True)
         sentinel_path.write_text(json.dumps(pause_info, indent=2))
+
+    def _raise_if_out_of_credits(
+        self,
+        output: str,
+        task_id: Optional[str],
+        condition_id: Optional[str],
+        turn: Optional[str],
+    ) -> None:
+        patterns = OUT_OF_CREDITS_PATTERNS + (
+            CODEX_OUT_OF_CREDITS_PATTERNS if self.cli == "codex" else []
+        )
+        if not _matches_any(output, patterns):
+            return
+        pause_info = self._build_pause_info(1, task_id, condition_id, turn)
+        pause_info["reason"] = "out_of_credits"
+        self._write_pause_sentinel(pause_info)
+        raise OutOfCreditsError(
+            f"Out of credits / payment required on {self.cli}/{self.model}. "
+            f"Hard stop: not retried and not saved. Output: {output.strip()[:500]}",
+            pause_info,
+        )
 
     def _parse_claude_response(
         self,
@@ -477,7 +539,11 @@ class CLIRunner:
             raw_stderr=stderr,
             exit_code=exit_code,
             duration_s=duration_s,
-            input_tokens=int(usage.get("input_tokens", 0) or 0),
+            # OpenAI's input_tokens already includes the cached tokens; store only the
+            # uncached part so pricing does not charge cached tokens twice.
+            input_tokens=max(
+                int(usage.get("input_tokens", 0) or 0) - int(usage.get("cached_input_tokens", 0) or 0), 0
+            ),
             output_tokens=int(usage.get("output_tokens", 0) or 0),
             cached_input_tokens=int(usage.get("cached_input_tokens", 0) or 0),
             cache_creation_input_tokens=0,
@@ -485,6 +551,17 @@ class CLIRunner:
             cli_version=self.get_version(),
             started_at=started_at,
             finished_at=finished_at,
+            runtime_settings={
+                "input_tokens_exclude_cached": True,
+                "codex_home": "isolated" if self.codex_home else "user_default",
+                "user_mcp_servers": "disabled" if self.codex_home else "user_config",
+                "tool_calls": sum(
+                    1
+                    for raw_line in stdout.splitlines()
+                    if '"item.completed"' in raw_line
+                    and re.search(r'"type"\s*:\s*"(mcp_tool_call|command_execution|web_search|file_change)"', raw_line)
+                ),
+            },
         )
 
     def run(
@@ -537,6 +614,15 @@ class CLIRunner:
             combined_output = f"{completed.stdout}\n{completed.stderr}"
 
             try:
+                failed = (
+                    completed.returncode != 0
+                    or IS_ERROR_RE.search(completed.stdout)
+                    or (self.cli == "codex" and re.search(r'"type"\s*:\s*"(error|turn\.failed)"', completed.stdout))
+                    or (self.cli == "gemini" and re.search(r'"error"\s*:\s*\{', completed.stdout))
+                )
+                if failed:
+                    self._raise_if_out_of_credits(combined_output, task_id, condition_id, turn)
+
                 # Gemini logs its own internal retries (e.g. 503 "try again later") to
                 # stderr even when the call succeeds, so only pattern-match failures.
                 if self.cli == "gemini" and completed.returncode == 0:

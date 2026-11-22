@@ -1,0 +1,121 @@
+{
+  "task_id": "3764",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.130.0-alpha.5",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-17T23:52:51.413482+00:00",
+  "writer_finished_at": "2026-05-17T23:53:04.787024+00:00",
+  "reviewer_started_at": "2026-11-22T02:15:40.622562+00:00",
+  "reviewer_finished_at": "2026-11-22T02:16:08.802745+00:00",
+  "writer_prompt_sha256": "a7a668599769d309d6ec681259e1f630cda67bd5c3c7930ec17d1bd236a1b7e2",
+  "reviewer_prompt_sha256": "7019ca2d567687cce4c3599aa868382cd82c85b4b0417a0265339a8b23a2967b",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 28.18013279200386,
+  "total_latency_s": 28.18013279200386,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8516,
+  "reviewer_output_tokens": 3782,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.062416,
+  "total_cost_usd": 0.062416,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"4a3b985e-15d6-4b88-bb22-c09c8b9c0da2\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\\n        candidates = []\\n        for row, limit in zip(grid, limits):\\n            if limit > 0:\\n                # Sort the row in place to optimize time and avoid unnecessary memory allocation\\n                row.sort(reverse=True)\\n                candidates.extend(row[:limit])\\n\\n        # Sort all the collected candidates in descending order\\n        candidates.sort(reverse=True)\\n        \\n        # Sum the largest k elements\\n        return sum(candidates[:k])\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 27379,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8516,\n          \"prompt\": 8516,\n          \"candidates\": 146,\n          \"total\": 12298,\n          \"cached\": 0,\n          \"thoughts\": 3636,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 27379,\n            \"tokens\": {\n              \"input\": 8516,\n              \"prompt\": 8516,\n              \"candidates\": 146,\n              \"total\": 12298,\n              \"cached\": 0,\n              \"thoughts\": 3636,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\n\nclass Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        if k == 0:\n            return 0\n\n        candidates = []\n        for row, limit in zip(grid, limits):\n            if limit > 0:\n                candidates.extend(sorted(row, reverse=True)[:limit])\n\n        candidates.sort(reverse=True)\n        return sum(candidates[:k])",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        candidates = []\n        for row, limit in zip(grid, limits):\n            if limit > 0:\n                # Sort the row in place to optimize time and avoid unnecessary memory allocation\n                row.sort(reverse=True)\n                candidates.extend(row[:limit])\n\n        # Sort all the collected candidates in descending order\n        candidates.sort(reverse=True)\n        \n        # Sum the largest k elements\n        return sum(candidates[:k])",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        candidates = []\n        for row, limit in zip(grid, limits):\n            if limit > 0:\n                # Sort the row in place to optimize time and avoid unnecessary memory allocation\n                row.sort(reverse=True)\n                candidates.extend(row[:limit])\n\n        # Sort all the collected candidates in descending order\n        candidates.sort(reverse=True)\n        \n        # Sum the largest k elements\n        return sum(candidates[:k])",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B2_gpt55_solo/3764__B2_gpt55_solo.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "306f0f9a0bb3a40ed6d5d9f3c8f024fa6c88113b882a278ec1df32e471106dc0",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 13.373358041979373,
+      "input_tokens": 20456,
+      "output_tokens": 519,
+      "cached_input_tokens": 3456,
+      "cost_usd": 0.119578
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "c47b98cf673ad189492ca440ab35c47d6043204240e0c60506f1fed13ef34758",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 10,
+    "reviewer_cost_all_attempts": 0.062416
+  }
+}

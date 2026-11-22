@@ -1,0 +1,121 @@
+{
+  "task_id": "3737",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T00:51:36.414108+00:00",
+  "writer_finished_at": "2026-11-22T00:52:43.738264+00:00",
+  "reviewer_started_at": "2026-11-22T01:49:16.670683+00:00",
+  "reviewer_finished_at": "2026-11-22T01:50:05.139345+00:00",
+  "writer_prompt_sha256": "7dd849dc7441ba1f98f91d14585086e12480778743208926cc5b0c561f2be0b2",
+  "reviewer_prompt_sha256": "917e7cd0fe36598f3c8d98afe2bf361d1cd84183ba32f47a94bfbd927fa9275d",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 48.46857224999985,
+  "total_latency_s": 48.46857224999985,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9286,
+  "reviewer_output_tokens": 8011,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.114704,
+  "total_cost_usd": 0.114704,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"203ea145-9052-4f88-a0df-32a8dc95c67e\",\n  \"response\": \"<solution>\\nfrom typing import List\\n\\nclass Solution:\\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\\n        # dp array stores the minimum cost for the valid color combinations of the \\n        # current pair of equidistant houses (i and n - 1 - i).\\n        # The 6 valid combinations (since colors must be different for equidistant houses) are:\\n        # Index 0: Color 0 and Color 1\\n        # Index 1: Color 0 and Color 2\\n        # Index 2: Color 1 and Color 0\\n        # Index 3: Color 1 and Color 2\\n        # Index 4: Color 2 and Color 0\\n        # Index 5: Color 2 and Color 1\\n        \\n        dp = [\\n            cost[0][0] + cost[n - 1][1],\\n            cost[0][0] + cost[n - 1][2],\\n            cost[0][1] + cost[n - 1][0],\\n            cost[0][1] + cost[n - 1][2],\\n            cost[0][2] + cost[n - 1][0],\\n            cost[0][2] + cost[n - 1][1],\\n        ]\\n        \\n        for i in range(1, n // 2):\\n            cost_i = cost[i]\\n            cost_n_i = cost[n - 1 - i]\\n            \\n            # Transition to the next pair of houses.\\n            # We must ensure that the adjacent houses do not share the same color.\\n            # E.g., for Index 0 (Color 0 and Color 1), the previous houses' colors\\n            # could not have been Color 0 on the left, nor Color 1 on the right.\\n            dp = [\\n                cost_i[0] + cost_n_i[1] + min(dp[2], dp[3], dp[4]),\\n                cost_i[0] + cost_n_i[2] + min(dp[2], dp[4], dp[5]),\\n                cost_i[1] + cost_n_i[0] + min(dp[0], dp[1], dp[5]),\\n                cost_i[1] + cost_n_i[2] + min(dp[0], dp[4], dp[5]),\\n                cost_i[2] + cost_n_i[0] + min(dp[0], dp[1], dp[3]),\\n                cost_i[2] + cost_n_i[1] + min(dp[1], dp[2], dp[3]),\\n            ]\\n            \\n        return min(dp)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 47695,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9286,\n          \"prompt\": 9286,\n          \"candidates\": 625,\n          \"total\": 17297,\n          \"cached\": 0,\n          \"thoughts\": 7386,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 47695,\n            \"tokens\": {\n              \"input\": 9286,\n              \"prompt\": 9286,\n              \"candidates\": 625,\n              \"total\": 17297,\n              \"cached\": 0,\n              \"thoughts\": 7386,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        # dp array stores the minimum cost for the valid color combinations of the \n        # current pair of equidistant houses (i and n - 1 - i).\n        # The 6 valid combinations (since colors must be different for equidistant houses) are:\n        # Index 0: Color 0 and Color 1\n        # Index 1: Color 0 and Color 2\n        # Index 2: Color 1 and Color 0\n        # Index 3: Color 1 and Color 2\n        # Index 4: Color 2 and Color 0\n        # Index 5: Color 2 and Color 1\n        \n        dp = [\n            cost[0][0] + cost[n - 1][1],\n            cost[0][0] + cost[n - 1][2],\n            cost[0][1] + cost[n - 1][0],\n            cost[0][1] + cost[n - 1][2],\n            cost[0][2] + cost[n - 1][0],\n            cost[0][2] + cost[n - 1][1],\n        ]\n        \n        for i in range(1, n // 2):\n            cost_i = cost[i]\n            cost_n_i = cost[n - 1 - i]\n            \n            # Transition to the next pair of houses.\n            # We must ensure that the adjacent houses do not share the same color.\n            # E.g., for Index 0 (Color 0 and Color 1), the previous houses' colors\n            # could not have been Color 0 on the left, nor Color 1 on the right.\n            dp = [\n                cost_i[0] + cost_n_i[1] + min(dp[2], dp[3], dp[4]),\n                cost_i[0] + cost_n_i[2] + min(dp[2], dp[4], dp[5]),\n                cost_i[1] + cost_n_i[0] + min(dp[0], dp[1], dp[5]),\n                cost_i[1] + cost_n_i[2] + min(dp[0], dp[4], dp[5]),\n                cost_i[2] + cost_n_i[0] + min(dp[0], dp[1], dp[3]),\n                cost_i[2] + cost_n_i[1] + min(dp[1], dp[2], dp[3]),\n            ]\n            \n        return min(dp)",
+  "reviewer_artifact": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        # dp array stores the minimum cost for the valid color combinations of the \n        # current pair of equidistant houses (i and n - 1 - i).\n        # The 6 valid combinations (since colors must be different for equidistant houses) are:\n        # Index 0: Color 0 and Color 1\n        # Index 1: Color 0 and Color 2\n        # Index 2: Color 1 and Color 0\n        # Index 3: Color 1 and Color 2\n        # Index 4: Color 2 and Color 0\n        # Index 5: Color 2 and Color 1\n        \n        dp = [\n            cost[0][0] + cost[n - 1][1],\n            cost[0][0] + cost[n - 1][2],\n            cost[0][1] + cost[n - 1][0],\n            cost[0][1] + cost[n - 1][2],\n            cost[0][2] + cost[n - 1][0],\n            cost[0][2] + cost[n - 1][1],\n        ]\n        \n        for i in range(1, n // 2):\n            cost_i = cost[i]\n            cost_n_i = cost[n - 1 - i]\n            \n            # Transition to the next pair of houses.\n            # We must ensure that the adjacent houses do not share the same color.\n            # E.g., for Index 0 (Color 0 and Color 1), the previous houses' colors\n            # could not have been Color 0 on the left, nor Color 1 on the right.\n            dp = [\n                cost_i[0] + cost_n_i[1] + min(dp[2], dp[3], dp[4]),\n                cost_i[0] + cost_n_i[2] + min(dp[2], dp[4], dp[5]),\n                cost_i[1] + cost_n_i[0] + min(dp[0], dp[1], dp[5]),\n                cost_i[1] + cost_n_i[2] + min(dp[0], dp[4], dp[5]),\n                cost_i[2] + cost_n_i[0] + min(dp[0], dp[1], dp[3]),\n                cost_i[2] + cost_n_i[1] + min(dp[1], dp[2], dp[3]),\n            ]\n            \n        return min(dp)",
+  "final_artifact": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, cost: List[List[int]]) -> int:\n        # dp array stores the minimum cost for the valid color combinations of the \n        # current pair of equidistant houses (i and n - 1 - i).\n        # The 6 valid combinations (since colors must be different for equidistant houses) are:\n        # Index 0: Color 0 and Color 1\n        # Index 1: Color 0 and Color 2\n        # Index 2: Color 1 and Color 0\n        # Index 3: Color 1 and Color 2\n        # Index 4: Color 2 and Color 0\n        # Index 5: Color 2 and Color 1\n        \n        dp = [\n            cost[0][0] + cost[n - 1][1],\n            cost[0][0] + cost[n - 1][2],\n            cost[0][1] + cost[n - 1][0],\n            cost[0][1] + cost[n - 1][2],\n            cost[0][2] + cost[n - 1][0],\n            cost[0][2] + cost[n - 1][1],\n        ]\n        \n        for i in range(1, n // 2):\n            cost_i = cost[i]\n            cost_n_i = cost[n - 1 - i]\n            \n            # Transition to the next pair of houses.\n            # We must ensure that the adjacent houses do not share the same color.\n            # E.g., for Index 0 (Color 0 and Color 1), the previous houses' colors\n            # could not have been Color 0 on the left, nor Color 1 on the right.\n            dp = [\n                cost_i[0] + cost_n_i[1] + min(dp[2], dp[3], dp[4]),\n                cost_i[0] + cost_n_i[2] + min(dp[2], dp[4], dp[5]),\n                cost_i[1] + cost_n_i[0] + min(dp[0], dp[1], dp[5]),\n                cost_i[1] + cost_n_i[2] + min(dp[0], dp[4], dp[5]),\n                cost_i[2] + cost_n_i[0] + min(dp[0], dp[1], dp[3]),\n                cost_i[2] + cost_n_i[1] + min(dp[1], dp[2], dp[3]),\n            ]\n            \n        return min(dp)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/3737__B3_gemini_solo.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "d28205ea80aebe6765356a037d622b0d82c4467e17df449f6a2ea061df78591f",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 67.32415941599902,
+      "input_tokens": 8660,
+      "output_tokens": 10048,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.137896
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "d28205ea80aebe6765356a037d622b0d82c4467e17df449f6a2ea061df78591f",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.114704
+  }
+}

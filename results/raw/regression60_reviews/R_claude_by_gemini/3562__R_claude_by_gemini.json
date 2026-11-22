@@ -1,0 +1,121 @@
+{
+  "task_id": "3562",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.50 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-15T22:28:56.053928+00:00",
+  "writer_finished_at": "2026-05-15T22:30:09.757987+00:00",
+  "reviewer_started_at": "2026-11-22T01:18:01.975939+00:00",
+  "reviewer_finished_at": "2026-11-22T01:21:15.943570+00:00",
+  "writer_prompt_sha256": "e5ddd8facdd671007c78293aadf68d8aa7fb3a88b86ae1683b4c1a5a8043530f",
+  "reviewer_prompt_sha256": "615dba204e055f753c255de8c9ca712b3515f2e21d53cb64e993f34cee9a371d",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 193.9676499160014,
+  "total_latency_s": 193.9676499160014,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9200,
+  "reviewer_output_tokens": 29965,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.37798,
+  "total_cost_usd": 0.37798,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"9098c933-8c79-4254-b737-010293b68e65\",\n  \"response\": \"<solution>\\nfrom typing import List\\nfrom bisect import bisect_left\\n\\nclass Solution:\\n    def maximumWeight(self, intervals: List[List[int]]) -> List[int]:\\n        n = len(intervals)\\n        if n == 0:\\n            return []\\n        \\n        # Sort indices by right endpoint\\n        order = sorted(range(n), key=lambda i: intervals[i][1])\\n        \\n        # Extract properties based on sorted order\\n        L = [intervals[i][0] for i in order]\\n        R = [intervals[i][1] for i in order]\\n        W = [intervals[i][2] for i in order]\\n        \\n        K = 4\\n        # dp[k][i] = (weight, sorted_tuple_of_original_indices)\\n        dp = [[(0, ())] * (n + 1) for _ in range(K + 1)]\\n        \\n        for i in range(1, n + 1):\\n            li = L[i - 1]\\n            wi = W[i - 1]\\n            oi = order[i - 1]\\n            \\n            # Find number of intervals ending strictly before the current left endpoint\\n            p = bisect_left(R, li)\\n            \\n            for k in range(1, K + 1):\\n                opt_a = dp[k][i - 1]\\n                prev_w, prev_t = dp[k - 1][p]\\n                \\n                opt_b_w = prev_w + wi\\n                \\n                # By checking weights before creating the tuple, \\n                # we skip the expensive tuple allocation/sorting step most of the time\\n                if opt_b_w > opt_a[0]:\\n                    dp[k][i] = (opt_b_w, tuple(sorted(prev_t + (oi,))))\\n                elif opt_b_w < opt_a[0]:\\n                    dp[k][i] = opt_a\\n                else:\\n                    # Weights are tied; form the tuple to compare lexicographically\\n                    opt_b_t = tuple(sorted(prev_t + (oi,)))\\n                    dp[k][i] = opt_a if opt_a[1] <= opt_b_t else (opt_b_w, opt_b_t)\\n        \\n        # Find best among all combinations of 1 to 4 intervals\\n        best = (0, ())\\n        for k in range(1, K + 1):\\n            cand = dp[k][n]\\n            if cand[0] > best[0]:\\n                best = cand\\n            elif cand[0] == best[0]:\\n                best = best if best[1] <= cand[1] else cand\\n                \\n        return list(best[1])\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 192284,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9200,\n          \"prompt\": 9200,\n          \"candidates\": 640,\n          \"total\": 39165,\n          \"cached\": 0,\n          \"thoughts\": 29325,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 192284,\n            \"tokens\": {\n              \"input\": 9200,\n              \"prompt\": 9200,\n              \"candidates\": 640,\n              \"total\": 39165,\n              \"cached\": 0,\n              \"thoughts\": 29325,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from typing import List\nfrom bisect import bisect_left\n\nclass Solution:\n    def maximumWeight(self, intervals: List[List[int]]) -> List[int]:\n        n = len(intervals)\n        if n == 0:\n            return []\n        \n        # Sort indices by right endpoint\n        order = sorted(range(n), key=lambda i: intervals[i][1])\n        L = [intervals[order[i]][0] for i in range(n)]\n        R = [intervals[order[i]][1] for i in range(n)]\n        W = [intervals[order[i]][2] for i in range(n)]\n        ORIG = [order[i] for i in range(n)]\n        \n        # dp[k][i] = (weight, sorted_tuple_of_original_indices)\n        # using first i sorted intervals, picking exactly k\n        K = 4\n        # Initialize with (i+1) slots from 0..n\n        dp = [[(0, ())] * (n + 1) for _ in range(K + 1)]\n        \n        def better(a, b):\n            if a[0] != b[0]:\n                return a if a[0] > b[0] else b\n            return a if a[1] <= b[1] else b\n        \n        for i in range(1, n + 1):\n            li = L[i - 1]\n            wi = W[i - 1]\n            oi = ORIG[i - 1]\n            # number of sorted intervals with R < li (strict, since shared boundary overlaps)\n            p = bisect_left(R, li)\n            \n            for k in range(1, K + 1):\n                # Option A: skip current\n                opt_a = dp[k][i - 1]\n                # Option B: take current\n                prev_w, prev_t = dp[k - 1][p]\n                # Insert oi into sorted tuple (size <= 3)\n                new_t_list = list(prev_t)\n                # binary-ish insert\n                lo, hi = 0, len(new_t_list)\n                while lo < hi:\n                    mid = (lo + hi) // 2\n                    if new_t_list[mid] < oi:\n                        lo = mid + 1\n                    else:\n                        hi = mid\n                new_t_list.insert(lo, oi)\n                opt_b = (prev_w + wi, tuple(new_t_list))\n                dp[k][i] = better(opt_a, opt_b)\n        \n        # Find best among all k in 0..4\n        best = (0, ())\n        for k in range(0, K + 1):\n            best = better(best, dp[k][n])\n        \n        return list(best[1])",
+  "reviewer_artifact": "from typing import List\nfrom bisect import bisect_left\n\nclass Solution:\n    def maximumWeight(self, intervals: List[List[int]]) -> List[int]:\n        n = len(intervals)\n        if n == 0:\n            return []\n        \n        # Sort indices by right endpoint\n        order = sorted(range(n), key=lambda i: intervals[i][1])\n        \n        # Extract properties based on sorted order\n        L = [intervals[i][0] for i in order]\n        R = [intervals[i][1] for i in order]\n        W = [intervals[i][2] for i in order]\n        \n        K = 4\n        # dp[k][i] = (weight, sorted_tuple_of_original_indices)\n        dp = [[(0, ())] * (n + 1) for _ in range(K + 1)]\n        \n        for i in range(1, n + 1):\n            li = L[i - 1]\n            wi = W[i - 1]\n            oi = order[i - 1]\n            \n            # Find number of intervals ending strictly before the current left endpoint\n            p = bisect_left(R, li)\n            \n            for k in range(1, K + 1):\n                opt_a = dp[k][i - 1]\n                prev_w, prev_t = dp[k - 1][p]\n                \n                opt_b_w = prev_w + wi\n                \n                # By checking weights before creating the tuple, \n                # we skip the expensive tuple allocation/sorting step most of the time\n                if opt_b_w > opt_a[0]:\n                    dp[k][i] = (opt_b_w, tuple(sorted(prev_t + (oi,))))\n                elif opt_b_w < opt_a[0]:\n                    dp[k][i] = opt_a\n                else:\n                    # Weights are tied; form the tuple to compare lexicographically\n                    opt_b_t = tuple(sorted(prev_t + (oi,)))\n                    dp[k][i] = opt_a if opt_a[1] <= opt_b_t else (opt_b_w, opt_b_t)\n        \n        # Find best among all combinations of 1 to 4 intervals\n        best = (0, ())\n        for k in range(1, K + 1):\n            cand = dp[k][n]\n            if cand[0] > best[0]:\n                best = cand\n            elif cand[0] == best[0]:\n                best = best if best[1] <= cand[1] else cand\n                \n        return list(best[1])",
+  "final_artifact": "from typing import List\nfrom bisect import bisect_left\n\nclass Solution:\n    def maximumWeight(self, intervals: List[List[int]]) -> List[int]:\n        n = len(intervals)\n        if n == 0:\n            return []\n        \n        # Sort indices by right endpoint\n        order = sorted(range(n), key=lambda i: intervals[i][1])\n        \n        # Extract properties based on sorted order\n        L = [intervals[i][0] for i in order]\n        R = [intervals[i][1] for i in order]\n        W = [intervals[i][2] for i in order]\n        \n        K = 4\n        # dp[k][i] = (weight, sorted_tuple_of_original_indices)\n        dp = [[(0, ())] * (n + 1) for _ in range(K + 1)]\n        \n        for i in range(1, n + 1):\n            li = L[i - 1]\n            wi = W[i - 1]\n            oi = order[i - 1]\n            \n            # Find number of intervals ending strictly before the current left endpoint\n            p = bisect_left(R, li)\n            \n            for k in range(1, K + 1):\n                opt_a = dp[k][i - 1]\n                prev_w, prev_t = dp[k - 1][p]\n                \n                opt_b_w = prev_w + wi\n                \n                # By checking weights before creating the tuple, \n                # we skip the expensive tuple allocation/sorting step most of the time\n                if opt_b_w > opt_a[0]:\n                    dp[k][i] = (opt_b_w, tuple(sorted(prev_t + (oi,))))\n                elif opt_b_w < opt_a[0]:\n                    dp[k][i] = opt_a\n                else:\n                    # Weights are tied; form the tuple to compare lexicographically\n                    opt_b_t = tuple(sorted(prev_t + (oi,)))\n                    dp[k][i] = opt_a if opt_a[1] <= opt_b_t else (opt_b_w, opt_b_t)\n        \n        # Find best among all combinations of 1 to 4 intervals\n        best = (0, ())\n        for k in range(1, K + 1):\n            cand = dp[k][n]\n            if cand[0] > best[0]:\n                best = cand\n            elif cand[0] == best[0]:\n                best = best if best[1] <= cand[1] else cand\n                \n        return list(best[1])",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_hard_full/B1_claude_solo/3562__B1_claude_solo.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "d86bd3142c8b013fe790fb109dffd2a44f475fc7773df7c0fc424077cb6d2164",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 73.70311516697984,
+      "input_tokens": 5,
+      "output_tokens": 6522,
+      "cached_input_tokens": 30890,
+      "cost_usd": 0.6068475
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "202fa5dff2b13693c11ef5926e6d7c3777bacc7fe45b8135fc83212a9926464b",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 63,
+    "reviewer_cost_all_attempts": 0.37798
+  }
+}

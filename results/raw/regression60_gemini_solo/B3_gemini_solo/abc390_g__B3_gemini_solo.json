@@ -1,0 +1,100 @@
+{
+  "task_id": "abc390_g",
+  "condition": "B3_gemini_solo",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T01:04:24.404151+00:00",
+  "writer_finished_at": "2026-11-22T01:06:40.753331+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "80363a1d58176f7ef4914c3b5057baef93ad927be36e8d13f6e5ef516f7c9301",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 136.34922158300105,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 136.34922158300105,
+  "writer_input_tokens": 8465,
+  "writer_output_tokens": 21960,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.28045,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.28045,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "{\n  \"session_id\": \"582f79c9-254e-47ba-8630-661692948186\",\n  \"response\": \"An elegant and highly optimal solution in Python to solve this problem.\\n\\n### Method Explanation\\nThe problem asks for the sum of $f(P)$ across all permutations of $(1, 2, \\\\ldots, N)$. \\nThe contribution of each element $k \\\\in \\\\{1, \\\\ldots, N\\\\}$ when placed in a permutation depends on the sum of the digit-lengths of all elements positioned after it. \\nSpecifically, the value contributed by $k$ is $k \\\\times 10^{\\\\text{sum of lengths of elements after } k}$.\\nIf we fix the subset $S$ of elements appearing after $k$, there are $|S|! (N - 1 - |S|)!$ valid arrangements for the remaining elements.\\n\\nWe can express the total answer using the Eulerian Beta integral. The weight $|S|! (N - 1 - |S|)!$ can be elegantly rewritten as $N! \\\\int_0^1 t^{|S|} (1-t)^{N-1-|S|} dt$. \\nSumming this over all elements $k$ and subsets $S$ yields:\\n$$ \\\\text{Total} = N! \\\\int_0^1 \\\\sum_{k=1}^N k \\\\prod_{x \\\\neq k} (t \\\\cdot 10^{\\\\text{len}(x)} + 1 - t) dt $$\\n\\nLet $v_L = 10^L - 1$. The term $t \\\\cdot 10^{\\\\text{len}(x)} + 1 - t$ simplifies to $1 + v_L t$. \\nLet $P(t) = \\\\prod_{L=1}^6 (1 + v_L t)^{c_L}$, where $c_L$ is the number of integers in $1 \\\\dots N$ with length $L$.\\nThe integrand simplifies to a polynomial $Q(t) = \\\\sum_{L=1}^6 S_L \\\\frac{P(t)}{1 + v_L t}$ where $S_L$ is the sum of integers in $1 \\\\dots N$ with length $L$.\\nBecause $Q(t)$ is a polynomial of degree $N-1$, $\\\\int_0^1 Q(t) dt$ corresponds to taking the coefficients $q_k$ of $t^k$ in $Q(t)$ and evaluating $\\\\sum_{k=0}^{N-1} \\\\frac{q_k}{k+1}$.\\n\\nInstead of computing the polynomial $Q(t)$ by naive expansion (which would take $O(N^2)$), we take advantage of linear recurrences created by logarithmic differentiation. We can deduce $p_k$ (the coefficients of $P(t)$) in $O(N \\\\cdot \\\\text{max\\\\_len})$ time because $P'(t) \\\\prod (1 + v_L t) = P(t) \\\\sum c_L v_L \\\\prod_{M \\\\neq L} (1 + v_M t)$. A similar iterative matching allows us to find $q_k$ sequentially in $O(N \\\\cdot \\\\text{max\\\\_len})$.\\n\\n### Python 3 Source Code\\n\\n<solution>\\nimport sys\\n\\ndef solve():\\n    input = sys.stdin.read\\n    data = input().split()\\n    if not data:\\n        return\\n    n = int(data[0])\\n    \\n    MOD = 998244353\\n    \\n    # Calculate counts and sums for elements of each possible decimal length\\n    c_count = {}\\n    S_sum = {}\\n    for L in range(1, 7):\\n        start = 10**(L-1)\\n        end = min(n, 10**L - 1)\\n        if start <= end:\\n            c_count[L] = (end - start + 1)\\n            S_sum[L] = (start + end) * c_count[L] // 2 % MOD\\n\\n    L_list = list(c_count.keys())\\n    \\n    def poly_mul(poly1, poly2):\\n        res = [0] * (len(poly1) + len(poly2) - 1)\\n        for i, c1 in enumerate(poly1):\\n            for j, c2 in enumerate(poly2):\\n                res[i+j] = (res[i+j] + c1 * c2) % MOD\\n        return res\\n\\n    def poly_add(poly1, poly2):\\n        res = [0] * max(len(poly1), len(poly2))\\n        for i in range(len(poly1)):\\n            res[i] = (res[i] + poly1[i]) % MOD\\n        for i in range(len(poly2)):\\n            res[i] = (res[i] + poly2[i]) % MOD\\n        return res\\n\\n    v = {L: (10**L - 1) % MOD for L in L_list}\\n\\n    # Construct the small degree polynomials A(t), B(t), C(t)\\n    A = [1]\\n    for L in L_list:\\n        A = poly_mul(A, [1, v[L]])\\n\\n    B = [0]\\n    for L in L_list:\\n        temp = [c_count[L] * v[L] % MOD]\\n        for M in L_list:\\n            if M != L:\\n                temp = poly_mul(temp, [1, v[M]])\\n        B = poly_add(B, temp)\\n\\n    C = [0]\\n    for L in L_list:\\n        temp = [S_sum[L]]\\n        for M in L_list:\\n            if M != L:\\n                temp = poly_mul(temp, [1, v[M]])\\n        C = poly_add(C, temp)\\n\\n    # Precompute modular inverses up to n\\n    inv = [0] * (n + 1)\\n    if n >= 1:\\n        inv[1] = 1\\n    for i in range(2, n + 1):\\n        inv[i] = MOD - (MOD // i) * inv[MOD % i] % MOD\\n\\n    # Iteratively compute coefficients of P(t)\\n    p = [0] * (n + 1)\\n    p[0] = 1\\n\\n    len_B = len(B)\\n    len_A = len(A)\\n    len_C = len(C)\\n\\n    for k in range(1, n + 1):\\n        sum_b = 0\\n        limit_B = min(k, len_B)\\n        for i in range(limit_B):\\n            sum_b += p[k - 1 - i] * B[i]\\n            \\n        sum_a = 0\\n        limit_A = min(k + 1, len_A)\\n        for i in range(1, limit_A):\\n            sum_a += (k - i) * p[k - i] * A[i]\\n            \\n        p[k] = (sum_b - sum_a) % MOD * inv[k] % MOD\\n\\n    # Iteratively compute coefficients of Q(t)\\n    q = [0] * n\\n    for k in range(n):\\n        sum_c = 0\\n        limit_C = min(k + 1, len_C)\\n        for i in range(limit_C):\\n            sum_c += p[k - i] * C[i]\\n            \\n        sum_qa = 0\\n        limit_A = min(k + 1, len_A)\\n        for i in range(1, limit_A):\\n            sum_qa += q[k - i] * A[i]\\n            \\n        q[k] = (sum_c - sum_qa) % MOD\\n\\n    # Compute final integral outcome sum\\n    ans = 0\\n    for k in range(n):\\n        ans = (ans + q[k] * inv[k + 1]) % MOD\\n\\n    # Factor in N! permutations multiplier factor\\n    fact = 1\\n    for i in range(1, n + 1):\\n        fact = (fact * i) % MOD\\n\\n    ans = (ans * fact) % MOD\\n    print(ans)\\n\\nif __name__ == '__main__':\\n    solve()\\n</solution>\\n\\nConfidence level: High, zero uncertain edge cases as algorithm natively safeguards large $N$ lengths limits implicitly via Eulerian integral properties.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 135577,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8465,\n          \"prompt\": 8465,\n          \"candidates\": 1906,\n          \"total\": 30425,\n          \"cached\": 0,\n          \"thoughts\": 20054,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 135577,\n            \"tokens\": {\n              \"input\": 8465,\n              \"prompt\": 8465,\n              \"candidates\": 1906,\n              \"total\": 30425,\n              \"cached\": 0,\n              \"thoughts\": 20054,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    if not data:\n        return\n    n = int(data[0])\n    \n    MOD = 998244353\n    \n    # Calculate counts and sums for elements of each possible decimal length\n    c_count = {}\n    S_sum = {}\n    for L in range(1, 7):\n        start = 10**(L-1)\n        end = min(n, 10**L - 1)\n        if start <= end:\n            c_count[L] = (end - start + 1)\n            S_sum[L] = (start + end) * c_count[L] // 2 % MOD\n\n    L_list = list(c_count.keys())\n    \n    def poly_mul(poly1, poly2):\n        res = [0] * (len(poly1) + len(poly2) - 1)\n        for i, c1 in enumerate(poly1):\n            for j, c2 in enumerate(poly2):\n                res[i+j] = (res[i+j] + c1 * c2) % MOD\n        return res\n\n    def poly_add(poly1, poly2):\n        res = [0] * max(len(poly1), len(poly2))\n        for i in range(len(poly1)):\n            res[i] = (res[i] + poly1[i]) % MOD\n        for i in range(len(poly2)):\n            res[i] = (res[i] + poly2[i]) % MOD\n        return res\n\n    v = {L: (10**L - 1) % MOD for L in L_list}\n\n    # Construct the small degree polynomials A(t), B(t), C(t)\n    A = [1]\n    for L in L_list:\n        A = poly_mul(A, [1, v[L]])\n\n    B = [0]\n    for L in L_list:\n        temp = [c_count[L] * v[L] % MOD]\n        for M in L_list:\n            if M != L:\n                temp = poly_mul(temp, [1, v[M]])\n        B = poly_add(B, temp)\n\n    C = [0]\n    for L in L_list:\n        temp = [S_sum[L]]\n        for M in L_list:\n            if M != L:\n                temp = poly_mul(temp, [1, v[M]])\n        C = poly_add(C, temp)\n\n    # Precompute modular inverses up to n\n    inv = [0] * (n + 1)\n    if n >= 1:\n        inv[1] = 1\n    for i in range(2, n + 1):\n        inv[i] = MOD - (MOD // i) * inv[MOD % i] % MOD\n\n    # Iteratively compute coefficients of P(t)\n    p = [0] * (n + 1)\n    p[0] = 1\n\n    len_B = len(B)\n    len_A = len(A)\n    len_C = len(C)\n\n    for k in range(1, n + 1):\n        sum_b = 0\n        limit_B = min(k, len_B)\n        for i in range(limit_B):\n            sum_b += p[k - 1 - i] * B[i]\n            \n        sum_a = 0\n        limit_A = min(k + 1, len_A)\n        for i in range(1, limit_A):\n            sum_a += (k - i) * p[k - i] * A[i]\n            \n        p[k] = (sum_b - sum_a) % MOD * inv[k] % MOD\n\n    # Iteratively compute coefficients of Q(t)\n    q = [0] * n\n    for k in range(n):\n        sum_c = 0\n        limit_C = min(k + 1, len_C)\n        for i in range(limit_C):\n            sum_c += p[k - i] * C[i]\n            \n        sum_qa = 0\n        limit_A = min(k + 1, len_A)\n        for i in range(1, limit_A):\n            sum_qa += q[k - i] * A[i]\n            \n        q[k] = (sum_c - sum_qa) % MOD\n\n    # Compute final integral outcome sum\n    ans = 0\n    for k in range(n):\n        ans = (ans + q[k] * inv[k + 1]) % MOD\n\n    # Factor in N! permutations multiplier factor\n    fact = 1\n    for i in range(1, n + 1):\n        fact = (fact * i) % MOD\n\n    ans = (ans * fact) % MOD\n    print(ans)\n\nif __name__ == '__main__':\n    solve()",
+  "reviewer_artifact": "",
+  "final_artifact": "import sys\n\ndef solve():\n    input = sys.stdin.read\n    data = input().split()\n    if not data:\n        return\n    n = int(data[0])\n    \n    MOD = 998244353\n    \n    # Calculate counts and sums for elements of each possible decimal length\n    c_count = {}\n    S_sum = {}\n    for L in range(1, 7):\n        start = 10**(L-1)\n        end = min(n, 10**L - 1)\n        if start <= end:\n            c_count[L] = (end - start + 1)\n            S_sum[L] = (start + end) * c_count[L] // 2 % MOD\n\n    L_list = list(c_count.keys())\n    \n    def poly_mul(poly1, poly2):\n        res = [0] * (len(poly1) + len(poly2) - 1)\n        for i, c1 in enumerate(poly1):\n            for j, c2 in enumerate(poly2):\n                res[i+j] = (res[i+j] + c1 * c2) % MOD\n        return res\n\n    def poly_add(poly1, poly2):\n        res = [0] * max(len(poly1), len(poly2))\n        for i in range(len(poly1)):\n            res[i] = (res[i] + poly1[i]) % MOD\n        for i in range(len(poly2)):\n            res[i] = (res[i] + poly2[i]) % MOD\n        return res\n\n    v = {L: (10**L - 1) % MOD for L in L_list}\n\n    # Construct the small degree polynomials A(t), B(t), C(t)\n    A = [1]\n    for L in L_list:\n        A = poly_mul(A, [1, v[L]])\n\n    B = [0]\n    for L in L_list:\n        temp = [c_count[L] * v[L] % MOD]\n        for M in L_list:\n            if M != L:\n                temp = poly_mul(temp, [1, v[M]])\n        B = poly_add(B, temp)\n\n    C = [0]\n    for L in L_list:\n        temp = [S_sum[L]]\n        for M in L_list:\n            if M != L:\n                temp = poly_mul(temp, [1, v[M]])\n        C = poly_add(C, temp)\n\n    # Precompute modular inverses up to n\n    inv = [0] * (n + 1)\n    if n >= 1:\n        inv[1] = 1\n    for i in range(2, n + 1):\n        inv[i] = MOD - (MOD // i) * inv[MOD % i] % MOD\n\n    # Iteratively compute coefficients of P(t)\n    p = [0] * (n + 1)\n    p[0] = 1\n\n    len_B = len(B)\n    len_A = len(A)\n    len_C = len(C)\n\n    for k in range(1, n + 1):\n        sum_b = 0\n        limit_B = min(k, len_B)\n        for i in range(limit_B):\n            sum_b += p[k - 1 - i] * B[i]\n            \n        sum_a = 0\n        limit_A = min(k + 1, len_A)\n        for i in range(1, limit_A):\n            sum_a += (k - i) * p[k - i] * A[i]\n            \n        p[k] = (sum_b - sum_a) % MOD * inv[k] % MOD\n\n    # Iteratively compute coefficients of Q(t)\n    q = [0] * n\n    for k in range(n):\n        sum_c = 0\n        limit_C = min(k + 1, len_C)\n        for i in range(limit_C):\n            sum_c += p[k - i] * C[i]\n            \n        sum_qa = 0\n        limit_A = min(k + 1, len_A)\n        for i in range(1, limit_A):\n            sum_qa += q[k - i] * A[i]\n            \n        q[k] = (sum_c - sum_qa) % MOD\n\n    # Compute final integral outcome sum\n    ans = 0\n    for k in range(n):\n        ans = (ans + q[k] * inv[k + 1]) % MOD\n\n    # Factor in N! permutations multiplier factor\n    fact = 1\n    for i in range(1, n + 1):\n        fact = (fact * i) % MOD\n\n    ans = (ans * fact) % MOD\n    print(ans)\n\nif __name__ == '__main__':\n    solve()",
+  "writer_confidence_note": "Confidence level: High, zero uncertain edge cases as algorithm natively safeguards large $N$ lengths limits implicitly via Eulerian integral properties.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "task_id": "3805",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "livecodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.50 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-05-18T00:17:17.206182+00:00",
+  "writer_finished_at": "2026-05-18T00:18:30.856654+00:00",
+  "reviewer_started_at": "2026-11-22T01:30:25.020315+00:00",
+  "reviewer_finished_at": "2026-11-22T01:32:06.095065+00:00",
+  "writer_prompt_sha256": "5092531f37e0486aeecdf65b5d2b939fc49afdf60846da2bcf62580bc2902f2f",
+  "reviewer_prompt_sha256": "8d9909763509562e11b92b41b81b0f265f3f7cf6d05a515c60a445069a502b2b",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 101.07474741699843,
+  "total_latency_s": 101.07474741699843,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8967,
+  "reviewer_output_tokens": 15807,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.207618,
+  "total_cost_usd": 0.207618,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"142b0892-c913-43b4-9ca5-a98b910e7457\",\n  \"response\": \"<solution>\\nclass Solution:\\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\\n        # Augment with '1' at both ends as described in the problem\\n        t = '1' + s + '1'\\n        n = len(t)\\n        \\n        # Find sizes of all contiguous 0-blocks in t\\n        zero_blocks = []\\n        i = 0\\n        while i < n:\\n            if t[i] == '0':\\n                j = i\\n                while j < n and t[j] == '0':\\n                    j += 1\\n                zero_blocks.append(j - i)\\n                i = j\\n            else:\\n                i += 1\\n        \\n        ones_count = s.count('1')\\n        \\n        # A valid trade requires changing a 1-block surrounded by 0s to 0s.\\n        # This implies we need at least two 0-blocks in t to surround a 1-block.\\n        if len(zero_blocks) < 2:\\n            return ones_count\\n        \\n        # The best gain is achieved by merging two adjacent 0-blocks\\n        # (by converting the 1-block between them to 0s) and then converting\\n        # the entire newly merged 0-block to 1s.\\n        # The net gain in '1's will be exactly the sum of the two 0-blocks' sizes.\\n        best_gain = 0\\n        for k in range(len(zero_blocks) - 1):\\n            best_gain = max(best_gain, zero_blocks[k] + zero_blocks[k+1])\\n        \\n        return ones_count + best_gain\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 100301,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8967,\n          \"prompt\": 8967,\n          \"candidates\": 394,\n          \"total\": 24774,\n          \"cached\": 0,\n          \"thoughts\": 15413,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 100301,\n            \"tokens\": {\n              \"input\": 8967,\n              \"prompt\": 8967,\n              \"candidates\": 394,\n              \"total\": 24774,\n              \"cached\": 0,\n              \"thoughts\": 15413,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "class Solution:\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\n        # Augment with '1' at both ends\n        t = '1' + s + '1'\n        n = len(t)\n        \n        # Find sizes of 0-blocks in t (in order)\n        zero_blocks = []\n        i = 0\n        while i < n:\n            if t[i] == '0':\n                j = i\n                while j < n and t[j] == '0':\n                    j += 1\n                zero_blocks.append(j - i)\n                i = j\n            else:\n                i += 1\n        \n        ones_count = s.count('1')\n        \n        # Need at least 2 zero-blocks in t to perform a valid trade\n        if len(zero_blocks) < 2:\n            return ones_count\n        \n        # Best gain = max over adjacent pairs of (z_i + z_{i+1})\n        # (pick the 1-block between them, merge into one 0-block, flip it)\n        best_gain = 0\n        for k in range(len(zero_blocks) - 1):\n            best_gain = max(best_gain, zero_blocks[k] + zero_blocks[k+1])\n        \n        return ones_count + best_gain",
+  "reviewer_artifact": "class Solution:\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\n        # Augment with '1' at both ends as described in the problem\n        t = '1' + s + '1'\n        n = len(t)\n        \n        # Find sizes of all contiguous 0-blocks in t\n        zero_blocks = []\n        i = 0\n        while i < n:\n            if t[i] == '0':\n                j = i\n                while j < n and t[j] == '0':\n                    j += 1\n                zero_blocks.append(j - i)\n                i = j\n            else:\n                i += 1\n        \n        ones_count = s.count('1')\n        \n        # A valid trade requires changing a 1-block surrounded by 0s to 0s.\n        # This implies we need at least two 0-blocks in t to surround a 1-block.\n        if len(zero_blocks) < 2:\n            return ones_count\n        \n        # The best gain is achieved by merging two adjacent 0-blocks\n        # (by converting the 1-block between them to 0s) and then converting\n        # the entire newly merged 0-block to 1s.\n        # The net gain in '1's will be exactly the sum of the two 0-blocks' sizes.\n        best_gain = 0\n        for k in range(len(zero_blocks) - 1):\n            best_gain = max(best_gain, zero_blocks[k] + zero_blocks[k+1])\n        \n        return ones_count + best_gain",
+  "final_artifact": "class Solution:\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\n        # Augment with '1' at both ends as described in the problem\n        t = '1' + s + '1'\n        n = len(t)\n        \n        # Find sizes of all contiguous 0-blocks in t\n        zero_blocks = []\n        i = 0\n        while i < n:\n            if t[i] == '0':\n                j = i\n                while j < n and t[j] == '0':\n                    j += 1\n                zero_blocks.append(j - i)\n                i = j\n            else:\n                i += 1\n        \n        ones_count = s.count('1')\n        \n        # A valid trade requires changing a 1-block surrounded by 0s to 0s.\n        # This implies we need at least two 0-blocks in t to surround a 1-block.\n        if len(zero_blocks) < 2:\n            return ones_count\n        \n        # The best gain is achieved by merging two adjacent 0-blocks\n        # (by converting the 1-block between them to 0s) and then converting\n        # the entire newly merged 0-block to 1s.\n        # The net gain in '1's will be exactly the sum of the two 0-blocks' sizes.\n        best_gain = 0\n        for k in range(len(zero_blocks) - 1):\n            best_gain = max(best_gain, zero_blocks[k] + zero_blocks[k+1])\n        \n        return ones_count + best_gain",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/lcb_medium_100/B1_claude_solo/3805__B1_claude_solo.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_lcb.txt",
+    "template_sha256": "14c05146688c030082f2b8ab51d3e133822ce8694ab136214f2d3c62adc6a336",
+    "draft_sha256": "e4451a9c83b92dcf21313b8a0b0072e78633cd68d929c6cbeebff7eba46a469a",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 73.64956658397568,
+      "input_tokens": 5,
+      "output_tokens": 5409,
+      "cached_input_tokens": 31052,
+      "cost_usd": 0.523503
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "6dbebbcf50d978491b546cec37e76bce5935e8b0f45f30ea78b0f6af656314a7",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 13,
+    "reviewer_cost_all_attempts": 0.207618
+  }
+}
