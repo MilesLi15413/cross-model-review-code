@@ -17,10 +17,13 @@
    crashes are input-parsing rewrites.
 4. **Claude is the most useful reviewer** on BigCodeBench: it fixes 18/99 failing drafts
    (GPT-5.5 5, Gemini 6; significant against both) and breaks the fewest.
-5. **The paper's GPT-5.5 solo score counts formatting as failure.** Its 83/116 is
-   reproducible with the paper's own code, but 15 failures are correct code wrapped in a
-   Markdown fence; on code correctness it is 98/116, and the claimed gains from review
-   (+18.1 / +12.9 pp) shrink to +5.2 pp (not significant) and 0.
+5. **The paper's GPT-5.5 solo score counts formatting as failure.** The paper's
+   statistics are not wrong: its 83/116 and the gains from review (+18.1 / +12.9 pp,
+   significant) reproduce exactly with the paper's own code. But 15 of the solo
+   failures are correct code wrapped in a Markdown fence, so most of that gain is the
+   reviewer fixing formatting. Counting code correctness only, GPT-5.5 solo is 98/116
+   and the gains are +5.2 pp (not significant) and 0. This needs reinterpreting, not
+   correcting (details: "Result of item 1").
 6. **The paper's GPT-5.5 costs are ~45% too high** (cached tokens counted twice); with
    corrected costs GPT-5.5 solo is the most cost-effective condition.
 
