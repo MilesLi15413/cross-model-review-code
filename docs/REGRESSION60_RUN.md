@@ -136,10 +136,11 @@ that pass today: 3562, 3688, 3717, 3789, 3801, abc388_f, abc399_e and arc195_e.
 - Each was regraded two more times on its own and passed every time, so this is not
   random.
 - All 8 went from fail to pass; none went the other way.
-- The cause is not confirmed. One possibility is that the original grading hit time
-  limits while the machine was running several conditions at once.
-- If this holds across all 116 problems, the paper's GPT-5.5 solo pass rate (71.6%)
-  may be understated. The frozen results were not changed. This run uses the regraded
+- **Cause (found later, see "Result of item 1"):** GPT-5.5 wrapped these programs in a
+  ```` ```python ```` Markdown fence. The paper's grading ran the fenced text as is
+  (a syntax error); the current grader strips the fence, and the code passes.
+- Across all 116 problems this affects 15 GPT-5.5 solo programs (item 1). The frozen
+  results were not changed. This run uses the regraded
   results, and the paper's values are kept in the `paper_passed` column of the
   inventory.
 
@@ -388,7 +389,7 @@ questions a reviewer will ask:
 
 Only one of 7a and 7b fits the remaining Gemini credit ($48).
 
-### Result of item 1: the paper's GPT-5.5 solo baseline is understated
+### Result of item 1: the paper's GPT-5.5 solo score counts formatting as failure
 
 Every frozen final program in the paper's pooled 116-problem complete case was regraded
 with the current grader (`scripts/regression60_regrade116.py`,
@@ -434,7 +435,31 @@ Only deviation from the paper's setup: Python 3.14 (the paper's version is unrec
 | AA vs A  | +0.0 pp  | +0.0 pp (unchanged)         |
 
 The paper's large gains from adding a reviewer to GPT-5.5 largely disappear. **This
-must be raised with the coauthors before the paper is used or submitted.** 5 of the 15
+must be raised with the coauthors before the paper is used or submitted.**
+
+**How to read this: the paper's number was not miscalculated; it measures something
+different from what the paper claims.** The paper's grader gives 83/116 reproducibly
+(see above). But 15 of GPT-5.5's 33 failures are correct code in a Markdown fence, so
+83/116 mixes "wrote correct code" with "followed the output format", and it is
+presented as the first. Three points make this matter:
+
+- *Only GPT-5.5 solo was exposed to the format test.* In every reviewed condition the
+  reviewer's output is graded, and no reviewer output was fenced, so the comparison is
+  not like for like.
+- *The claimed benefit of review is mostly the reviewer removing the fence.* On code
+  correctness the gains are +5.2 pp (OA, not significant: 11 vs 5 problems, p = 0.21)
+  and 0 (OO, 8 vs 8), down from +18.1 and +12.9 pp (26 vs 5 and 21 vs 6, both
+  significant).
+- *LiveCodeBench's own scorer would pass these programs*, since its pipeline extracts
+  code from inside fences. 98/116 is the benchmark-standard pass rate.
+
+A defensible alternative is to keep 83/116 and state explicitly that output formatting
+counts as failure, but then the paper must also explain why the reviewed conditions do
+not face the same test. Suggested wording for the coauthors: *"The GPT-5.5 solo pass
+rate was not miscalculated, but 15 of its failures were formatting, not wrong code: our
+grader did not strip Markdown fences, and only the solo condition was exposed to that.
+On code correctness GPT-5.5 solo is 98/116, and the claimed benefit of review mostly
+disappears."* 5 of the 15
 flipped drafts were also written with tool use (see Limitations).
 
 ### Result of item 2: the paper's GPT-5.5 costs are overstated by about 45%
@@ -731,9 +756,11 @@ So "before" and "after" are scored by the same grader. Otherwise a regression co
 be grader drift.
 
 **"Why do 8 GPT-5.5 drafts disagree with the paper?"**
-They pass every time today but were scored as failing in the original run. The cause is
-not confirmed. It is worth checking across all 116 problems, because it may mean the
-paper understates GPT-5.5's solo pass rate.
+GPT-5.5 put its code in a ```` ```python ```` fence. The paper's grading ran the fence
+as code (a syntax error); the current grader strips it, and the code passes every test.
+Rerunning the paper's own code reproduces the paper exactly, so the paper's number was
+computed correctly but counts a formatting issue as wrong code. Across all 116 problems
+this affects 15 GPT-5.5 solo programs and only that condition (see "Result of item 1").
 
 **"Did GPT-5.5 have tools in the paper?"**
 Yes. Codex has a built-in shell, and the paper's records show the GPT writer used it
