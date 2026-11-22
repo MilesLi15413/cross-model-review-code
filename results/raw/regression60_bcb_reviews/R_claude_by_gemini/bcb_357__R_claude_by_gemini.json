@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_357",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:30:41.142888+00:00",
+  "writer_finished_at": "2026-11-22T16:30:47.631871+00:00",
+  "reviewer_started_at": "2026-11-22T16:59:27.008185+00:00",
+  "reviewer_finished_at": "2026-11-22T16:59:43.783592+00:00",
+  "writer_prompt_sha256": "6f758a01afd0ae1822f9f9f0dbf47edf02aaba0a5f095d70a0ca1feb0680a730",
+  "reviewer_prompt_sha256": "af01c04cca10edc16fad18f61fb477afe9f4647e1f63e08f1e7d2955c90788cb",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 16.775517792000073,
+  "total_latency_s": 16.775517792000073,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8253,
+  "reviewer_output_tokens": 2277,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.04383,
+  "total_cost_usd": 0.04383,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"fafc9400-4829-4e2f-9a01-3ecbecd6ab00\",\n  \"response\": \"<solution>\\nimport numpy as np\\nfrom scipy.stats import norm\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(x):\\n    if not isinstance(x, np.ndarray):\\n        raise TypeError(\\\"x must be a numpy.ndarray\\\")\\n    \\n    real_part = norm.pdf(x, loc=0, scale=1)\\n    imag_part = norm.pdf(x, loc=2, scale=2)\\n    complex_dist = real_part + 1j * imag_part\\n    \\n    plt.plot(x, real_part, label='Real part')\\n    plt.plot(x, imag_part, label='Imaginary part')\\n    plt.legend()\\n    \\n    return complex_dist\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 15974,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8253,\n          \"prompt\": 8253,\n          \"candidates\": 169,\n          \"total\": 10530,\n          \"cached\": 0,\n          \"thoughts\": 2108,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 15974,\n            \"tokens\": {\n              \"input\": 8253,\n              \"prompt\": 8253,\n              \"candidates\": 169,\n              \"total\": 10530,\n              \"cached\": 0,\n              \"thoughts\": 2108,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nfrom scipy.stats import norm\nimport matplotlib.pyplot as plt\ndef task_func(x):\n    if not isinstance(x, np.ndarray):\n        raise TypeError(\"x must be a numpy.ndarray\")\n    real_part = norm.pdf(x, loc=0, scale=1)\n    imag_part = norm.pdf(x, loc=2, scale=2)\n    complex_dist = real_part + 1j * imag_part\n    plt.plot(x, real_part, label='Real part')\n    plt.plot(x, imag_part, label='Imaginary part')\n    plt.legend()\n    return complex_dist",
+  "reviewer_artifact": "import numpy as np\nfrom scipy.stats import norm\nimport matplotlib.pyplot as plt\n\ndef task_func(x):\n    if not isinstance(x, np.ndarray):\n        raise TypeError(\"x must be a numpy.ndarray\")\n    \n    real_part = norm.pdf(x, loc=0, scale=1)\n    imag_part = norm.pdf(x, loc=2, scale=2)\n    complex_dist = real_part + 1j * imag_part\n    \n    plt.plot(x, real_part, label='Real part')\n    plt.plot(x, imag_part, label='Imaginary part')\n    plt.legend()\n    \n    return complex_dist",
+  "final_artifact": "import numpy as np\nfrom scipy.stats import norm\nimport matplotlib.pyplot as plt\n\ndef task_func(x):\n    if not isinstance(x, np.ndarray):\n        raise TypeError(\"x must be a numpy.ndarray\")\n    \n    real_part = norm.pdf(x, loc=0, scale=1)\n    imag_part = norm.pdf(x, loc=2, scale=2)\n    complex_dist = real_part + 1j * imag_part\n    \n    plt.plot(x, real_part, label='Real part')\n    plt.plot(x, imag_part, label='Imaginary part')\n    plt.legend()\n    \n    return complex_dist",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_357__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "26fe1b21ac379e347a7a842fe14dafa79db8cbe709dc493822fe9eebcaece010",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 6.489014583999989,
+      "input_tokens": 5,
+      "output_tokens": 259,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.184334
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "ab81e655fded65d3df123d4f45f818b0539e062a6d29bc5b4d295fd83fb05509",
+    "unchanged_exact": false,
+    "unchanged_whitespace": true,
+    "diff_lines": 4,
+    "reviewer_cost_all_attempts": 0.04383,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

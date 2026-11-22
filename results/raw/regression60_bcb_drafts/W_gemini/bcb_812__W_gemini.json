@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_812",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T16:46:52.383896+00:00",
+  "writer_finished_at": "2026-11-22T16:47:30.727779+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "96c385641a448adc51945f3998b35f7256680a915a309fb58bbd06ee8fa4f192",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 38.34416166699998,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 38.34416166699998,
+  "writer_input_tokens": 8070,
+  "writer_output_tokens": 6352,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.092364,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.092364,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "{\n  \"session_id\": \"fa568746-1aa5-43b7-bbc9-cdd392c59fe3\",\n  \"response\": \"<solution>\\nimport re\\nfrom pathlib import Path\\nimport tarfile\\nimport tempfile\\nimport os\\n\\n# Constants\\nPATTERN = r\\\"(?<!Distillr)\\\\\\\\\\\\\\\\AcroTray\\\\.exe\\\"\\nDIRECTORY = r\\\"C:\\\\\\\\SomeDir\\\\\\\\\\\"\\n\\ndef task_func(directory=DIRECTORY, file_pattern=PATTERN):\\n    fd, tar_path = tempfile.mkstemp(suffix=\\\".tar\\\")\\n    os.close(fd)\\n    \\n    pattern = re.compile(file_pattern)\\n    \\n    with tarfile.open(tar_path, \\\"w\\\") as tar:\\n        dir_path = Path(directory)\\n        if dir_path.exists() and dir_path.is_dir():\\n            for file_path in dir_path.rglob(\\\"*\\\"):\\n                if file_path.is_file():\\n                    p1 = str(file_path)\\n                    p2 = str(file_path.absolute())\\n                    # Ensure compatibility with varying slash representations on different OS/environments\\n                    p3 = p1.replace(\\\"/\\\", \\\"\\\\\\\\\\\")\\n                    p4 = p2.replace(\\\"/\\\", \\\"\\\\\\\\\\\")\\n                    p5 = p3.replace(\\\"\\\\\\\\\\\", \\\"\\\\\\\\\\\\\\\\\\\")\\n                    p6 = p4.replace(\\\"\\\\\\\\\\\", \\\"\\\\\\\\\\\\\\\\\\\")\\n                    \\n                    if any(pattern.search(p) for p in [p1, p2, p3, p4, p5, p6]):\\n                        try:\\n                            arcname = str(file_path.relative_to(dir_path))\\n                        except ValueError:\\n                            arcname = file_path.name\\n                        tar.add(str(file_path), arcname=arcname)\\n                        \\n    return tar_path\\n</solution>\\n\\nConfidence level: High. I am confident in this implementation as it handles OS-specific directory traversals securely via `pathlib`, checks multiple normalized path variations to correctly apply the regex string (even if evaluated on a non-Windows OS mock test), and safely groups matched files into a valid `.tar` file utilizing `tempfile`.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 37593,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8070,\n          \"prompt\": 8070,\n          \"candidates\": 445,\n          \"total\": 14422,\n          \"cached\": 0,\n          \"thoughts\": 5907,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 37593,\n            \"tokens\": {\n              \"input\": 8070,\n              \"prompt\": 8070,\n              \"candidates\": 445,\n              \"total\": 14422,\n              \"cached\": 0,\n              \"thoughts\": 5907,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import re\nfrom pathlib import Path\nimport tarfile\nimport tempfile\nimport os\n\n# Constants\nPATTERN = r\"(?<!Distillr)\\\\\\\\AcroTray\\.exe\"\nDIRECTORY = r\"C:\\\\SomeDir\\\\\"\n\ndef task_func(directory=DIRECTORY, file_pattern=PATTERN):\n    fd, tar_path = tempfile.mkstemp(suffix=\".tar\")\n    os.close(fd)\n    \n    pattern = re.compile(file_pattern)\n    \n    with tarfile.open(tar_path, \"w\") as tar:\n        dir_path = Path(directory)\n        if dir_path.exists() and dir_path.is_dir():\n            for file_path in dir_path.rglob(\"*\"):\n                if file_path.is_file():\n                    p1 = str(file_path)\n                    p2 = str(file_path.absolute())\n                    # Ensure compatibility with varying slash representations on different OS/environments\n                    p3 = p1.replace(\"/\", \"\\\\\")\n                    p4 = p2.replace(\"/\", \"\\\\\")\n                    p5 = p3.replace(\"\\\\\", \"\\\\\\\\\")\n                    p6 = p4.replace(\"\\\\\", \"\\\\\\\\\")\n                    \n                    if any(pattern.search(p) for p in [p1, p2, p3, p4, p5, p6]):\n                        try:\n                            arcname = str(file_path.relative_to(dir_path))\n                        except ValueError:\n                            arcname = file_path.name\n                        tar.add(str(file_path), arcname=arcname)\n                        \n    return tar_path",
+  "reviewer_artifact": "",
+  "final_artifact": "import re\nfrom pathlib import Path\nimport tarfile\nimport tempfile\nimport os\n\n# Constants\nPATTERN = r\"(?<!Distillr)\\\\\\\\AcroTray\\.exe\"\nDIRECTORY = r\"C:\\\\SomeDir\\\\\"\n\ndef task_func(directory=DIRECTORY, file_pattern=PATTERN):\n    fd, tar_path = tempfile.mkstemp(suffix=\".tar\")\n    os.close(fd)\n    \n    pattern = re.compile(file_pattern)\n    \n    with tarfile.open(tar_path, \"w\") as tar:\n        dir_path = Path(directory)\n        if dir_path.exists() and dir_path.is_dir():\n            for file_path in dir_path.rglob(\"*\"):\n                if file_path.is_file():\n                    p1 = str(file_path)\n                    p2 = str(file_path.absolute())\n                    # Ensure compatibility with varying slash representations on different OS/environments\n                    p3 = p1.replace(\"/\", \"\\\\\")\n                    p4 = p2.replace(\"/\", \"\\\\\")\n                    p5 = p3.replace(\"\\\\\", \"\\\\\\\\\")\n                    p6 = p4.replace(\"\\\\\", \"\\\\\\\\\")\n                    \n                    if any(pattern.search(p) for p in [p1, p2, p3, p4, p5, p6]):\n                        try:\n                            arcname = str(file_path.relative_to(dir_path))\n                        except ValueError:\n                            arcname = file_path.name\n                        tar.add(str(file_path), arcname=arcname)\n                        \n    return tar_path",
+  "writer_confidence_note": "Confidence level: High.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/812",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.092364,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "PermissionError: [Errno 13] Permission denied: '/tmp/tmp4tygpt7j/AcroTray.exe'",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_981",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T16:40:31.690466+00:00",
+  "writer_finished_at": "2026-11-22T16:40:54.297579+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "c792c981d8a026a3316abd61149b372f57897f3be7cf41aab197df89552a481d",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 22.607268165999926,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 22.607268165999926,
+  "writer_input_tokens": 8166,
+  "writer_output_tokens": 3354,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.05658,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.05658,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "{\n  \"session_id\": \"6f9640f3-60b4-4dfc-909a-fd4012dc7f08\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nfrom datetime import datetime\\nimport random\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(start_date, end_date, num_series, seed=None):\\n    start = pd.to_datetime(start_date)\\n    end = pd.to_datetime(end_date)\\n    \\n    if start > end:\\n        raise ValueError(\\\"start_date cannot be later than end_date\\\")\\n    if num_series < 1:\\n        raise ValueError(\\\"num_series must be at least 1\\\")\\n        \\n    if seed is not None:\\n        random.seed(seed)\\n        \\n    # Generate daily date range\\n    dates = pd.date_range(start=start, end=end, freq='D')\\n    \\n    # Generate random time series data\\n    data = {}\\n    for i in range(1, num_series + 1):\\n        data[f'series_{i}'] = [random.randint(0, 100) for _ in range(len(dates))]\\n        \\n    df = pd.DataFrame(data, index=dates)\\n    \\n    # Plotting\\n    ax = df.plot(title=\\\"Random Time Series\\\")\\n    ax.set_xlabel(\\\"Date\\\")\\n    ax.set_ylabel(\\\"Value\\\")\\n    \\n    return df, ax\\n</solution>\\n\\nConfidence level: High. The only slight ambiguity is whether the series naming convention `series_x` expects 0-based indexing (e.g., `series_0`) or 1-based indexing (`series_1`); 1-based indexing has been used here as it aligns naturally with the common phrasing of \\\"series number 1, 2, etc.\\\"\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 21816,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8166,\n          \"prompt\": 8166,\n          \"candidates\": 381,\n          \"total\": 11520,\n          \"cached\": 0,\n          \"thoughts\": 2973,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 21816,\n            \"tokens\": {\n              \"input\": 8166,\n              \"prompt\": 8166,\n              \"candidates\": 381,\n              \"total\": 11520,\n              \"cached\": 0,\n              \"thoughts\": 2973,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import pandas as pd\nfrom datetime import datetime\nimport random\nimport matplotlib.pyplot as plt\n\ndef task_func(start_date, end_date, num_series, seed=None):\n    start = pd.to_datetime(start_date)\n    end = pd.to_datetime(end_date)\n    \n    if start > end:\n        raise ValueError(\"start_date cannot be later than end_date\")\n    if num_series < 1:\n        raise ValueError(\"num_series must be at least 1\")\n        \n    if seed is not None:\n        random.seed(seed)\n        \n    # Generate daily date range\n    dates = pd.date_range(start=start, end=end, freq='D')\n    \n    # Generate random time series data\n    data = {}\n    for i in range(1, num_series + 1):\n        data[f'series_{i}'] = [random.randint(0, 100) for _ in range(len(dates))]\n        \n    df = pd.DataFrame(data, index=dates)\n    \n    # Plotting\n    ax = df.plot(title=\"Random Time Series\")\n    ax.set_xlabel(\"Date\")\n    ax.set_ylabel(\"Value\")\n    \n    return df, ax",
+  "reviewer_artifact": "",
+  "final_artifact": "import pandas as pd\nfrom datetime import datetime\nimport random\nimport matplotlib.pyplot as plt\n\ndef task_func(start_date, end_date, num_series, seed=None):\n    start = pd.to_datetime(start_date)\n    end = pd.to_datetime(end_date)\n    \n    if start > end:\n        raise ValueError(\"start_date cannot be later than end_date\")\n    if num_series < 1:\n        raise ValueError(\"num_series must be at least 1\")\n        \n    if seed is not None:\n        random.seed(seed)\n        \n    # Generate daily date range\n    dates = pd.date_range(start=start, end=end, freq='D')\n    \n    # Generate random time series data\n    data = {}\n    for i in range(1, num_series + 1):\n        data[f'series_{i}'] = [random.randint(0, 100) for _ in range(len(dates))]\n        \n    df = pd.DataFrame(data, index=dates)\n    \n    # Plotting\n    ax = df.plot(title=\"Random Time Series\")\n    ax.set_xlabel(\"Date\")\n    ax.set_ylabel(\"Value\")\n    \n    return df, ax",
+  "writer_confidence_note": "Confidence level: High.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/981",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.05658,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

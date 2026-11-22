@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_987",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:30:40.727990+00:00",
+  "writer_finished_at": "2026-11-22T16:30:49.292438+00:00",
+  "reviewer_started_at": "2026-11-22T17:06:34.631141+00:00",
+  "reviewer_finished_at": "2026-11-22T17:07:10.225936+00:00",
+  "writer_prompt_sha256": "c3203224e44660a3fc2c18bcb77b8759f60c50ae76543a5e669694ba2648e01b",
+  "reviewer_prompt_sha256": "5589cc448d44be60427e0ba93c8443031bfdeda6085f222eb9d887302e330e07",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 35.59482829100034,
+  "total_latency_s": 35.59482829100034,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8482,
+  "reviewer_output_tokens": 5503,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.083,
+  "total_cost_usd": 0.083,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"f9ea2d61-52d9-4961-9807-90b0313f3df2\",\n  \"response\": \"<solution>\\nimport json\\nimport pandas as pd\\nfrom sklearn.preprocessing import MinMaxScaler\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(json_data: str, data_key: str):\\n    data = json.loads(json_data)\\n    keys = data_key.split('.')\\n    current = data\\n    for key in keys:\\n        if not isinstance(current, dict) or key not in current:\\n            raise KeyError(f\\\"Key path '{data_key}' not found in the given data.\\\")\\n        current = current[key]\\n\\n    original = pd.Series(current, dtype='float64')\\n\\n    if original.empty:\\n        return original, None, None\\n\\n    scaler = MinMaxScaler()\\n    normalized_values = scaler.fit_transform(original.values.reshape(-1, 1)).flatten()\\n    # Explicitly inherit the index from `original` to maintain alignment for non-default indices (e.g. if parsed from a dict)\\n    normalized = pd.Series(normalized_values, index=original.index, dtype='float64')\\n\\n    fig, ax = plt.subplots()\\n    ax.plot(original, label='Original Data')\\n    ax.plot(normalized, label='Normalized Data')\\n    ax.set_title('Comparison of Original and Normalized Data')\\n    ax.set_xlabel('Index')\\n    ax.set_ylabel('Value')\\n    ax.legend()\\n\\n    return original, normalized, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 34814,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8482,\n          \"prompt\": 8482,\n          \"candidates\": 328,\n          \"total\": 13985,\n          \"cached\": 0,\n          \"thoughts\": 5175,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 34814,\n            \"tokens\": {\n              \"input\": 8482,\n              \"prompt\": 8482,\n              \"candidates\": 328,\n              \"total\": 13985,\n              \"cached\": 0,\n              \"thoughts\": 5175,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import json\nimport pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\ndef task_func(json_data: str, data_key: str):\n    data = json.loads(json_data)\n    keys = data_key.split('.')\n    current = data\n    for key in keys:\n        if not isinstance(current, dict) or key not in current:\n            raise KeyError(f\"Key path '{data_key}' not found in the given data.\")\n        current = current[key]\n\n    original = pd.Series(current, dtype='float64')\n\n    if original.empty:\n        return original, None, None\n\n    scaler = MinMaxScaler()\n    normalized_values = scaler.fit_transform(original.values.reshape(-1, 1)).flatten()\n    normalized = pd.Series(normalized_values, dtype='float64')\n\n    fig, ax = plt.subplots()\n    ax.plot(original, label='Original Data')\n    ax.plot(normalized, label='Normalized Data')\n    ax.set_title('Comparison of Original and Normalized Data')\n    ax.set_xlabel('Index')\n    ax.set_ylabel('Value')\n    ax.legend()\n\n    return original, normalized, ax",
+  "reviewer_artifact": "import json\nimport pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\n\ndef task_func(json_data: str, data_key: str):\n    data = json.loads(json_data)\n    keys = data_key.split('.')\n    current = data\n    for key in keys:\n        if not isinstance(current, dict) or key not in current:\n            raise KeyError(f\"Key path '{data_key}' not found in the given data.\")\n        current = current[key]\n\n    original = pd.Series(current, dtype='float64')\n\n    if original.empty:\n        return original, None, None\n\n    scaler = MinMaxScaler()\n    normalized_values = scaler.fit_transform(original.values.reshape(-1, 1)).flatten()\n    # Explicitly inherit the index from `original` to maintain alignment for non-default indices (e.g. if parsed from a dict)\n    normalized = pd.Series(normalized_values, index=original.index, dtype='float64')\n\n    fig, ax = plt.subplots()\n    ax.plot(original, label='Original Data')\n    ax.plot(normalized, label='Normalized Data')\n    ax.set_title('Comparison of Original and Normalized Data')\n    ax.set_xlabel('Index')\n    ax.set_ylabel('Value')\n    ax.legend()\n\n    return original, normalized, ax",
+  "final_artifact": "import json\nimport pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\n\ndef task_func(json_data: str, data_key: str):\n    data = json.loads(json_data)\n    keys = data_key.split('.')\n    current = data\n    for key in keys:\n        if not isinstance(current, dict) or key not in current:\n            raise KeyError(f\"Key path '{data_key}' not found in the given data.\")\n        current = current[key]\n\n    original = pd.Series(current, dtype='float64')\n\n    if original.empty:\n        return original, None, None\n\n    scaler = MinMaxScaler()\n    normalized_values = scaler.fit_transform(original.values.reshape(-1, 1)).flatten()\n    # Explicitly inherit the index from `original` to maintain alignment for non-default indices (e.g. if parsed from a dict)\n    normalized = pd.Series(normalized_values, index=original.index, dtype='float64')\n\n    fig, ax = plt.subplots()\n    ax.plot(original, label='Original Data')\n    ax.plot(normalized, label='Normalized Data')\n    ax.set_title('Comparison of Original and Normalized Data')\n    ax.set_xlabel('Index')\n    ax.set_ylabel('Value')\n    ax.legend()\n\n    return original, normalized, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_987__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "7b9e046288b70f0fda8a0ab78079c6af6023204e46180f42c9cfe73f25efc940",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 8.56449783299999,
+      "input_tokens": 5,
+      "output_tokens": 487,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.191254
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "ee26deafe540ff41c051eabe0866ca8cbeb50da02eb8b3ba9898168cfff1c3a7",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 4,
+    "reviewer_cost_all_attempts": 0.083,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_599",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T08:48:32.207790+00:00",
+  "writer_finished_at": "2026-11-22T08:48:44.885906+00:00",
+  "reviewer_started_at": "2026-11-22T09:01:25.225516+00:00",
+  "reviewer_finished_at": "2026-11-22T09:01:59.134031+00:00",
+  "writer_prompt_sha256": "ab9c677f186ffbc400e23ce66e548d5862f026a2a14a6f95d111678105db5c0f",
+  "reviewer_prompt_sha256": "533ad347a61a3407deff7e15f9779b1f0705a16941a30a6233774fbf439c526c",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 33.90836541700264,
+  "total_latency_s": 33.90836541700264,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8289,
+  "reviewer_output_tokens": 5494,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.082506,
+  "total_cost_usd": 0.082506,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"a0503ea0-c7a4-4576-ad6c-3e13871ff621\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nimport time\\n\\ndef task_func(df, letter):\\n    import matplotlib.pyplot as plt\\n\\n    data = pd.DataFrame(df)\\n\\n    if \\\"Word\\\" not in data.columns:\\n        raise ValueError(\\\"Input data must contain a 'Word' column.\\\")\\n\\n    if letter is None or str(letter) == \\\"\\\":\\n        raise ValueError(\\\"letter must be a non-empty string.\\\")\\n\\n    letter = str(letter)\\n\\n    words = data[\\\"Word\\\"].dropna().astype(str)\\n    filtered_words = words[words.str.startswith(letter)]\\n    word_lengths = filtered_words.str.len()\\n\\n    fig, ax = plt.subplots()\\n    \\n    # Use \\\"auto\\\" bins for calculating optimal bin width, fallback to 1 if no words match \\n    # to avoid matplotlib/numpy histogram errors on empty arrays\\n    ax.hist(word_lengths, bins=\\\"auto\\\" if not word_lengths.empty else 1)\\n    ax.set_xlabel(\\\"Word Length\\\")\\n    ax.set_ylabel(\\\"Frequency\\\")\\n    ax.set_title(f\\\"Word lengths starting with '{letter}'\\\")\\n\\n    return ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 32875,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8289,\n          \"prompt\": 8289,\n          \"candidates\": 265,\n          \"total\": 13783,\n          \"cached\": 0,\n          \"thoughts\": 5229,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 32875,\n            \"tokens\": {\n              \"input\": 8289,\n              \"prompt\": 8289,\n              \"candidates\": 265,\n              \"total\": 13783,\n              \"cached\": 0,\n              \"thoughts\": 5229,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nimport time\ndef task_func(df, letter):\n    import matplotlib.pyplot as plt\n\n    data = pd.DataFrame(df)\n\n    if \"Word\" not in data.columns:\n        raise ValueError(\"Input data must contain a 'Word' column.\")\n\n    if letter is None:\n        raise ValueError(\"letter must be a non-empty string.\")\n\n    letter = str(letter)\n    if letter == \"\":\n        raise ValueError(\"letter must be a non-empty string.\")\n\n    words = data[\"Word\"].dropna().astype(str)\n    filtered_words = words[words.str.startswith(letter)]\n    word_lengths = filtered_words.str.len()\n\n    fig, ax = plt.subplots()\n    ax.hist(word_lengths, bins=\"auto\" if not word_lengths.empty else 1)\n    ax.set_xlabel(\"Word Length\")\n    ax.set_ylabel(\"Frequency\")\n    ax.set_title(f\"Word lengths starting with '{letter}'\")\n\n    return ax",
+  "reviewer_artifact": "import pandas as pd\nimport time\n\ndef task_func(df, letter):\n    import matplotlib.pyplot as plt\n\n    data = pd.DataFrame(df)\n\n    if \"Word\" not in data.columns:\n        raise ValueError(\"Input data must contain a 'Word' column.\")\n\n    if letter is None or str(letter) == \"\":\n        raise ValueError(\"letter must be a non-empty string.\")\n\n    letter = str(letter)\n\n    words = data[\"Word\"].dropna().astype(str)\n    filtered_words = words[words.str.startswith(letter)]\n    word_lengths = filtered_words.str.len()\n\n    fig, ax = plt.subplots()\n    \n    # Use \"auto\" bins for calculating optimal bin width, fallback to 1 if no words match \n    # to avoid matplotlib/numpy histogram errors on empty arrays\n    ax.hist(word_lengths, bins=\"auto\" if not word_lengths.empty else 1)\n    ax.set_xlabel(\"Word Length\")\n    ax.set_ylabel(\"Frequency\")\n    ax.set_title(f\"Word lengths starting with '{letter}'\")\n\n    return ax",
+  "final_artifact": "import pandas as pd\nimport time\n\ndef task_func(df, letter):\n    import matplotlib.pyplot as plt\n\n    data = pd.DataFrame(df)\n\n    if \"Word\" not in data.columns:\n        raise ValueError(\"Input data must contain a 'Word' column.\")\n\n    if letter is None or str(letter) == \"\":\n        raise ValueError(\"letter must be a non-empty string.\")\n\n    letter = str(letter)\n\n    words = data[\"Word\"].dropna().astype(str)\n    filtered_words = words[words.str.startswith(letter)]\n    word_lengths = filtered_words.str.len()\n\n    fig, ax = plt.subplots()\n    \n    # Use \"auto\" bins for calculating optimal bin width, fallback to 1 if no words match \n    # to avoid matplotlib/numpy histogram errors on empty arrays\n    ax.hist(word_lengths, bins=\"auto\" if not word_lengths.empty else 1)\n    ax.set_xlabel(\"Word Length\")\n    ax.set_ylabel(\"Frequency\")\n    ax.set_title(f\"Word lengths starting with '{letter}'\")\n\n    return ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_599__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "3ead7ddbf7fafe0ff74fd11e84e86d02ee58f9154b519982bb33caa077297172",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 12.678055958000186,
+      "input_tokens": 963,
+      "output_tokens": 744,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.031999
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "24ec19f25c3253fa58357ae8ae1a2ecafd9180588da5a6807414d5c0d636399c",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 8,
+    "reviewer_cost_all_attempts": 0.082506,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: Expected 'hist' to have been called once. Called 0 times.",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

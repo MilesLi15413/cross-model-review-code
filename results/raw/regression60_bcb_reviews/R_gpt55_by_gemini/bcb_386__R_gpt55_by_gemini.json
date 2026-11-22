@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_386",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:36:33.207662+00:00",
+  "writer_finished_at": "2026-11-22T16:36:48.819515+00:00",
+  "reviewer_started_at": "2026-11-22T17:20:13.041788+00:00",
+  "reviewer_finished_at": "2026-11-22T17:22:03.485635+00:00",
+  "writer_prompt_sha256": "ef9fc5d0c7462a16c5d3d264f937b1eda080a4da797744657e2841f8f692ba6d",
+  "reviewer_prompt_sha256": "f44528b24b89d2cc3e13761b63b69a2726315aa8e57935e87dd29fa057975b62",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 110.44397991699998,
+  "total_latency_s": 110.44397991699998,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8419,
+  "reviewer_output_tokens": 17502,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.226862,
+  "total_cost_usd": 0.226862,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"691f0670-0fbd-4b7e-b676-f07607548243\",\n  \"response\": \"<solution>\\nimport numpy as np\\nimport pandas as pd\\n\\n# Constants\\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\\n\\ndef task_func(length, min_value=0, max_value=100):\\n    \\\"\\\"\\\"\\n    Randomly generate a pandas DataFrame with values in the specified range\\n    and calculate the empirical cumulative distribution function (CDF) for each column.\\n\\n    Parameters:\\n        length (int): Number of rows to generate.\\n        min_value (int): Inclusive lower bound for generated values.\\n        max_value (int): Exclusive upper bound for generated values.\\n\\n    Returns:\\n        pd.DataFrame: A pandas DataFrame containing the calculated cumulative \\n        distribution function (CDF) for each column.\\n    \\\"\\\"\\\"\\n    if length <= 0:\\n        return pd.DataFrame(columns=COLUMNS)\\n\\n    # Generate random integer data within the specified range\\n    data = np.random.randint(min_value, max_value, size=(length, len(COLUMNS)))\\n    df = pd.DataFrame(data, columns=COLUMNS)\\n\\n    # Calculate the cumulative distribution function (CDF) for each column\\n    cdf = df.apply(lambda x: x.value_counts(normalize=True).sort_index().cumsum())\\n\\n    # Forward fill to propagate the CDF values across the union of indices, \\n    # and fill any leading NaNs with 0 to complete the CDF step function.\\n    cdf = cdf.ffill().fillna(0)\\n\\n    return cdf\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 109598,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8419,\n          \"prompt\": 8419,\n          \"candidates\": 346,\n          \"total\": 25921,\n          \"cached\": 0,\n          \"thoughts\": 17156,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 109598,\n            \"tokens\": {\n              \"input\": 8419,\n              \"prompt\": 8419,\n              \"candidates\": 346,\n              \"total\": 25921,\n              \"cached\": 0,\n              \"thoughts\": 17156,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport pandas as pd\n\n# Constants\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\n\ndef task_func(length, min_value=0, max_value=100):\n    \"\"\"\n    Randomly generate a pandas DataFrame with values in the specified range\n    and return the empirical cumulative distribution function (CDF) for each\n    column.\n\n    Parameters:\n        length (int): Number of rows to generate.\n        min_value (int or float): Inclusive lower bound for generated values.\n        max_value (int or float): Exclusive upper bound for generated values.\n\n    Returns:\n        pd.DataFrame: DataFrame of empirical CDF values with the same shape and\n        columns as the generated data.\n    \"\"\"\n    if not isinstance(length, int):\n        raise TypeError(\"length must be an integer\")\n    if length < 0:\n        raise ValueError(\"length must be non-negative\")\n    if min_value >= max_value:\n        raise ValueError(\"min_value must be less than max_value\")\n\n    if length == 0:\n        return pd.DataFrame(columns=COLUMNS)\n\n    data = np.random.uniform(min_value, max_value, size=(length, len(COLUMNS)))\n    df = pd.DataFrame(data, columns=COLUMNS)\n\n    cdf = df.rank(method=\"max\", pct=True)\n    return cdf",
+  "reviewer_artifact": "import numpy as np\nimport pandas as pd\n\n# Constants\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\n\ndef task_func(length, min_value=0, max_value=100):\n    \"\"\"\n    Randomly generate a pandas DataFrame with values in the specified range\n    and calculate the empirical cumulative distribution function (CDF) for each column.\n\n    Parameters:\n        length (int): Number of rows to generate.\n        min_value (int): Inclusive lower bound for generated values.\n        max_value (int): Exclusive upper bound for generated values.\n\n    Returns:\n        pd.DataFrame: A pandas DataFrame containing the calculated cumulative \n        distribution function (CDF) for each column.\n    \"\"\"\n    if length <= 0:\n        return pd.DataFrame(columns=COLUMNS)\n\n    # Generate random integer data within the specified range\n    data = np.random.randint(min_value, max_value, size=(length, len(COLUMNS)))\n    df = pd.DataFrame(data, columns=COLUMNS)\n\n    # Calculate the cumulative distribution function (CDF) for each column\n    cdf = df.apply(lambda x: x.value_counts(normalize=True).sort_index().cumsum())\n\n    # Forward fill to propagate the CDF values across the union of indices, \n    # and fill any leading NaNs with 0 to complete the CDF step function.\n    cdf = cdf.ffill().fillna(0)\n\n    return cdf",
+  "final_artifact": "import numpy as np\nimport pandas as pd\n\n# Constants\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\n\ndef task_func(length, min_value=0, max_value=100):\n    \"\"\"\n    Randomly generate a pandas DataFrame with values in the specified range\n    and calculate the empirical cumulative distribution function (CDF) for each column.\n\n    Parameters:\n        length (int): Number of rows to generate.\n        min_value (int): Inclusive lower bound for generated values.\n        max_value (int): Exclusive upper bound for generated values.\n\n    Returns:\n        pd.DataFrame: A pandas DataFrame containing the calculated cumulative \n        distribution function (CDF) for each column.\n    \"\"\"\n    if length <= 0:\n        return pd.DataFrame(columns=COLUMNS)\n\n    # Generate random integer data within the specified range\n    data = np.random.randint(min_value, max_value, size=(length, len(COLUMNS)))\n    df = pd.DataFrame(data, columns=COLUMNS)\n\n    # Calculate the cumulative distribution function (CDF) for each column\n    cdf = df.apply(lambda x: x.value_counts(normalize=True).sort_index().cumsum())\n\n    # Forward fill to propagate the CDF values across the union of indices, \n    # and fill any leading NaNs with 0 to complete the CDF step function.\n    cdf = cdf.ffill().fillna(0)\n\n    return cdf",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_386__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "5c079734bea7d9eb15be0d2d79b020e16dafa78661d33ddbd99e5e4959a376bd",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 15.611955667000075,
+      "input_tokens": 993,
+      "output_tokens": 841,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.035059
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "11c620e56aa28de35cbebcb9d158e6db8e9544ae4bf703d5947fe11b8dffacdb",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 31,
+    "reviewer_cost_all_attempts": 0.226862,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 1.0 != 10",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

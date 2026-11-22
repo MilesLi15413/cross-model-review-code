@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_869",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T08:48:56.607311+00:00",
+  "writer_finished_at": "2026-11-22T08:49:34.020158+00:00",
+  "reviewer_started_at": "2026-11-22T09:00:04.269777+00:00",
+  "reviewer_finished_at": "2026-11-22T09:00:37.754058+00:00",
+  "writer_prompt_sha256": "876cdf71731128f8d2c444bb3952aa8b471e1f0e6f1b52c4dc8267b9737df0d0",
+  "reviewer_prompt_sha256": "97e821b26f75ef58d5c93d6a127ee41832fe4fc21a28551ce03fd2b9d5ea3ded",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 33.48413158299809,
+  "total_latency_s": 33.48413158299809,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8464,
+  "reviewer_output_tokens": 5889,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.087596,
+  "total_cost_usd": 0.087596,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"3d413752-d398-4e41-8832-43e45463aee2\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nfrom itertools import cycle\\nfrom random import randint, seed\\n\\ndef task_func(\\n    n_grades,\\n    students=['Alice', 'Bob', 'Charlie', 'David', 'Eve'],\\n    grade_range=range(1, 11),\\n    rng_seed=None\\n):\\n    if not students:\\n        raise ValueError(\\\"List of students is empty.\\\")\\n    \\n    if rng_seed is not None:\\n        seed(rng_seed)\\n        \\n    grade_list = list(grade_range)\\n    report_data = []\\n    student_gen = cycle(students)\\n    \\n    for _ in range(n_grades):\\n        student = next(student_gen)\\n        grade_idx = randint(0, len(grade_list) - 1)\\n        grade = grade_list[grade_idx]\\n        report_data.append({'Student': student, 'Grade': grade})\\n        \\n    df = pd.DataFrame(report_data, columns=['Student', 'Grade'])\\n    return df\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 32322,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8464,\n          \"prompt\": 8464,\n          \"candidates\": 242,\n          \"total\": 14353,\n          \"cached\": 0,\n          \"thoughts\": 5647,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 32322,\n            \"tokens\": {\n              \"input\": 8464,\n              \"prompt\": 8464,\n              \"candidates\": 242,\n              \"total\": 14353,\n              \"cached\": 0,\n              \"thoughts\": 5647,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nfrom itertools import cycle\nfrom random import randint, seed\n\ndef task_func(\n    n_grades,\n    students=['Alice', 'Bob', 'Charlie', 'David', 'Eve'],\n    grade_range=range(1, 11),\n    rng_seed=None\n):\n    if not students:\n        raise ValueError(\"List of students is empty.\")\n    \n    if rng_seed is not None:\n        seed(rng_seed)\n        \n    grade_list = list(grade_range)\n    if not grade_list:\n        raise ValueError(\"Grade range is empty.\")\n        \n    report_data = []\n    student_gen = cycle(students)\n    \n    for _ in range(n_grades):\n        student = next(student_gen)\n        grade_idx = randint(0, len(grade_list) - 1)\n        grade = grade_list[grade_idx]\n        report_data.append({'Student': student, 'Grade': grade})\n        \n    df = pd.DataFrame(report_data, columns=['Student', 'Grade'])\n    return df",
+  "reviewer_artifact": "import pandas as pd\nfrom itertools import cycle\nfrom random import randint, seed\n\ndef task_func(\n    n_grades,\n    students=['Alice', 'Bob', 'Charlie', 'David', 'Eve'],\n    grade_range=range(1, 11),\n    rng_seed=None\n):\n    if not students:\n        raise ValueError(\"List of students is empty.\")\n    \n    if rng_seed is not None:\n        seed(rng_seed)\n        \n    grade_list = list(grade_range)\n    report_data = []\n    student_gen = cycle(students)\n    \n    for _ in range(n_grades):\n        student = next(student_gen)\n        grade_idx = randint(0, len(grade_list) - 1)\n        grade = grade_list[grade_idx]\n        report_data.append({'Student': student, 'Grade': grade})\n        \n    df = pd.DataFrame(report_data, columns=['Student', 'Grade'])\n    return df",
+  "final_artifact": "import pandas as pd\nfrom itertools import cycle\nfrom random import randint, seed\n\ndef task_func(\n    n_grades,\n    students=['Alice', 'Bob', 'Charlie', 'David', 'Eve'],\n    grade_range=range(1, 11),\n    rng_seed=None\n):\n    if not students:\n        raise ValueError(\"List of students is empty.\")\n    \n    if rng_seed is not None:\n        seed(rng_seed)\n        \n    grade_list = list(grade_range)\n    report_data = []\n    student_gen = cycle(students)\n    \n    for _ in range(n_grades):\n        student = next(student_gen)\n        grade_idx = randint(0, len(grade_list) - 1)\n        grade = grade_list[grade_idx]\n        report_data.append({'Student': student, 'Grade': grade})\n        \n    df = pd.DataFrame(report_data, columns=['Student', 'Grade'])\n    return df",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_869__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "861aabdf4aee11b1f100ee91a02737b117d081dcd14f05cafd26287a0cec7280",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 37.41268416700041,
+      "input_tokens": 10230,
+      "output_tokens": 4687,
+      "cached_input_tokens": 6142,
+      "cost_usd": 0.0779324
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "2f53af40ca3efd1b564a6edc9cd16ae47bfb6c335e45918a6db6ed16a748600a",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 3,
+    "reviewer_cost_all_attempts": 0.087596,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

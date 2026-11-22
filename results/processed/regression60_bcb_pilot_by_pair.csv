@@ -1,0 +1,13 @@
+writer,reviewer,self_review,subset,reviews_total,reviews_valid,reviews_invalid,reviews_ungraded,passing_reviewed,regressions,regression_rate,regression_ci_low,regression_ci_high,failing_reviewed,fixes,fix_rate,fix_ci_low,fix_ci_high,unchanged_rate,unchanged_ws_rate,unchanged_rate_on_passing,edit_lines_mean,edit_lines_median,edit_lines_mean_when_changed,cost_per_review_usd,cost_total_usd,latency_mean_s,latency_median_s
+claude,claude,True,all,10,10,0,0,9,0,0.0,0.0,0.3363,1,0,0.0,0.0,0.975,0.9,0.9,0.8889,0.3,0.0,3,0.1229,1.229,6.2,5.8
+claude,gemini,False,all,10,10,0,0,9,0,0.0,0.0,0.3363,1,0,0.0,0.0,0.975,0.1,0.3,0.1111,9.1,9.0,10.1,0.0945,0.945,41.4,21.6
+claude,gpt55,False,all,10,10,0,0,9,1,0.1111,0.0028,0.4825,1,0,0.0,0.0,0.975,0.1,0.2,0.1111,11.7,4.5,13,0.0291,0.291,10.7,12.3
+gemini,claude,False,all,9,9,0,0,7,0,0.0,0.0,0.4096,2,0,0.0,0.0,0.8419,0.1111,0.4444,0.1429,11.8,9,13.2,0.1263,1.137,7.4,6.1
+gemini,gemini,True,all,9,9,0,0,7,1,0.1429,0.0036,0.5787,2,0,0.0,0.0,0.8419,0.2222,0.2222,0.2857,9,5,11.6,0.0794,0.715,34.9,26.6
+gemini,gpt55,False,all,9,9,0,0,7,1,0.1429,0.0036,0.5787,2,0,0.0,0.0,0.8419,0.1111,0.1111,0.1429,22.6,18,25.4,0.0297,0.268,12.3,13.4
+gpt55,claude,False,all,10,10,0,0,6,0,0.0,0.0,0.4593,4,2,0.5,0.0676,0.9324,0.3,0.3,0.3333,16.1,9.0,23,0.1086,1.086,7.7,6.6
+gpt55,claude,False,no_tool_drafts,10,10,0,0,6,0,0.0,0.0,0.4593,4,2,0.5,0.0676,0.9324,0.3,0.3,0.3333,16.1,9.0,23,0.1086,1.086,7.7,6.6
+gpt55,gemini,False,all,10,10,0,0,6,0,0.0,0.0,0.4593,4,1,0.25,0.0063,0.8059,0.1,0.2,0.0,17.5,17.5,19.4,0.089,0.89,46.3,29.8
+gpt55,gemini,False,no_tool_drafts,10,10,0,0,6,0,0.0,0.0,0.4593,4,1,0.25,0.0063,0.8059,0.1,0.2,0.0,17.5,17.5,19.4,0.089,0.89,46.3,29.8
+gpt55,gpt55,True,all,10,10,0,0,6,0,0.0,0.0,0.4593,4,0,0.0,0.0,0.6024,0.2,0.3,0.0,17.5,14.0,21.9,0.0311,0.311,13.0,13.3
+gpt55,gpt55,True,no_tool_drafts,10,10,0,0,6,0,0.0,0.0,0.4593,4,0,0.0,0.0,0.6024,0.2,0.3,0.0,17.5,14.0,21.9,0.0311,0.311,13.0,13.3

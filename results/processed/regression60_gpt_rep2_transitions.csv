@@ -1,0 +1,10 @@
+type,problem_id,writer,reviewer,edit_lines,gpt_draft_used_tools,eval_note
+regression,3688,gpt55,gpt55,32,True,
+fix,3754,gpt55,gpt55,5,False,
+regression,3762,gemini,gpt55,100,,
+regression,abc389_e,claude,gpt55,56,,
+regression,abc389_f,claude,gpt55,101,,
+regression,abc396_g,claude,gpt55,59,,
+regression,abc399_e,gpt55,gpt55,58,True,
+regression,arc194_b,claude,gpt55,51,,
+fix,arc195_e,claude,gpt55,90,,

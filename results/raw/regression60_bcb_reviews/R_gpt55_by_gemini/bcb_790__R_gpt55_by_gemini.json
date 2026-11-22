@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_790",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:36:27.181124+00:00",
+  "writer_finished_at": "2026-11-22T16:36:40.972983+00:00",
+  "reviewer_started_at": "2026-11-22T17:24:11.414637+00:00",
+  "reviewer_finished_at": "2026-11-22T17:24:48.147570+00:00",
+  "writer_prompt_sha256": "6b27bc27e6fc36bba0382e26e7ab2312909b80b1b44d8a4f1f8ecdc82a9a5061",
+  "reviewer_prompt_sha256": "d62a81de53105bc89723a54035255244081d7197e9e475ef56407e12fa2cd6d3",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 36.73296716699997,
+  "total_latency_s": 36.73296716699997,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8348,
+  "reviewer_output_tokens": 5989,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.088564,
+  "total_cost_usd": 0.088564,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"c745a1a0-4eeb-46cd-8c14-ec026cb0dd34\",\n  \"response\": \"<solution>\\nimport heapq\\nfrom sklearn.preprocessing import StandardScaler\\n\\ndef task_func(df, col1, col2, N=10):\\n    if col1 not in df.columns or col2 not in df.columns:\\n        raise ValueError(\\\"Specified columns are not in the provided DataFrame.\\\")\\n\\n    if N <= 0 or len(df) == 0:\\n        return []\\n\\n    values = df[[col1, col2]].to_numpy()\\n    standardized = StandardScaler().fit_transform(values)\\n\\n    # Use enumerate to guarantee we return integer positional indices,\\n    # regardless of whether the DataFrame's index is custom or non-integer.\\n    diffs = [\\n        (abs(row[0] - row[1]), i)\\n        for i, row in enumerate(standardized)\\n    ]\\n\\n    largest = heapq.nlargest(N, diffs, key=lambda x: x[0])\\n    return [index for _, index in largest]\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 35950,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8348,\n          \"prompt\": 8348,\n          \"candidates\": 220,\n          \"total\": 14337,\n          \"cached\": 0,\n          \"thoughts\": 5769,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 35950,\n            \"tokens\": {\n              \"input\": 8348,\n              \"prompt\": 8348,\n              \"candidates\": 220,\n              \"total\": 14337,\n              \"cached\": 0,\n              \"thoughts\": 5769,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import heapq\nfrom sklearn.preprocessing import StandardScaler\n\ndef task_func(df, col1, col2, N=10):\n    if col1 not in df.columns or col2 not in df.columns:\n        raise ValueError(\"Specified columns are not in the provided DataFrame.\")\n\n    if N <= 0 or len(df) == 0:\n        return []\n\n    values = df[[col1, col2]].to_numpy()\n    standardized = StandardScaler().fit_transform(values)\n\n    diffs = [\n        (abs(row[0] - row[1]), index)\n        for row, index in zip(standardized, df.index)\n    ]\n\n    largest = heapq.nlargest(min(N, len(diffs)), diffs, key=lambda x: x[0])\n    return [int(index) for _, index in largest]",
+  "reviewer_artifact": "import heapq\nfrom sklearn.preprocessing import StandardScaler\n\ndef task_func(df, col1, col2, N=10):\n    if col1 not in df.columns or col2 not in df.columns:\n        raise ValueError(\"Specified columns are not in the provided DataFrame.\")\n\n    if N <= 0 or len(df) == 0:\n        return []\n\n    values = df[[col1, col2]].to_numpy()\n    standardized = StandardScaler().fit_transform(values)\n\n    # Use enumerate to guarantee we return integer positional indices,\n    # regardless of whether the DataFrame's index is custom or non-integer.\n    diffs = [\n        (abs(row[0] - row[1]), i)\n        for i, row in enumerate(standardized)\n    ]\n\n    largest = heapq.nlargest(N, diffs, key=lambda x: x[0])\n    return [index for _, index in largest]",
+  "final_artifact": "import heapq\nfrom sklearn.preprocessing import StandardScaler\n\ndef task_func(df, col1, col2, N=10):\n    if col1 not in df.columns or col2 not in df.columns:\n        raise ValueError(\"Specified columns are not in the provided DataFrame.\")\n\n    if N <= 0 or len(df) == 0:\n        return []\n\n    values = df[[col1, col2]].to_numpy()\n    standardized = StandardScaler().fit_transform(values)\n\n    # Use enumerate to guarantee we return integer positional indices,\n    # regardless of whether the DataFrame's index is custom or non-integer.\n    diffs = [\n        (abs(row[0] - row[1]), i)\n        for i, row in enumerate(standardized)\n    ]\n\n    largest = heapq.nlargest(N, diffs, key=lambda x: x[0])\n    return [index for _, index in largest]",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_790__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "4323d733df4ed4916ebbde8da04defb133fd2437ec51bf05b1054aaaec981ad5",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 13.791936333999956,
+      "input_tokens": 1060,
+      "output_tokens": 727,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.031974
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "fd93a5f3056679bed7031e055c61749b0e80296821cd24a9e194cb46bc6e5718",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 10,
+    "reviewer_cost_all_attempts": 0.088564,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

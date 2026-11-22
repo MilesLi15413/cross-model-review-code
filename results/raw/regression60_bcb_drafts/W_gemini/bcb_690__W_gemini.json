@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_690",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T08:48:50.320253+00:00",
+  "writer_finished_at": "2026-11-22T08:49:06.741214+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "cfe0d288156f251cb179d31f87f93824a8c96e307e622806f87acc518a675bb6",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 16.420883790997323,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 16.420883790997323,
+  "writer_input_tokens": 8039,
+  "writer_output_tokens": 2448,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.045454,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.045454,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "{\n  \"session_id\": \"2330de05-870c-4060-ae8a-5d8be03e3c2f\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nfrom sklearn.linear_model import LinearRegression\\nROWS = 100\\nCOLUMNS = ['X', 'Y']\\ndef task_func(df):\\n    if not isinstance(df, pd.DataFrame):\\n        raise TypeError(\\\"Input must be a pandas DataFrame.\\\")\\n    if 'X' not in df.columns or 'Y' not in df.columns:\\n        raise ValueError(\\\"DataFrame must contain 'X' and 'Y' columns.\\\")\\n        \\n    # Drop rows with NaN values in the relevant columns to avoid fitting errors\\n    df_clean = df.dropna(subset=['X', 'Y'])\\n    \\n    if len(df_clean) == 0:\\n        raise ValueError(\\\"DataFrame is empty or contains no valid data points after dropping NaNs.\\\")\\n        \\n    X = df_clean[['X']]\\n    y = df_clean['Y']\\n    \\n    model = LinearRegression()\\n    model.fit(X, y)\\n    \\n    return model\\n</solution>\\n\\nI have a high confidence level in this solution; the primary edge cases I am uncertain about are whether the input DataFrame might contain non-numeric types that fail during fitting, though the prompt guarantees random numeric values.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 15091,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8039,\n          \"prompt\": 8039,\n          \"candidates\": 268,\n          \"total\": 10487,\n          \"cached\": 0,\n          \"thoughts\": 2180,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 15091,\n            \"tokens\": {\n              \"input\": 8039,\n              \"prompt\": 8039,\n              \"candidates\": 268,\n              \"total\": 10487,\n              \"cached\": 0,\n              \"thoughts\": 2180,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import pandas as pd\nfrom sklearn.linear_model import LinearRegression\nROWS = 100\nCOLUMNS = ['X', 'Y']\ndef task_func(df):\n    if not isinstance(df, pd.DataFrame):\n        raise TypeError(\"Input must be a pandas DataFrame.\")\n    if 'X' not in df.columns or 'Y' not in df.columns:\n        raise ValueError(\"DataFrame must contain 'X' and 'Y' columns.\")\n        \n    # Drop rows with NaN values in the relevant columns to avoid fitting errors\n    df_clean = df.dropna(subset=['X', 'Y'])\n    \n    if len(df_clean) == 0:\n        raise ValueError(\"DataFrame is empty or contains no valid data points after dropping NaNs.\")\n        \n    X = df_clean[['X']]\n    y = df_clean['Y']\n    \n    model = LinearRegression()\n    model.fit(X, y)\n    \n    return model",
+  "reviewer_artifact": "",
+  "final_artifact": "import pandas as pd\nfrom sklearn.linear_model import LinearRegression\nROWS = 100\nCOLUMNS = ['X', 'Y']\ndef task_func(df):\n    if not isinstance(df, pd.DataFrame):\n        raise TypeError(\"Input must be a pandas DataFrame.\")\n    if 'X' not in df.columns or 'Y' not in df.columns:\n        raise ValueError(\"DataFrame must contain 'X' and 'Y' columns.\")\n        \n    # Drop rows with NaN values in the relevant columns to avoid fitting errors\n    df_clean = df.dropna(subset=['X', 'Y'])\n    \n    if len(df_clean) == 0:\n        raise ValueError(\"DataFrame is empty or contains no valid data points after dropping NaNs.\")\n        \n    X = df_clean[['X']]\n    y = df_clean['Y']\n    \n    model = LinearRegression()\n    model.fit(X, y)\n    \n    return model",
+  "writer_confidence_note": "I have a high confidence level in this solution; the primary edge cases I am uncertain about are whether the input DataFrame might contain non-numeric types that fail during fitting, though the prompt guarantees random numeric values.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/690",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.045454,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

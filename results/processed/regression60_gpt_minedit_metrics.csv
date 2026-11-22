@@ -1,0 +1,7 @@
+reviewer,group,reviews_total,reviews_valid,reviews_invalid,reviews_ungraded,passing_reviewed,regressions,regression_rate,regression_ci_low,regression_ci_high,failing_reviewed,fixes,fix_rate,fix_ci_low,fix_ci_high,unchanged_rate,unchanged_ws_rate,unchanged_rate_on_passing,edit_lines_mean,edit_lines_median,edit_lines_mean_when_changed,cost_per_review_usd,cost_total_usd,latency_mean_s,latency_median_s
+gpt55,all_writers,180,179,1,0,161,1,0.0062,0.0002,0.0341,18,3,0.1667,0.0358,0.4142,0.7374,0.7374,0.7516,5.2,0,19.7,0.0419,7.534,15.0,14.3
+gpt55,own_drafts,60,59,1,0,51,1,0.0196,0.0005,0.1045,8,1,0.125,0.0032,0.5265,0.9322,0.9322,0.9412,0.4,0,5.2,0.0368,2.209,13.5,12.1
+gpt55,other_models_drafts,120,120,0,0,110,0,0.0,0.0,0.033,10,2,0.2,0.0252,0.5561,0.6417,0.6417,0.6636,7.5,0.0,21.1,0.0444,5.326,15.8,14.6
+all,self_review,60,59,1,0,51,1,0.0196,0.0005,0.1045,8,1,0.125,0.0032,0.5265,0.9322,0.9322,0.9412,0.4,0,5.2,0.0368,2.209,13.5,12.1
+all,cross_review,120,120,0,0,110,0,0.0,0.0,0.033,10,2,0.2,0.0252,0.5561,0.6417,0.6417,0.6636,7.5,0.0,21.1,0.0444,5.326,15.8,14.6
+all,all,180,179,1,0,161,1,0.0062,0.0002,0.0341,18,3,0.1667,0.0358,0.4142,0.7374,0.7374,0.7516,5.2,0,19.7,0.0419,7.534,15.0,14.3

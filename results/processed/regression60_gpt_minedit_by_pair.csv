@@ -1,0 +1,5 @@
+writer,reviewer,self_review,subset,reviews_total,reviews_valid,reviews_invalid,reviews_ungraded,passing_reviewed,regressions,regression_rate,regression_ci_low,regression_ci_high,failing_reviewed,fixes,fix_rate,fix_ci_low,fix_ci_high,unchanged_rate,unchanged_ws_rate,unchanged_rate_on_passing,edit_lines_mean,edit_lines_median,edit_lines_mean_when_changed,cost_per_review_usd,cost_total_usd,latency_mean_s,latency_median_s
+claude,gpt55,False,all,60,60,0,0,54,0,0.0,0.0,0.066,6,2,0.3333,0.0433,0.7772,0.65,0.65,0.7037,5.0,0.0,14.3,0.0435,2.611,14.6,14.8
+gemini,gpt55,False,all,60,60,0,0,56,0,0.0,0.0,0.0638,4,0,0.0,0.0,0.6024,0.6333,0.6333,0.625,10.1,0.0,27.5,0.0452,2.715,17.0,14.5
+gpt55,gpt55,True,all,60,59,1,0,51,1,0.0196,0.0005,0.1045,8,1,0.125,0.0032,0.5265,0.9322,0.9322,0.9412,0.4,0,5.2,0.0368,2.209,13.5,12.1
+gpt55,gpt55,True,no_tool_drafts,55,55,0,0,47,0,0.0,0.0,0.0755,8,1,0.125,0.0032,0.5265,0.9455,0.9455,0.9574,0.1,0,2.3,0.036,1.979,13.1,11.4

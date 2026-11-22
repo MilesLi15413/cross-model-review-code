@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_237",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:34:13.407181+00:00",
+  "writer_finished_at": "2026-11-22T16:34:30.706533+00:00",
+  "reviewer_started_at": "2026-11-22T17:18:30.350153+00:00",
+  "reviewer_finished_at": "2026-11-22T17:18:59.795183+00:00",
+  "writer_prompt_sha256": "4520992b4801936d4cfb8f664c8056e8b4dbb6fa1bdd25532b42527629aef7c0",
+  "reviewer_prompt_sha256": "e0ae626f83d99d136f809fe76341feaecd380d5e4463b2fb0221c40e8f08add9",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 29.445057291000012,
+  "total_latency_s": 29.445057291000012,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8723,
+  "reviewer_output_tokens": 4814,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.075214,
+  "total_cost_usd": 0.075214,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"6ab6115f-1998-4ded-bcb6-ee6351969400\",\n  \"response\": \"<solution>\\nimport numpy as np\\nfrom sklearn.decomposition import PCA\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(data, save_plot=False, plot_path=None):\\n    if save_plot and plot_path is None:\\n        raise ValueError(\\\"plot_path must be provided when save_plot is True\\\")\\n\\n    objects, coordinates = zip(*data)\\n\\n    pca = PCA(n_components=2)\\n    coordinates_2d = pca.fit_transform(list(coordinates))\\n\\n    fig, ax = plt.subplots()\\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\\n\\n    for obj, (x, y) in zip(objects, coordinates_2d):\\n        ax.annotate(str(obj), (x, y))\\n\\n    if save_plot:\\n        fig.savefig(plot_path)\\n        plt.close(fig)\\n        return coordinates_2d\\n\\n    return coordinates_2d, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 28642,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8723,\n          \"prompt\": 8723,\n          \"candidates\": 224,\n          \"total\": 13537,\n          \"cached\": 0,\n          \"thoughts\": 4590,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 28642,\n            \"tokens\": {\n              \"input\": 8723,\n              \"prompt\": 8723,\n              \"candidates\": 224,\n              \"total\": 13537,\n              \"cached\": 0,\n              \"thoughts\": 4590,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nfrom sklearn.decomposition import PCA\nimport matplotlib.pyplot as plt\n\ndef task_func(data, save_plot=False, plot_path=None):\n    if save_plot and not plot_path:\n        raise ValueError(\"plot_path must be provided when save_plot is True.\")\n\n    if data is None:\n        raise ValueError(\"data must not be None.\")\n\n    data = list(data)\n    if len(data) == 0:\n        raise ValueError(\"data must contain at least one object with coordinates.\")\n\n    try:\n        objects, coordinates = zip(*data)\n    except ValueError as exc:\n        raise ValueError(\"data must be an iterable of (object, 3D_coordinates) pairs.\") from exc\n\n    coordinates = np.asarray(coordinates, dtype=float)\n\n    if coordinates.ndim != 2 or coordinates.shape[1] != 3:\n        raise ValueError(\"Each coordinate must contain exactly three numeric values.\")\n\n    if not np.all(np.isfinite(coordinates)):\n        raise ValueError(\"Coordinates must contain only finite numeric values.\")\n\n    n_samples, n_features = coordinates.shape\n    n_components = min(2, n_samples, n_features)\n\n    if n_components == 0:\n        coordinates_2d = np.empty((n_samples, 2), dtype=float)\n    elif n_samples == 1:\n        coordinates_2d = np.zeros((1, 2), dtype=float)\n    else:\n        reduced = PCA(n_components=n_components).fit_transform(coordinates)\n        if n_components < 2:\n            coordinates_2d = np.zeros((n_samples, 2), dtype=float)\n            coordinates_2d[:, :n_components] = reduced\n        else:\n            coordinates_2d = reduced\n\n    fig, ax = plt.subplots()\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\n\n    for obj, (x, y) in zip(objects, coordinates_2d):\n        ax.annotate(str(obj), (x, y))\n\n    ax.set_xlabel(\"Principal Component 1\")\n    ax.set_ylabel(\"Principal Component 2\")\n    ax.set_title(\"2D PCA Projection\")\n    fig.tight_layout()\n\n    if save_plot:\n        fig.savefig(plot_path)\n        plt.close(fig)\n        return coordinates_2d\n\n    return coordinates_2d, ax",
+  "reviewer_artifact": "import numpy as np\nfrom sklearn.decomposition import PCA\nimport matplotlib.pyplot as plt\n\ndef task_func(data, save_plot=False, plot_path=None):\n    if save_plot and plot_path is None:\n        raise ValueError(\"plot_path must be provided when save_plot is True\")\n\n    objects, coordinates = zip(*data)\n\n    pca = PCA(n_components=2)\n    coordinates_2d = pca.fit_transform(list(coordinates))\n\n    fig, ax = plt.subplots()\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\n\n    for obj, (x, y) in zip(objects, coordinates_2d):\n        ax.annotate(str(obj), (x, y))\n\n    if save_plot:\n        fig.savefig(plot_path)\n        plt.close(fig)\n        return coordinates_2d\n\n    return coordinates_2d, ax",
+  "final_artifact": "import numpy as np\nfrom sklearn.decomposition import PCA\nimport matplotlib.pyplot as plt\n\ndef task_func(data, save_plot=False, plot_path=None):\n    if save_plot and plot_path is None:\n        raise ValueError(\"plot_path must be provided when save_plot is True\")\n\n    objects, coordinates = zip(*data)\n\n    pca = PCA(n_components=2)\n    coordinates_2d = pca.fit_transform(list(coordinates))\n\n    fig, ax = plt.subplots()\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\n\n    for obj, (x, y) in zip(objects, coordinates_2d):\n        ax.annotate(str(obj), (x, y))\n\n    if save_plot:\n        fig.savefig(plot_path)\n        plt.close(fig)\n        return coordinates_2d\n\n    return coordinates_2d, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_237__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "02164989e5631a8b41cb9cbbd84be2ced4277307d488f9083de379a4ce915ca8",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 17.29946508400002,
+      "input_tokens": 1047,
+      "output_tokens": 1042,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.041359
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "28b199eb38865917610171c13b51da244a7a76bae3b36d1093689504eff5a9c0",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 45,
+    "reviewer_cost_all_attempts": 0.075214,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "ValueError: too many values to unpack (expected 2)",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

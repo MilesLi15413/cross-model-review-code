@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_892",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:29:52.375886+00:00",
+  "writer_finished_at": "2026-11-22T16:29:58.386000+00:00",
+  "reviewer_started_at": "2026-11-22T17:04:22.221992+00:00",
+  "reviewer_finished_at": "2026-11-22T17:06:47.172924+00:00",
+  "writer_prompt_sha256": "6fb093604cd977bffa64262ef9664c59d4bef56c43b85cb01a273ae2d1b84e32",
+  "reviewer_prompt_sha256": "cc6d6896b1ed801743e81d8f1695b83993a7e9015200c3d907def940b3bb9907",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 144.95110345900002,
+  "total_latency_s": 144.95110345900002,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8090,
+  "reviewer_output_tokens": 21222,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.270844,
+  "total_cost_usd": 0.270844,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"a0ab4e1c-b7be-4ac3-b05b-e4c9e4dc0f32\",\n  \"response\": \"```python\\nimport random\\nfrom collections import Counter\\n\\ndef task_func(strings: list) -> dict:\\n    \\\"\\\"\\\"\\n    Analyzes a given list of strings for the occurrence of specific patterns\\n    (the strings themselves) and counts their frequencies.\\n    \\\"\\\"\\\"\\n    return dict(Counter(strings))\\n```\\n\\n<solution>\\nimport random\\nfrom collections import Counter\\n\\ndef task_func(strings: list) -> dict:\\n    return dict(Counter(strings))\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 144167,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8090,\n          \"prompt\": 8090,\n          \"candidates\": 105,\n          \"total\": 29312,\n          \"cached\": 0,\n          \"thoughts\": 21117,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 144167,\n            \"tokens\": {\n              \"input\": 8090,\n              \"prompt\": 8090,\n              \"candidates\": 105,\n              \"total\": 29312,\n              \"cached\": 0,\n              \"thoughts\": 21117,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import random\nfrom collections import Counter\ndef task_func(strings: list) -> dict:\n    pattern = '}'\n    counts = Counter()\n    for s in strings:\n        counts[s] = s.count(pattern)\n    return dict(counts)",
+  "reviewer_artifact": "import random\nfrom collections import Counter\n\ndef task_func(strings: list) -> dict:\n    return dict(Counter(strings))",
+  "final_artifact": "import random\nfrom collections import Counter\n\ndef task_func(strings: list) -> dict:\n    return dict(Counter(strings))",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_892__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "44247e42ad127d49f509261bafdc9fd13c4de66e02f4f3c515010689e66bf41d",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 6.010144957999984,
+      "input_tokens": 5,
+      "output_tokens": 160,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.18076899999999999
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "a8b0c32a36a11aee0782ab60a15c0ce4b4ae9d2164d993d5ac18397c61ee2511",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 7,
+    "reviewer_cost_all_attempts": 0.270844,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 5 != 10",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_156",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:35:51.346216+00:00",
+  "writer_finished_at": "2026-11-22T16:36:06.364976+00:00",
+  "reviewer_started_at": "2026-11-22T17:17:58.867374+00:00",
+  "reviewer_finished_at": "2026-11-22T17:18:56.474784+00:00",
+  "writer_prompt_sha256": "14580c2d3f024a3aa561b60aca1c3410f99f71800fa76b60fdf43090c8913960",
+  "reviewer_prompt_sha256": "ac3881360b1b2ac83ace8b3946e78ed92603532647f6db3ac9f43c04dfd7e27e",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 57.60747050000009,
+  "total_latency_s": 57.60747050000009,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8623,
+  "reviewer_output_tokens": 8499,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.119234,
+  "total_cost_usd": 0.119234,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"bd3a015b-e463-4ad5-96c8-9e3f8c877d57\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nfrom sklearn.preprocessing import MinMaxScaler\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(data):\\n    if isinstance(data, pd.Series):\\n        df = data.to_frame()\\n    else:\\n        df = pd.DataFrame(data)\\n\\n    if df.empty:\\n        res = df.copy()\\n        res[\\\"Average\\\"] = pd.Series(dtype=float, index=res.index)\\n        fig, ax = plt.subplots()\\n        ax.bar(res.index.astype(str), res[\\\"Average\\\"])\\n        ax.set_xlabel(\\\"Row\\\")\\n        ax.set_ylabel(\\\"Average\\\")\\n        ax.set_title(\\\"Average Values\\\")\\n        return res, ax\\n\\n    scaler = MinMaxScaler()\\n    scaled = scaler.fit_transform(df)\\n\\n    res = pd.DataFrame(scaled, columns=df.columns, index=df.index)\\n    res[\\\"Average\\\"] = res.mean(axis=1)\\n\\n    fig, ax = plt.subplots()\\n    ax.bar(res.index.astype(str), res[\\\"Average\\\"])\\n    ax.set_xlabel(\\\"Row\\\")\\n    ax.set_ylabel(\\\"Average\\\")\\n    ax.set_title(\\\"Average Values\\\")\\n\\n    return res, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 56823,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8623,\n          \"prompt\": 8623,\n          \"candidates\": 290,\n          \"total\": 17122,\n          \"cached\": 0,\n          \"thoughts\": 8209,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 56823,\n            \"tokens\": {\n              \"input\": 8623,\n              \"prompt\": 8623,\n              \"candidates\": 290,\n              \"total\": 17122,\n              \"cached\": 0,\n              \"thoughts\": 8209,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\n\ndef task_func(data):\n    if isinstance(data, pd.Series):\n        df = data.to_frame()\n    elif isinstance(data, pd.DataFrame):\n        df = data.copy()\n    else:\n        df = pd.DataFrame(data)\n        if df.ndim == 1:\n            df = df.to_frame()\n\n    if df.empty:\n        result = df.copy()\n        result[\"Average\"] = pd.Series(dtype=float, index=result.index)\n        _, ax = plt.subplots()\n        ax.bar(result.index.astype(str), result[\"Average\"])\n        ax.set_xlabel(\"Row\")\n        ax.set_ylabel(\"Average\")\n        ax.set_title(\"Average Values\")\n        return result, ax\n\n    if df.shape[1] == 0:\n        result = df.copy()\n        result[\"Average\"] = float(\"nan\")\n        _, ax = plt.subplots()\n        ax.bar(result.index.astype(str), result[\"Average\"])\n        ax.set_xlabel(\"Row\")\n        ax.set_ylabel(\"Average\")\n        ax.set_title(\"Average Values\")\n        return result, ax\n\n    try:\n        numeric_df = df.apply(pd.to_numeric)\n    except Exception as exc:\n        raise ValueError(\"All input data must be numeric or convertible to numeric.\") from exc\n\n    if numeric_df.replace([float(\"inf\"), float(\"-inf\")], pd.NA).isna().any().any():\n        if numeric_df.isin([float(\"inf\"), float(\"-inf\")]).any().any():\n            raise ValueError(\"Input data must not contain infinite values.\")\n\n    scaler = MinMaxScaler()\n    scaled = scaler.fit_transform(numeric_df)\n\n    result = pd.DataFrame(scaled, columns=df.columns, index=df.index)\n    result[\"Average\"] = result.mean(axis=1, skipna=True)\n\n    _, ax = plt.subplots()\n    ax.bar(result.index.astype(str), result[\"Average\"])\n    ax.set_xlabel(\"Row\")\n    ax.set_ylabel(\"Average\")\n    ax.set_title(\"Average Values\")\n\n    return result, ax",
+  "reviewer_artifact": "import pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\n\ndef task_func(data):\n    if isinstance(data, pd.Series):\n        df = data.to_frame()\n    else:\n        df = pd.DataFrame(data)\n\n    if df.empty:\n        res = df.copy()\n        res[\"Average\"] = pd.Series(dtype=float, index=res.index)\n        fig, ax = plt.subplots()\n        ax.bar(res.index.astype(str), res[\"Average\"])\n        ax.set_xlabel(\"Row\")\n        ax.set_ylabel(\"Average\")\n        ax.set_title(\"Average Values\")\n        return res, ax\n\n    scaler = MinMaxScaler()\n    scaled = scaler.fit_transform(df)\n\n    res = pd.DataFrame(scaled, columns=df.columns, index=df.index)\n    res[\"Average\"] = res.mean(axis=1)\n\n    fig, ax = plt.subplots()\n    ax.bar(res.index.astype(str), res[\"Average\"])\n    ax.set_xlabel(\"Row\")\n    ax.set_ylabel(\"Average\")\n    ax.set_title(\"Average Values\")\n\n    return res, ax",
+  "final_artifact": "import pandas as pd\nfrom sklearn.preprocessing import MinMaxScaler\nimport matplotlib.pyplot as plt\n\ndef task_func(data):\n    if isinstance(data, pd.Series):\n        df = data.to_frame()\n    else:\n        df = pd.DataFrame(data)\n\n    if df.empty:\n        res = df.copy()\n        res[\"Average\"] = pd.Series(dtype=float, index=res.index)\n        fig, ax = plt.subplots()\n        ax.bar(res.index.astype(str), res[\"Average\"])\n        ax.set_xlabel(\"Row\")\n        ax.set_ylabel(\"Average\")\n        ax.set_title(\"Average Values\")\n        return res, ax\n\n    scaler = MinMaxScaler()\n    scaled = scaler.fit_transform(df)\n\n    res = pd.DataFrame(scaled, columns=df.columns, index=df.index)\n    res[\"Average\"] = res.mean(axis=1)\n\n    fig, ax = plt.subplots()\n    ax.bar(res.index.astype(str), res[\"Average\"])\n    ax.set_xlabel(\"Row\")\n    ax.set_ylabel(\"Average\")\n    ax.set_title(\"Average Values\")\n\n    return res, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_156__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "72a322c1844c505452debef64d16ff57a72f3faf56991aaa5e14389b77ca6618",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 15.018847499999993,
+      "input_tokens": 1007,
+      "output_tokens": 982,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.039359
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "332e335beac763455c904a3490a590edabfb69c3d85e18ed952bf5d4e837eadf",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 45,
+    "reviewer_cost_all_attempts": 0.119234,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 0 != 1",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

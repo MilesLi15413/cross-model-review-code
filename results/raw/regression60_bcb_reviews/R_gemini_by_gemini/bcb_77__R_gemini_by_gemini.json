@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_77",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:45:43.299570+00:00",
+  "writer_finished_at": "2026-11-22T16:46:51.816623+00:00",
+  "reviewer_started_at": "2026-11-22T17:13:09.678467+00:00",
+  "reviewer_finished_at": "2026-11-22T17:14:53.615273+00:00",
+  "writer_prompt_sha256": "e67255fdd197636fed2f086b252e92b124bc01414694db86261b964a1bb12676",
+  "reviewer_prompt_sha256": "be7060b1e34ea233b586fe78e39aaa23dd7d6ce7ab8450e3204c92a7e92f4b0e",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 103.93693383400023,
+  "total_latency_s": 103.93693383400023,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8626,
+  "reviewer_output_tokens": 15259,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.20036,
+  "total_cost_usd": 0.20036,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"cb70b863-38b6-4548-acd2-e92c0ed82d8a\",\n  \"response\": \"<solution>\\nimport hashlib\\nimport base64\\nimport binascii\\nfrom django.http import HttpResponseBadRequest, HttpResponse\\n\\ndef task_func(data):\\n    try:\\n        username = data['username']\\n        password_str = data['password']\\n        \\n        # In case the password is provided as raw bytes, decode it to string first.\\n        # This will raise UnicodeDecodeError if the bytes are not valid utf-8.\\n        if isinstance(password_str, bytes):\\n            password_str = password_str.decode('utf-8')\\n            \\n        # Decode the base64 encoded hash. validate=True ensures binascii.Error \\n        # is raised if non-base64 characters are present.\\n        decoded_password = base64.b64decode(password_str, validate=True)\\n        \\n        # Calculate the expected SHA-256 hash for 'password'\\n        expected_hash = hashlib.sha256(b'password').digest()\\n        \\n        if username == 'admin' and decoded_password == expected_hash:\\n            return HttpResponse('Login successful.', status=400)\\n        else:\\n            return HttpResponse('Login failed.', status=401)\\n            \\n    except (KeyError, UnicodeDecodeError, binascii.Error, ValueError):\\n        return HttpResponseBadRequest('Bad Request.')\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 103168,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8626,\n          \"prompt\": 8626,\n          \"candidates\": 303,\n          \"total\": 23885,\n          \"cached\": 0,\n          \"thoughts\": 14956,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 103168,\n            \"tokens\": {\n              \"input\": 8626,\n              \"prompt\": 8626,\n              \"candidates\": 303,\n              \"total\": 23885,\n              \"cached\": 0,\n              \"thoughts\": 14956,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import hashlib\nimport base64\nimport binascii\nfrom django.http import HttpResponseBadRequest, HttpResponse\n\ndef task_func(data):\n    try:\n        username = data['username']\n        password_str = data['password']\n        \n        # In case the password is provided as raw bytes, decode it to string first.\n        # This can raise UnicodeDecodeError if bytes are not valid utf-8.\n        if isinstance(password_str, bytes):\n            password_str = password_str.decode('utf-8')\n            \n        # Decode the base64 encoded hash. validate=True ensures binascii.Error \n        # is raised if non-base64 characters are present.\n        decoded_password = base64.b64decode(password_str, validate=True)\n        \n        # Calculate the expected SHA-256 hash for 'password'\n        expected_hash = hashlib.sha256(b'password').digest()\n        \n        if username == 'admin' and decoded_password == expected_hash:\n            # Note: The requirements explicitly asked for status 400 on success.\n            return HttpResponse('Login successful.', status=400)\n        else:\n            return HttpResponse('Login failed.', status=401)\n            \n    except (KeyError, UnicodeDecodeError, binascii.Error, ValueError):\n        return HttpResponseBadRequest('Bad Request.')",
+  "reviewer_artifact": "import hashlib\nimport base64\nimport binascii\nfrom django.http import HttpResponseBadRequest, HttpResponse\n\ndef task_func(data):\n    try:\n        username = data['username']\n        password_str = data['password']\n        \n        # In case the password is provided as raw bytes, decode it to string first.\n        # This will raise UnicodeDecodeError if the bytes are not valid utf-8.\n        if isinstance(password_str, bytes):\n            password_str = password_str.decode('utf-8')\n            \n        # Decode the base64 encoded hash. validate=True ensures binascii.Error \n        # is raised if non-base64 characters are present.\n        decoded_password = base64.b64decode(password_str, validate=True)\n        \n        # Calculate the expected SHA-256 hash for 'password'\n        expected_hash = hashlib.sha256(b'password').digest()\n        \n        if username == 'admin' and decoded_password == expected_hash:\n            return HttpResponse('Login successful.', status=400)\n        else:\n            return HttpResponse('Login failed.', status=401)\n            \n    except (KeyError, UnicodeDecodeError, binascii.Error, ValueError):\n        return HttpResponseBadRequest('Bad Request.')",
+  "final_artifact": "import hashlib\nimport base64\nimport binascii\nfrom django.http import HttpResponseBadRequest, HttpResponse\n\ndef task_func(data):\n    try:\n        username = data['username']\n        password_str = data['password']\n        \n        # In case the password is provided as raw bytes, decode it to string first.\n        # This will raise UnicodeDecodeError if the bytes are not valid utf-8.\n        if isinstance(password_str, bytes):\n            password_str = password_str.decode('utf-8')\n            \n        # Decode the base64 encoded hash. validate=True ensures binascii.Error \n        # is raised if non-base64 characters are present.\n        decoded_password = base64.b64decode(password_str, validate=True)\n        \n        # Calculate the expected SHA-256 hash for 'password'\n        expected_hash = hashlib.sha256(b'password').digest()\n        \n        if username == 'admin' and decoded_password == expected_hash:\n            return HttpResponse('Login successful.', status=400)\n        else:\n            return HttpResponse('Login failed.', status=401)\n            \n    except (KeyError, UnicodeDecodeError, binascii.Error, ValueError):\n        return HttpResponseBadRequest('Bad Request.')",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_77__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "0159ccfedc060e46d5bbbb8a45c48c410b0d3600afba4d3cece8df91ac018515",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 68.51755779100017,
+      "input_tokens": 8302,
+      "output_tokens": 9559,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.131312
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "2ebb4e0c06537c87227bf7096d1600b0424573b0d3aaedcac25eccc138c63379",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 3,
+    "reviewer_cost_all_attempts": 0.20036,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 401 != 200",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

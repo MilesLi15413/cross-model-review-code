@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_897",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:31:34.543708+00:00",
+  "writer_finished_at": "2026-11-22T16:31:50.663471+00:00",
+  "reviewer_started_at": "2026-11-22T17:25:23.328613+00:00",
+  "reviewer_finished_at": "2026-11-22T17:26:21.090610+00:00",
+  "writer_prompt_sha256": "5ccbb339c6b4e9cd8404f29afa25c85a232c642995bf2165ae106aa3da875446",
+  "reviewer_prompt_sha256": "5545dbcad8a34d5db0df8e146a5badbb5483b9aaac47d579a49c4e1e28e35060",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 57.76205741700005,
+  "total_latency_s": 57.76205741700005,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 3941,
+  "reviewer_output_tokens": 9882,
+  "reviewer_cached_input_tokens": 4522,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.1273704,
+  "total_cost_usd": 0.1273704,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"7a8ac9b4-934b-43f6-870f-4821e5c9701b\",\n  \"response\": \"<solution>\\nimport numpy as np\\nimport matplotlib.pyplot as plt\\nimport random\\n\\n# Constants\\nNUMBERS = list(range(1, 7))  # Adjusting for dice rolls (1 to 6)\\n\\ndef task_func(rolls, seed=None):\\n    \\\"\\\"\\\"\\n    Simulate dice rolls, compute outcome frequencies, and plot a histogram.\\n\\n    Args:\\n        rolls (int): Number of dice rolls to simulate.\\n        seed (optional): Seed for reproducible random results.\\n\\n    Returns:\\n        tuple: (frequency_array, histogram_axes)\\n    \\\"\\\"\\\"\\n    if isinstance(rolls, bool) or not isinstance(rolls, (int, np.integer)):\\n        raise TypeError(\\\"rolls must be a non-negative integer\\\")\\n    if rolls < 0:\\n        raise ValueError(\\\"rolls must be non-negative\\\")\\n\\n    rolls = int(rolls)\\n    \\n    # Use a localized Random instance if seed is provided, \\n    # otherwise fallback to global random to respect globally set seeds.\\n    if seed is not None:\\n        rng = random.Random(seed)\\n    else:\\n        rng = random\\n\\n    # Use a numpy array of dtype=int to prevent np.bincount from raising a TypeError when rolls=0\\n    results = np.array([rng.choice(NUMBERS) for _ in range(rolls)], dtype=int)\\n    frequency = np.bincount(results, minlength=7)[1:7]\\n\\n    fig, ax = plt.subplots()\\n    ax.hist(results, bins=np.arange(0.5, 7.5, 1), edgecolor=\\\"black\\\")\\n    ax.set_title(\\\"Histogram of Dice Rolls\\\")\\n    ax.set_xlabel(\\\"Dice Value\\\")\\n    ax.set_ylabel(\\\"Frequency\\\")\\n    ax.set_xticks(NUMBERS)\\n\\n    return frequency, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 56981,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 3941,\n          \"prompt\": 8463,\n          \"candidates\": 416,\n          \"total\": 18345,\n          \"cached\": 4522,\n          \"thoughts\": 9466,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 56981,\n            \"tokens\": {\n              \"input\": 3941,\n              \"prompt\": 8463,\n              \"candidates\": 416,\n              \"total\": 18345,\n              \"cached\": 4522,\n              \"thoughts\": 9466,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport matplotlib.pyplot as plt\nimport random\n\n# Constants\nNUMBERS = list(range(1, 7))  # Adjusting for dice rolls (1 to 6)\n\ndef task_func(rolls, seed=None):\n    \"\"\"\n    Simulate dice rolls, compute outcome frequencies, and plot a histogram.\n\n    Args:\n        rolls (int): Number of dice rolls to simulate.\n        seed (optional): Seed for reproducible random results.\n\n    Returns:\n        tuple: (frequency_array, histogram_axes)\n    \"\"\"\n    if isinstance(rolls, bool) or not isinstance(rolls, (int, np.integer)):\n        raise TypeError(\"rolls must be a non-negative integer\")\n    if rolls < 0:\n        raise ValueError(\"rolls must be non-negative\")\n\n    rolls = int(rolls)\n    rng = random.Random(seed)\n\n    results = [rng.choice(NUMBERS) for _ in range(rolls)]\n    frequency = np.bincount(results, minlength=7)[1:7]\n\n    fig, ax = plt.subplots()\n    ax.hist(results, bins=np.arange(0.5, 7.5, 1), edgecolor=\"black\")\n    ax.set_title(\"Histogram of Dice Rolls\")\n    ax.set_xlabel(\"Dice Value\")\n    ax.set_ylabel(\"Frequency\")\n    ax.set_xticks(NUMBERS)\n\n    return frequency, ax",
+  "reviewer_artifact": "import numpy as np\nimport matplotlib.pyplot as plt\nimport random\n\n# Constants\nNUMBERS = list(range(1, 7))  # Adjusting for dice rolls (1 to 6)\n\ndef task_func(rolls, seed=None):\n    \"\"\"\n    Simulate dice rolls, compute outcome frequencies, and plot a histogram.\n\n    Args:\n        rolls (int): Number of dice rolls to simulate.\n        seed (optional): Seed for reproducible random results.\n\n    Returns:\n        tuple: (frequency_array, histogram_axes)\n    \"\"\"\n    if isinstance(rolls, bool) or not isinstance(rolls, (int, np.integer)):\n        raise TypeError(\"rolls must be a non-negative integer\")\n    if rolls < 0:\n        raise ValueError(\"rolls must be non-negative\")\n\n    rolls = int(rolls)\n    \n    # Use a localized Random instance if seed is provided, \n    # otherwise fallback to global random to respect globally set seeds.\n    if seed is not None:\n        rng = random.Random(seed)\n    else:\n        rng = random\n\n    # Use a numpy array of dtype=int to prevent np.bincount from raising a TypeError when rolls=0\n    results = np.array([rng.choice(NUMBERS) for _ in range(rolls)], dtype=int)\n    frequency = np.bincount(results, minlength=7)[1:7]\n\n    fig, ax = plt.subplots()\n    ax.hist(results, bins=np.arange(0.5, 7.5, 1), edgecolor=\"black\")\n    ax.set_title(\"Histogram of Dice Rolls\")\n    ax.set_xlabel(\"Dice Value\")\n    ax.set_ylabel(\"Frequency\")\n    ax.set_xticks(NUMBERS)\n\n    return frequency, ax",
+  "final_artifact": "import numpy as np\nimport matplotlib.pyplot as plt\nimport random\n\n# Constants\nNUMBERS = list(range(1, 7))  # Adjusting for dice rolls (1 to 6)\n\ndef task_func(rolls, seed=None):\n    \"\"\"\n    Simulate dice rolls, compute outcome frequencies, and plot a histogram.\n\n    Args:\n        rolls (int): Number of dice rolls to simulate.\n        seed (optional): Seed for reproducible random results.\n\n    Returns:\n        tuple: (frequency_array, histogram_axes)\n    \"\"\"\n    if isinstance(rolls, bool) or not isinstance(rolls, (int, np.integer)):\n        raise TypeError(\"rolls must be a non-negative integer\")\n    if rolls < 0:\n        raise ValueError(\"rolls must be non-negative\")\n\n    rolls = int(rolls)\n    \n    # Use a localized Random instance if seed is provided, \n    # otherwise fallback to global random to respect globally set seeds.\n    if seed is not None:\n        rng = random.Random(seed)\n    else:\n        rng = random\n\n    # Use a numpy array of dtype=int to prevent np.bincount from raising a TypeError when rolls=0\n    results = np.array([rng.choice(NUMBERS) for _ in range(rolls)], dtype=int)\n    frequency = np.bincount(results, minlength=7)[1:7]\n\n    fig, ax = plt.subplots()\n    ax.hist(results, bins=np.arange(0.5, 7.5, 1), edgecolor=\"black\")\n    ax.set_title(\"Histogram of Dice Rolls\")\n    ax.set_xlabel(\"Dice Value\")\n    ax.set_ylabel(\"Frequency\")\n    ax.set_xticks(NUMBERS)\n\n    return frequency, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_897__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "4acf7a4b57f84e7dc75be889e12c1bac62c85a61e293f547e09ce7e61031e4cc",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 16.119856959000003,
+      "input_tokens": 1041,
+      "output_tokens": 840,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.035269
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "8bd2153305fa3562855475a5cd5b557a0c9af4254f4014534897d306589b859b",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 11,
+    "reviewer_cost_all_attempts": 0.1273704,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

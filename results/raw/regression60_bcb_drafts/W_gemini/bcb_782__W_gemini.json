@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_782",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T08:50:45.398082+00:00",
+  "writer_finished_at": "2026-11-22T08:51:43.099705+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "fb0fbd9409bf757f64ee7b22537716ce49b60f60679c3bb9de0745c42f9cb63d",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 57.70138458300062,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 57.70138458300062,
+  "writer_input_tokens": 10242,
+  "writer_output_tokens": 4237,
+  "writer_cached_input_tokens": 6154,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0725588,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.0725588,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "{\n  \"session_id\": \"2cd03b61-8a5f-4db6-ba66-71647620f4fa\",\n  \"response\": \"<solution>\\nimport random\\nimport pandas as pd\\nimport numpy as np\\n\\ndef task_func(n,\\n          domain=\\\"samplewebsite.com\\\",\\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\\n          random_seed=None):\\n    if random_seed is not None:\\n        random.seed(random_seed)\\n        np.random.seed(random_seed)\\n    \\n    # Handle negative values of n gracefully by treating them as 0\\n    n = max(0, int(n))\\n    \\n    ids = list(range(n))\\n    titles = [f\\\"Article {i}\\\" for i in ids]\\n    title_urls = [f\\\"{domain}/Article_{i}\\\" for i in ids]\\n    \\n    if n > 0 and categories:\\n        cats = [random.choice(categories) for _ in range(n)]\\n    else:\\n        cats = []\\n        \\n    views = np.random.poisson(1000, n)\\n    \\n    df = pd.DataFrame({\\n        'title': titles,\\n        'title_url': title_urls,\\n        'id': ids,\\n        'category': cats,\\n        'views': views\\n    })\\n    \\n    return df\\n</solution>\\n\\nConfidence level: High. I am confident this solution perfectly matches the requested behavior, effectively handles setting seeds for both `random` and `numpy.random`, and gracefully handles edge cases like `n=0` or a negative `n`.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 2,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 55439,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 10242,\n          \"prompt\": 16396,\n          \"candidates\": 412,\n          \"total\": 20633,\n          \"cached\": 6154,\n          \"thoughts\": 3825,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 2,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 55439,\n            \"tokens\": {\n              \"input\": 10242,\n              \"prompt\": 16396,\n              \"candidates\": 412,\n              \"total\": 20633,\n              \"cached\": 6154,\n              \"thoughts\": 3825,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import random\nimport pandas as pd\nimport numpy as np\n\ndef task_func(n,\n          domain=\"samplewebsite.com\",\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\n          random_seed=None):\n    if random_seed is not None:\n        random.seed(random_seed)\n        np.random.seed(random_seed)\n    \n    # Handle negative values of n gracefully by treating them as 0\n    n = max(0, int(n))\n    \n    ids = list(range(n))\n    titles = [f\"Article {i}\" for i in ids]\n    title_urls = [f\"{domain}/Article_{i}\" for i in ids]\n    \n    if n > 0 and categories:\n        cats = [random.choice(categories) for _ in range(n)]\n    else:\n        cats = []\n        \n    views = np.random.poisson(1000, n)\n    \n    df = pd.DataFrame({\n        'title': titles,\n        'title_url': title_urls,\n        'id': ids,\n        'category': cats,\n        'views': views\n    })\n    \n    return df",
+  "reviewer_artifact": "",
+  "final_artifact": "import random\nimport pandas as pd\nimport numpy as np\n\ndef task_func(n,\n          domain=\"samplewebsite.com\",\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\n          random_seed=None):\n    if random_seed is not None:\n        random.seed(random_seed)\n        np.random.seed(random_seed)\n    \n    # Handle negative values of n gracefully by treating them as 0\n    n = max(0, int(n))\n    \n    ids = list(range(n))\n    titles = [f\"Article {i}\" for i in ids]\n    title_urls = [f\"{domain}/Article_{i}\" for i in ids]\n    \n    if n > 0 and categories:\n        cats = [random.choice(categories) for _ in range(n)]\n    else:\n        cats = []\n        \n    views = np.random.poisson(1000, n)\n    \n    df = pd.DataFrame({\n        'title': titles,\n        'title_url': title_urls,\n        'id': ids,\n        'category': cats,\n        'views': views\n    })\n    \n    return df",
+  "writer_confidence_note": "Confidence level: High.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/782",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 2,
+    "writer_cost_all_runs": 0.14447880000000002,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

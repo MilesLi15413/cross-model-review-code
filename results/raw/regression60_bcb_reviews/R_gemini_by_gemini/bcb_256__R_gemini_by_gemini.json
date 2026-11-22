@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_256",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:40:46.422192+00:00",
+  "writer_finished_at": "2026-11-22T16:41:55.849392+00:00",
+  "reviewer_started_at": "2026-11-22T17:09:02.868793+00:00",
+  "reviewer_finished_at": "2026-11-22T17:09:30.038852+00:00",
+  "writer_prompt_sha256": "90c9f8eb105258ebf6695b23063194dfd9e55a528639f8818a409db16aaf583f",
+  "reviewer_prompt_sha256": "ff2f5effb006ee98f38a2699acc119f37d98ae9e5d3105b2c7e7edaee1e7ef6e",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 27.170074707999902,
+  "total_latency_s": 27.170074707999902,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8308,
+  "reviewer_output_tokens": 3775,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.061916,
+  "total_cost_usd": 0.061916,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"2b424ddf-6cbe-4900-b0e5-b41f9f207002\",\n  \"response\": \"<solution>\\nimport json\\nimport random\\nimport hashlib\\nfrom datetime import datetime\\nimport string\\n\\ndef task_func(utc_datetime, salt='salt', password_length=10, seed=0):\\n    if not isinstance(utc_datetime, datetime):\\n        raise ValueError(\\\"utc_datetime must be a datetime object\\\")\\n    if not isinstance(salt, str):\\n        raise ValueError(\\\"salt must be a string\\\")\\n        \\n    random.seed(seed)\\n    chars = string.ascii_lowercase + string.digits\\n    password = ''.join(random.choices(chars, k=password_length))\\n    \\n    combination = salt + str(utc_datetime)\\n    string_to_hash = password + combination\\n    \\n    hashed_password = hashlib.sha256(string_to_hash.encode('utf-8')).hexdigest()\\n    \\n    return json.dumps(hashed_password)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 26409,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8308,\n          \"prompt\": 8308,\n          \"candidates\": 207,\n          \"total\": 12083,\n          \"cached\": 0,\n          \"thoughts\": 3568,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 26409,\n            \"tokens\": {\n              \"input\": 8308,\n              \"prompt\": 8308,\n              \"candidates\": 207,\n              \"total\": 12083,\n              \"cached\": 0,\n              \"thoughts\": 3568,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import json\nimport random\nimport hashlib\nfrom datetime import datetime\nimport string\n\ndef task_func(utc_datetime, salt='salt', password_length=10, seed=0):\n    if not isinstance(utc_datetime, datetime):\n        raise ValueError(\"utc_datetime must be a datetime object\")\n    if not isinstance(salt, str):\n        raise ValueError(\"salt must be a string\")\n        \n    random.seed(seed)\n    chars = string.ascii_lowercase + string.digits\n    password = ''.join(random.choices(chars, k=password_length))\n    \n    combination = salt + str(utc_datetime)\n    string_to_hash = password + combination\n    \n    hashed_password = hashlib.sha256(string_to_hash.encode('utf-8')).hexdigest()\n    \n    return json.dumps(hashed_password)",
+  "reviewer_artifact": "import json\nimport random\nimport hashlib\nfrom datetime import datetime\nimport string\n\ndef task_func(utc_datetime, salt='salt', password_length=10, seed=0):\n    if not isinstance(utc_datetime, datetime):\n        raise ValueError(\"utc_datetime must be a datetime object\")\n    if not isinstance(salt, str):\n        raise ValueError(\"salt must be a string\")\n        \n    random.seed(seed)\n    chars = string.ascii_lowercase + string.digits\n    password = ''.join(random.choices(chars, k=password_length))\n    \n    combination = salt + str(utc_datetime)\n    string_to_hash = password + combination\n    \n    hashed_password = hashlib.sha256(string_to_hash.encode('utf-8')).hexdigest()\n    \n    return json.dumps(hashed_password)",
+  "final_artifact": "import json\nimport random\nimport hashlib\nfrom datetime import datetime\nimport string\n\ndef task_func(utc_datetime, salt='salt', password_length=10, seed=0):\n    if not isinstance(utc_datetime, datetime):\n        raise ValueError(\"utc_datetime must be a datetime object\")\n    if not isinstance(salt, str):\n        raise ValueError(\"salt must be a string\")\n        \n    random.seed(seed)\n    chars = string.ascii_lowercase + string.digits\n    password = ''.join(random.choices(chars, k=password_length))\n    \n    combination = salt + str(utc_datetime)\n    string_to_hash = password + combination\n    \n    hashed_password = hashlib.sha256(string_to_hash.encode('utf-8')).hexdigest()\n    \n    return json.dumps(hashed_password)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_256__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "59db3278cf67541b80d96d496f3ac4cd21c176a1c3d553b57191c01a808d65bd",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 69.427712542,
+      "input_tokens": 16170,
+      "output_tokens": 7817,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.126144
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "59db3278cf67541b80d96d496f3ac4cd21c176a1c3d553b57191c01a808d65bd",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.061916,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "+ 3da4b6faf766416fe75b2e5efd831f0fc907e0cc450e7fb58f61110be0a6ab3a",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

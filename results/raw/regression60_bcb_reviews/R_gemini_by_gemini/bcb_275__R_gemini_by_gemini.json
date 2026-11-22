@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_275",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T08:50:16.600729+00:00",
+  "writer_finished_at": "2026-11-22T08:50:27.340278+00:00",
+  "reviewer_started_at": "2026-11-22T08:59:16.012214+00:00",
+  "reviewer_finished_at": "2026-11-22T08:59:26.062679+00:00",
+  "writer_prompt_sha256": "4c7640f58ecb2d28acdb2a7dd422176781f77e329cd0ee53df8f8516dc444cef",
+  "reviewer_prompt_sha256": "31999b9d04e4532ec147229c7970abe1444c000822ef9c04cf3469f94f7cb141",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 10.050410083000315,
+  "total_latency_s": 10.050410083000315,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8120,
+  "reviewer_output_tokens": 1019,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.028468,
+  "total_cost_usd": 0.028468,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"5f43f441-72d6-4675-b9b8-3490c9337864\",\n  \"response\": \"<solution>\\nimport numpy as np\\nfrom itertools import combinations\\n\\ndef task_func(n):\\n    if n < 1:\\n        raise ValueError(\\\"n must be at least 1\\\")\\n    return list(combinations(range(1, n + 1), 2))\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 9002,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8120,\n          \"prompt\": 8120,\n          \"candidates\": 65,\n          \"total\": 9139,\n          \"cached\": 0,\n          \"thoughts\": 954,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 9002,\n            \"tokens\": {\n              \"input\": 8120,\n              \"prompt\": 8120,\n              \"candidates\": 65,\n              \"total\": 9139,\n              \"cached\": 0,\n              \"thoughts\": 954,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "writer_artifact": "import numpy as np\nfrom itertools import combinations\n\ndef task_func(n):\n    if n < 1:\n        raise ValueError(\"n must be at least 1\")\n    return list(combinations(range(1, n + 1), 2))",
+  "reviewer_artifact": "import numpy as np\nfrom itertools import combinations\n\ndef task_func(n):\n    if n < 1:\n        raise ValueError(\"n must be at least 1\")\n    return list(combinations(range(1, n + 1), 2))",
+  "final_artifact": "import numpy as np\nfrom itertools import combinations\n\ndef task_func(n):\n    if n < 1:\n        raise ValueError(\"n must be at least 1\")\n    return list(combinations(range(1, n + 1), 2))",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_275__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "03e472da06690b626dc88eda44cd40d1fc3e85303b1fda3dbf30b921ac7c17ec",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 10.739490583997394,
+      "input_tokens": 8043,
+      "output_tokens": 1345,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.032226
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "03e472da06690b626dc88eda44cd40d1fc3e85303b1fda3dbf30b921ac7c17ec",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.028468,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

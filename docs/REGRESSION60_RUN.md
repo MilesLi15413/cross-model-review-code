@@ -377,16 +377,139 @@ questions a reviewer will ask:
 
 | # | Experiment | Cost | Why | Would it help? | Status |
 |---|------------|------|-----|----------------|--------|
-| 1 | **Regrade all 116 paper problems × 6 conditions** with the current grader | Free | Checks whether the grader drift we saw on 60 problems affects the paper's published pass rates (GPT-5.5 solo: 71.6%) | **Yes, essential.** If the paper's numbers are off, it must be corrected before anything else; a referee finding it first would damage credibility | Running |
+| 1 | **Regrade all 116 paper problems × 6 conditions** with the current grader | Free | Checks whether the grader drift we saw on 60 problems affects the paper's published pass rates (GPT-5.5 solo: 71.6%) | **Yes, essential.** If the paper's numbers are off, it must be corrected before anything else; a referee finding it first would damage credibility | **Done: see "Result of item 1" below** |
 | 2 | **Recheck the paper's GPT-5.5 costs** for the cached-token double count | Free | The same pricing code produced the paper's cost tables | **Yes.** A cost claim that is 2× off undermines any cost-effectiveness argument | To do |
 | 3 | **Classify every break**: wrong answer, too slow, or crash; test whether edit size predicts breaking | Free | Explains *how* review breaks code (e.g. abc388_f was a rewrite that made the program too slow) | **Yes.** A mechanism makes the finding more convincing and more useful | To do |
-| 4 | **Repeat GPT-5.5's 180 reviews** (same prompt, fresh calls) | ≈ $8 OpenAI | Shows whether GPT breaks the *same* drafts again or different ones | **Yes.** Separates a consistent weakness from run-to-run noise, the most likely referee objection | Approved, not started |
-| 5 | **"Change as little as possible" prompt** for GPT-5.5's 180 reviews (one added line: `harness/prompts/reviewer_lcb_minimal_edit.txt`) | ≈ $8 OpenAI | Tests whether GPT's heavy rewriting is what causes the breaks | **Yes.** If one line removes most breaks, that is a practical, citable contribution | Approved, not started |
-| 6 | **BigCodeBench grader check**: install it and grade its own reference solutions twice | Free | BigCodeBench tests depend on pinned libraries and sometimes files or network; a flaky grader would make break counts meaningless | **Decides #7.** Only worth adding BigCodeBench if the grader is reliable | To do |
-| 7a | **If #6 passes: BigCodeBench**, about 60 tasks sampled from the full set (not Hard), all 9 pairings | ≈ $25–35 Gemini, ≈ $5 OpenAI, Claude free | Real-world library code (pandas, files, APIs) instead of puzzles | **Yes, most for the paper.** Answers "does this only apply to competitive programming?"; the full set gives enough passing drafts | Decided by #6 |
-| 7b | **If #6 fails: the other 56 LiveCodeBench problems**, all 9 pairings | ≈ $40 Gemini, ≈ $8 OpenAI, Claude free | About twice the data on the same problems; full coverage of the paper's 116 | **Somewhat.** Tightens GPT-5.5 vs Claude (now 9 vs 1, not significant after correction) but does not address generality | Fallback |
+| 4 | **Repeat GPT-5.5's 180 reviews** (same prompt, fresh calls) | ≈ $8 OpenAI | Shows whether GPT breaks the *same* drafts again or different ones | **Yes.** Separates a consistent weakness from run-to-run noise, the most likely referee objection | **Done: see "Results of items 4 and 5"** |
+| 5 | **"Change as little as possible" prompt** for GPT-5.5's 180 reviews (one added line: `harness/prompts/reviewer_lcb_minimal_edit.txt`) | ≈ $8 OpenAI | Tests whether GPT's heavy rewriting is what causes the breaks | **Yes.** If one line removes most breaks, that is a practical, citable contribution | **Done (1 regrade pending): see "Results of items 4 and 5"** |
+| 6 | **BigCodeBench grader check**: install it and grade its own reference solutions twice | Free | BigCodeBench tests depend on pinned libraries and sometimes files or network; a flaky grader would make break counts meaningless | **Decides #7.** Only worth adding BigCodeBench if the grader is reliable | **Done: passed (0 disagreements)** |
+| 7a | **If #6 passes: BigCodeBench**, about 60 tasks sampled from the full set (not Hard), all 9 pairings | ≈ $25–35 Gemini, ≈ $5 OpenAI, Claude free | Real-world library code (pandas, files, APIs) instead of puzzles | **Yes, most for the paper.** Answers "does this only apply to competitive programming?"; the full set gives enough passing drafts | **Done (80 tasks): see "Result of item 7a"** |
+| 7b | **If #6 fails: the other 56 LiveCodeBench problems**, all 9 pairings | ≈ $40 Gemini, ≈ $8 OpenAI, Claude free | About twice the data on the same problems; full coverage of the paper's 116 | **Somewhat.** Tightens GPT-5.5 vs Claude (now 9 vs 1, not significant after correction) but does not address generality | Not run (#6 passed) |
 
 Only one of 7a and 7b fits the remaining Gemini credit ($48).
+
+### Result of item 1: the paper's GPT-5.5 solo baseline is understated
+
+Every frozen final program in the paper's pooled 116-problem complete case was regraded
+with the current grader (`scripts/regression60_regrade116.py`,
+`results/processed/regression60_paper_regrade_116.csv`). The frozen records were only
+read.
+
+| Paper label | Condition                        | Paper   | Regrade | Fail → pass | Pass → fail |
+|-------------|----------------------------------|---------|---------|-------------|-------------|
+| A           | `B1_claude_solo`                 | 106/116 | 106/116 | 0           | 0           |
+| **O**       | **`B2_gpt55_solo`**              | **83/116 (71.6%)** | **98/116 (84.5%)** | **15** | 0 |
+| AO          | `C1_claude_writes_gpt55_reviews` | 96/116  | 96/116  | 0           | 0           |
+| OA          | `C2_gpt55_writes_claude_reviews` | 104/116 | 104/116 | 0           | 0           |
+| AA          | `C3_claude_writes_claude_reviews`| 106/116 | 106/116 | 0           | 0           |
+| OO          | `C4_gpt55_writes_gpt55_reviews`  | 98/116  | 98/116  | 0           | 0           |
+
+(One C1 program, arc194_b, timed out in the regrade and is counted as in the paper.)
+
+**Only the GPT-5.5 solo condition is affected, and only in the hard slice:** 15
+programs the paper scored as failing pass today, every time, and nothing flips the
+other way. The likeliest cause is a grading fault in the original hard-slice run of
+that one condition. The harness's own notes describe an earlier evaluator that "silently
+scores correct programs as failures"; this is not confirmed.
+
+**What it does to the paper's headline comparisons against O:**
+
+| Contrast | Paper   | With the regraded O (98/116) |
+|----------|---------|------------------------------|
+| OA vs O  | +18.1 pp | **+5.2 pp**                 |
+| OO vs O  | +12.9 pp | **+0.0 pp**                 |
+| AO vs A  | −8.6 pp  | −8.6 pp (unchanged)         |
+| AA vs A  | +0.0 pp  | +0.0 pp (unchanged)         |
+
+The paper's large gains from adding a reviewer to GPT-5.5 largely disappear. **This
+must be raised with the coauthors before the paper is used or submitted.** 5 of the 15
+flipped drafts were also written with tool use (see Limitations).
+
+### Results of items 4 and 5: GPT-5.5 breaks are noisy, and a one-line prompt removes most
+
+Same 180 drafts, GPT-5.5 reviewer, fresh calls (`results/processed/regression60_gpt_rep2_*`,
+`regression60_gpt_minedit_*`):
+
+| Run | Regressions | Rate (95% interval) | Fixes | Unchanged | Mean edit (lines) |
+|-----|-------------|---------------------|-------|-----------|-------------------|
+| Stage 2 (original) | 9 / 162 | 5.6% (2.6 – 10.3%) | — | 7% | 46.9 |
+| Item 4: repeat, same prompt | 7 / 162 | 4.3% (1.8 – 8.7%) | 2 / 18 | 7% | 45.9 |
+| Item 5: "change as little as possible" | **1 / 161** | **0.6% (0.0 – 3.4%)** | 3 / 18 | 74% | 5.2 |
+
+- **Item 4:** the break *rate* repeats but the *drafts* mostly do not: only 3 of the 7
+  repeat-run breaks were also broken in the original run. GPT-5.5's breaking is a stable
+  tendency, not a fixed set of hard drafts.
+- **Item 5:** one added prompt line cuts breaks from 9 to 1 and edit size by about 9×,
+  without losing fixes. Heavy rewriting looks like the mechanism.
+- One minimal-edit review (abc388_f) is still being regraded; it can move the count by at
+  most one.
+
+### Result of item 7a: BigCodeBench, all 9 pairings
+
+**Grader check (item 6), passed.** BigCodeBench's official evaluation image
+(bigcodebench 0.2.4, pinned by digest) graded all 1,140 reference solutions twice with
+0 disagreements; the same 5 references failed both times.
+
+**Setup, and how it differs from the LiveCodeBench run.** Identical models, efforts,
+CLIs, isolation (GPT-5.5 without tools), one-shot reviews, and all 9 writer × reviewer
+pairings. Differences:
+
+- *Prompts:* `writer_bcb.txt` / `reviewer_bcb.txt` are the LiveCodeBench prompts with
+  only the first line changed ("competitive programming problem" → "Python programming
+  task").
+- *Grader:* BigCodeBench's own evaluator inside its Docker image, as on its leaderboard,
+  20 s per task (`harness/benchmarks/bigcodebench.py`), instead of the paper's grader.
+- *Tasks:* 80 tasks sampled from the full instruct set (`experiments/task_lists/bcb_80.txt`),
+  excluding the 5 always-failing references and any task importing a networking library
+  (requests, urllib, socket, …), so no result depends on the internet.
+- *Drafts:* written fresh by the three models for this run (not from the paper's runs).
+  Gemini returned no usable draft for 2 tasks (78 Gemini drafts), giving 238 drafts and
+  714 reviews, all graded (0 grading errors).
+
+**Writers' pass rates:** Claude 57/80, Gemini 42/78, GPT-5.5 40/80, so 139 passing and
+99 failing drafts.
+
+**Regressions (breaking a passing draft) and fixes, by reviewer** (all writers):
+
+| Reviewer | Regressions | Rate (95% interval) | Fixes | Fix rate | Unchanged | Mean edit (lines) |
+|----------|-------------|---------------------|-------|----------|-----------|-------------------|
+| Claude   | 2 / 139     | 1.4% (0.2 – 5.1%)   | **18 / 99** | **18.2%** | 36% | 8.7 |
+| GPT-5.5  | **12 / 139**| **8.6% (4.5 – 14.6%)** | 5 / 99 | 5.1% | 6% | 18.4 |
+| Gemini   | 4 / 139     | 2.9% (0.8 – 7.2%)   | 6 / 99  | 6.1% | 24% | 10.8 |
+
+**Draft-by-draft comparisons** (exact McNemar test, Holm correction over 6 tests):
+
+| Comparison | Only the first | Only the second | p | After Holm |
+|------------|----------------|-----------------|---|------------|
+| Breaks: GPT-5.5 vs Claude | 12 | 2 | 0.013 | 0.052, borderline |
+| Breaks: GPT-5.5 vs Gemini | 10 | 2 | 0.039 | 0.12, not significant |
+| Breaks: Gemini vs Claude  | 3  | 1 | 0.63  | 1.0 |
+| Fixes: Claude vs GPT-5.5  | 14 | 1 | 0.001 | **0.006, significant** |
+| Fixes: Claude vs Gemini   | 15 | 3 | 0.008 | **0.038, significant** |
+| Fixes: Gemini vs GPT-5.5  | 5  | 4 | 1.0   | 1.0 |
+
+**By pair** (writer → reviewer), regressions on passing drafts:
+
+| Writer ↓ / Reviewer → | Claude | GPT-5.5 | Gemini |
+|-----------------------|--------|---------|--------|
+| Claude (57 passing)   | 0      | **7**   | 2      |
+| GPT-5.5 (40 passing)  | 2      | 2       | 1      |
+| Gemini (42 passing)   | 0      | 3       | 1      |
+
+Full tables: `results/processed/regression60_bcb_metrics.csv`, `_by_pair.csv`,
+`_transitions.csv` (every break and fix).
+
+**What it shows.** The LiveCodeBench finding carries over to real-world library code:
+GPT-5.5 is again the reviewer that breaks working code most often (12 vs 2 for Claude,
+the same direction and similar size as 9 vs 1 on LiveCodeBench), and again it rewrites
+most and leaves the fewest drafts unchanged. New on BigCodeBench: Claude fixes failing
+drafts significantly more often than either other reviewer, which LiveCodeBench (18
+failing drafts) was too small to show. Self-review is mostly a no-op for Claude (73% of
+its own drafts unchanged, 0 breaks, 0 fixes). Pooling with LiveCodeBench is not advised,
+as graders and pass rates differ; report the two side by side.
+
+**Cost:** recorded at API rates, about $25 Gemini and $10 OpenAI for drafts and reviews
+(pilot included); Claude ran on the Pro plan.
 
 ### Considered and set aside
 

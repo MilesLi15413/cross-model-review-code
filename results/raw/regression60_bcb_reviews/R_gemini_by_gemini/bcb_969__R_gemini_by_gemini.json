@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_969",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:42:54.812282+00:00",
+  "writer_finished_at": "2026-11-22T16:43:15.743283+00:00",
+  "reviewer_started_at": "2026-11-22T17:15:12.087037+00:00",
+  "reviewer_finished_at": "2026-11-22T17:15:40.641845+00:00",
+  "writer_prompt_sha256": "c002f45e2d65899e46c6c5810c0a4e12200877143e5f50c2747be56997b8d5ae",
+  "reviewer_prompt_sha256": "87414907c90305751b9a18e4886a52d9559daa8007e40dac348699127fb53478",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 28.554831625000133,
+  "total_latency_s": 28.554831625000133,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8274,
+  "reviewer_output_tokens": 3763,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.061704,
+  "total_cost_usd": 0.061704,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"060c7dc1-5b90-4a96-ba9a-2b6e559657e8\",\n  \"response\": \"<solution>\\nimport numpy as np\\nfrom sklearn.preprocessing import MinMaxScaler\\nimport pandas as pd\\n\\ndef task_func(df: pd.DataFrame) -> pd.DataFrame:\\n    if df.empty:\\n        raise ValueError(\\\"The DataFrame is empty.\\\")\\n    \\n    if df.isna().any().any():\\n        raise ValueError(\\\"The DataFrame contains NaN values.\\\")\\n        \\n    if not all(pd.api.types.is_numeric_dtype(dtype) for dtype in df.dtypes):\\n        raise TypeError(\\\"The DataFrame contains non-numeric data types.\\\")\\n        \\n    cumsum_df = df.cumsum()\\n    \\n    scaler = MinMaxScaler()\\n    normalized_data = scaler.fit_transform(cumsum_df)\\n    \\n    return pd.DataFrame(normalized_data, index=df.index, columns=df.columns)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 27733,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8274,\n          \"prompt\": 8274,\n          \"candidates\": 186,\n          \"total\": 12037,\n          \"cached\": 0,\n          \"thoughts\": 3577,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 27733,\n            \"tokens\": {\n              \"input\": 8274,\n              \"prompt\": 8274,\n              \"candidates\": 186,\n              \"total\": 12037,\n              \"cached\": 0,\n              \"thoughts\": 3577,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nfrom sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\ndef task_func(df: pd.DataFrame) -> pd.DataFrame:\n    if df.empty:\n        raise ValueError(\"The DataFrame is empty.\")\n    \n    if df.isna().values.any():\n        raise ValueError(\"The DataFrame contains NaN values.\")\n        \n    if not all(pd.api.types.is_numeric_dtype(dtype) for dtype in df.dtypes):\n        raise TypeError(\"The DataFrame contains non-numeric data types.\")\n        \n    cumsum_df = df.cumsum()\n    \n    scaler = MinMaxScaler()\n    normalized_data = scaler.fit_transform(cumsum_df)\n    \n    return pd.DataFrame(normalized_data, index=df.index, columns=df.columns)",
+  "reviewer_artifact": "import numpy as np\nfrom sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\ndef task_func(df: pd.DataFrame) -> pd.DataFrame:\n    if df.empty:\n        raise ValueError(\"The DataFrame is empty.\")\n    \n    if df.isna().any().any():\n        raise ValueError(\"The DataFrame contains NaN values.\")\n        \n    if not all(pd.api.types.is_numeric_dtype(dtype) for dtype in df.dtypes):\n        raise TypeError(\"The DataFrame contains non-numeric data types.\")\n        \n    cumsum_df = df.cumsum()\n    \n    scaler = MinMaxScaler()\n    normalized_data = scaler.fit_transform(cumsum_df)\n    \n    return pd.DataFrame(normalized_data, index=df.index, columns=df.columns)",
+  "final_artifact": "import numpy as np\nfrom sklearn.preprocessing import MinMaxScaler\nimport pandas as pd\n\ndef task_func(df: pd.DataFrame) -> pd.DataFrame:\n    if df.empty:\n        raise ValueError(\"The DataFrame is empty.\")\n    \n    if df.isna().any().any():\n        raise ValueError(\"The DataFrame contains NaN values.\")\n        \n    if not all(pd.api.types.is_numeric_dtype(dtype) for dtype in df.dtypes):\n        raise TypeError(\"The DataFrame contains non-numeric data types.\")\n        \n    cumsum_df = df.cumsum()\n    \n    scaler = MinMaxScaler()\n    normalized_data = scaler.fit_transform(cumsum_df)\n    \n    return pd.DataFrame(normalized_data, index=df.index, columns=df.columns)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_969__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "ff20095245079549e61063b942c75ba9e7d4c06964c01f99d9b7fc9556b2d801",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 20.93114587499997,
+      "input_tokens": 8076,
+      "output_tokens": 3194,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.05448
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "4d511cba17381e9faff5dc30355ecf8acc2a47a469e9131e9ea619f1d5479433",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 2,
+    "reviewer_cost_all_attempts": 0.061704,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

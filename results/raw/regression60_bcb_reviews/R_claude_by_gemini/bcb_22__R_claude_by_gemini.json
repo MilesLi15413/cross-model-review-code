@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_22",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:29:32.477411+00:00",
+  "writer_finished_at": "2026-11-22T16:29:38.312084+00:00",
+  "reviewer_started_at": "2026-11-22T16:58:39.038674+00:00",
+  "reviewer_finished_at": "2026-11-22T16:59:04.004822+00:00",
+  "writer_prompt_sha256": "9a285198e995a7b3d4c37fc47de8da165c23d5ecba17b8aa5c014277138c74a6",
+  "reviewer_prompt_sha256": "229f02649e1d2adc948e45cf6dc4fb95a030ce03edcd2fc0324fc15d9a83d5b4",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 24.96632591699995,
+  "total_latency_s": 24.96632591699995,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8170,
+  "reviewer_output_tokens": 3635,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.05996,
+  "total_cost_usd": 0.05996,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"a9ed3ba5-3876-49f8-b6eb-76d3fe873803\",\n  \"response\": \"<solution>\\nimport collections\\nfrom itertools import zip_longest\\nfrom random import choices\\n\\ndef task_func(l1, l2, K=10):\\n    # Use a sentinel object to distinguish actual None values in the lists from the padding added by zip_longest\\n    sentinel = object()\\n    combined = [\\n        x for pair in zip_longest(l1, l2, fillvalue=sentinel) \\n        for x in pair if x is not sentinel\\n    ]\\n    \\n    # Handle the edge case where both lists are empty to avoid IndexError from choices()\\n    if not combined:\\n        return collections.Counter()\\n        \\n    sample = choices(combined, k=K)\\n    return collections.Counter(sample)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 24197,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8170,\n          \"prompt\": 8170,\n          \"candidates\": 167,\n          \"total\": 11805,\n          \"cached\": 0,\n          \"thoughts\": 3468,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 24197,\n            \"tokens\": {\n              \"input\": 8170,\n              \"prompt\": 8170,\n              \"candidates\": 167,\n              \"total\": 11805,\n              \"cached\": 0,\n              \"thoughts\": 3468,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import collections\nfrom itertools import zip_longest\nfrom random import choices\ndef task_func(l1, l2, K=10):\n    combined = [x for pair in zip_longest(l1, l2) for x in pair if x is not None]\n    sample = choices(combined, k=K)\n    return collections.Counter(sample)",
+  "reviewer_artifact": "import collections\nfrom itertools import zip_longest\nfrom random import choices\n\ndef task_func(l1, l2, K=10):\n    # Use a sentinel object to distinguish actual None values in the lists from the padding added by zip_longest\n    sentinel = object()\n    combined = [\n        x for pair in zip_longest(l1, l2, fillvalue=sentinel) \n        for x in pair if x is not sentinel\n    ]\n    \n    # Handle the edge case where both lists are empty to avoid IndexError from choices()\n    if not combined:\n        return collections.Counter()\n        \n    sample = choices(combined, k=K)\n    return collections.Counter(sample)",
+  "final_artifact": "import collections\nfrom itertools import zip_longest\nfrom random import choices\n\ndef task_func(l1, l2, K=10):\n    # Use a sentinel object to distinguish actual None values in the lists from the padding added by zip_longest\n    sentinel = object()\n    combined = [\n        x for pair in zip_longest(l1, l2, fillvalue=sentinel) \n        for x in pair if x is not sentinel\n    ]\n    \n    # Handle the edge case where both lists are empty to avoid IndexError from choices()\n    if not combined:\n        return collections.Counter()\n        \n    sample = choices(combined, k=K)\n    return collections.Counter(sample)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_22__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "78fa402a3f7d9d0dcbdb9f568bb1f6fc2728586a6f7883e95faf7ad3f5eeb16c",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 5.834704584000008,
+      "input_tokens": 5,
+      "output_tokens": 179,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.181844
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "eba04ace37d547270f65435e37156babe01c9ebe47ba1c099d6510353ab7b8ad",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 13,
+    "reviewer_cost_all_attempts": 0.05996,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

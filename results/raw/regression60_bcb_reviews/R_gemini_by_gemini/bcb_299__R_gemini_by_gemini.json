@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_299",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T08:49:45.165759+00:00",
+  "writer_finished_at": "2026-11-22T08:50:15.843791+00:00",
+  "reviewer_started_at": "2026-11-22T08:59:25.204968+00:00",
+  "reviewer_finished_at": "2026-11-22T09:01:42.725303+00:00",
+  "writer_prompt_sha256": "49a3de024089fd51a5d89162459fa3eaa5f93f36db9394471134cb0a7fdacafb",
+  "reviewer_prompt_sha256": "deea09524f97efe57ecee30a1f52d255f5ce2be525c2acc38b1b1a008ba45f03",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 137.51975295800366,
+  "total_latency_s": 137.51975295800366,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8222,
+  "reviewer_output_tokens": 20922,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.267508,
+  "total_cost_usd": 0.267508,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"a645063f-8c49-4db6-bfac-df4d42f482ab\",\n  \"response\": \"```python\\nimport itertools\\nimport math\\nfrom pandas import Series\\n\\ndef task_func(elements, subset_size, top_n=2):\\n    if subset_size == 0 or subset_size > len(elements):\\n        return 1\\n    \\n    sums = [sum(subset) for subset in itertools.combinations(elements, subset_size)]\\n    \\n    prod = math.prod(sums)\\n    top_sums = sorted(sums, reverse=True)[:top_n]\\n    \\n    return prod, Series(top_sums)\\n```\\n\\n<solution>\\nimport itertools\\nimport math\\nfrom pandas import Series\\n\\ndef task_func(elements, subset_size, top_n=2):\\n    if subset_size == 0 or subset_size > len(elements):\\n        return 1\\n    \\n    sums = [sum(subset) for subset in itertools.combinations(elements, subset_size)]\\n    \\n    prod = math.prod(sums)\\n    top_sums = sorted(sums, reverse=True)[:top_n]\\n    \\n    return prod, Series(top_sums)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 136471,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8222,\n          \"prompt\": 8222,\n          \"candidates\": 250,\n          \"total\": 29144,\n          \"cached\": 0,\n          \"thoughts\": 20672,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 136471,\n            \"tokens\": {\n              \"input\": 8222,\n              \"prompt\": 8222,\n              \"candidates\": 250,\n              \"total\": 29144,\n              \"cached\": 0,\n              \"thoughts\": 20672,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import itertools\nimport math\nfrom pandas import Series\n\ndef task_func(elements, subset_size, top_n=2):\n    if subset_size == 0 or subset_size > len(elements):\n        return 1, Series([], dtype=int)\n    \n    sums = [sum(subset) for subset in itertools.combinations(elements, subset_size)]\n    \n    prod = math.prod(sums)\n    top_sums = sorted(sums, reverse=True)[:top_n]\n    \n    return prod, Series(top_sums)",
+  "reviewer_artifact": "import itertools\nimport math\nfrom pandas import Series\n\ndef task_func(elements, subset_size, top_n=2):\n    if subset_size == 0 or subset_size > len(elements):\n        return 1\n    \n    sums = [sum(subset) for subset in itertools.combinations(elements, subset_size)]\n    \n    prod = math.prod(sums)\n    top_sums = sorted(sums, reverse=True)[:top_n]\n    \n    return prod, Series(top_sums)",
+  "final_artifact": "import itertools\nimport math\nfrom pandas import Series\n\ndef task_func(elements, subset_size, top_n=2):\n    if subset_size == 0 or subset_size > len(elements):\n        return 1\n    \n    sums = [sum(subset) for subset in itertools.combinations(elements, subset_size)]\n    \n    prod = math.prod(sums)\n    top_sums = sorted(sums, reverse=True)[:top_n]\n    \n    return prod, Series(top_sums)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_299__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "83337101ed0f5de8dda466037190cf1b910ff1580f8b6a6fa1a13e76df352bad",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 30.677895375003573,
+      "input_tokens": 8077,
+      "output_tokens": 4550,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.070754
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "37ff46c28da21380bdd29582ef61d874814ed68521375e13bef63fed29f8f208",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 2,
+    "reviewer_cost_all_attempts": 0.267508,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "TypeError: cannot unpack non-iterable int object",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

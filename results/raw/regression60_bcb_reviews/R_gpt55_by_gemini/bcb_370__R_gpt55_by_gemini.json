@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_370",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:34:00.536008+00:00",
+  "writer_finished_at": "2026-11-22T16:34:13.391232+00:00",
+  "reviewer_started_at": "2026-11-22T17:20:02.956004+00:00",
+  "reviewer_finished_at": "2026-11-22T17:20:32.842659+00:00",
+  "writer_prompt_sha256": "e2746ed0d2f9ab32dabf0e4cba95618bef84636c8cedd5e79142ae3ca8c77ce2",
+  "reviewer_prompt_sha256": "0ee8d6ac9f7a4e494669f63b2d5740b24fe20ed40093bf1ca5b90ed98e16f4e8",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 29.886685166999996,
+  "total_latency_s": 29.886685166999996,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8304,
+  "reviewer_output_tokens": 4348,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.068784,
+  "total_cost_usd": 0.068784,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"7f93a6d3-3741-4898-bf89-313c8b13cb66\",\n  \"response\": \"<solution>\\nimport os\\nimport re\\nimport json\\nimport glob\\n\\ndef task_func(directory_path: str) -> list:\\n    if not os.path.exists(directory_path):\\n        raise FileNotFoundError(f\\\"Directory not found: {directory_path}\\\")\\n\\n    processed_files = []\\n    json_files = sorted(glob.glob(os.path.join(directory_path, \\\"*.json\\\")))\\n\\n    for file_path in json_files:\\n        with open(file_path, \\\"r\\\", encoding=\\\"utf-8\\\") as file:\\n            content = file.read()\\n\\n        # In Python string literals, '\\\\\\\\\\\\\\\\\\\"' evaluates to two backslashes followed by a double quote\\n        modified_content = content.replace('\\\"', '\\\\\\\\\\\\\\\\\\\"')\\n\\n        with open(file_path, \\\"w\\\", encoding=\\\"utf-8\\\") as file:\\n            file.write(modified_content)\\n\\n        processed_files.append(file_path)\\n\\n    return processed_files\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 29127,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8304,\n          \"prompt\": 8304,\n          \"candidates\": 222,\n          \"total\": 12652,\n          \"cached\": 0,\n          \"thoughts\": 4126,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 29127,\n            \"tokens\": {\n              \"input\": 8304,\n              \"prompt\": 8304,\n              \"candidates\": 222,\n              \"total\": 12652,\n              \"cached\": 0,\n              \"thoughts\": 4126,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import os\nimport re\nimport json\nimport glob\n\ndef task_func(directory_path: str) -> list:\n    if not os.path.isdir(directory_path):\n        raise FileNotFoundError(f\"Directory not found: {directory_path}\")\n\n    processed_files = []\n    json_files = sorted(glob.glob(os.path.join(directory_path, \"*.json\")))\n    protected_quote = \"\\\\\\\\\" + '\"'\n\n    for file_path in json_files:\n        with open(file_path, \"r\", encoding=\"utf-8\") as file:\n            content = file.read()\n\n        modified_content = content.replace('\"', protected_quote)\n\n        with open(file_path, \"w\", encoding=\"utf-8\") as file:\n            file.write(modified_content)\n\n        processed_files.append(file_path)\n\n    return processed_files",
+  "reviewer_artifact": "import os\nimport re\nimport json\nimport glob\n\ndef task_func(directory_path: str) -> list:\n    if not os.path.exists(directory_path):\n        raise FileNotFoundError(f\"Directory not found: {directory_path}\")\n\n    processed_files = []\n    json_files = sorted(glob.glob(os.path.join(directory_path, \"*.json\")))\n\n    for file_path in json_files:\n        with open(file_path, \"r\", encoding=\"utf-8\") as file:\n            content = file.read()\n\n        # In Python string literals, '\\\\\\\\\"' evaluates to two backslashes followed by a double quote\n        modified_content = content.replace('\"', '\\\\\\\\\"')\n\n        with open(file_path, \"w\", encoding=\"utf-8\") as file:\n            file.write(modified_content)\n\n        processed_files.append(file_path)\n\n    return processed_files",
+  "final_artifact": "import os\nimport re\nimport json\nimport glob\n\ndef task_func(directory_path: str) -> list:\n    if not os.path.exists(directory_path):\n        raise FileNotFoundError(f\"Directory not found: {directory_path}\")\n\n    processed_files = []\n    json_files = sorted(glob.glob(os.path.join(directory_path, \"*.json\")))\n\n    for file_path in json_files:\n        with open(file_path, \"r\", encoding=\"utf-8\") as file:\n            content = file.read()\n\n        # In Python string literals, '\\\\\\\\\"' evaluates to two backslashes followed by a double quote\n        modified_content = content.replace('\"', '\\\\\\\\\"')\n\n        with open(file_path, \"w\", encoding=\"utf-8\") as file:\n            file.write(modified_content)\n\n        processed_files.append(file_path)\n\n    return processed_files",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_370__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "0d97693a75dd30a4373e798231173d88289a87029e45a437eca71090258c3b40",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 12.855307584000002,
+      "input_tokens": 1901,
+      "output_tokens": 710,
+      "cached_input_tokens": 8832,
+      "cost_usd": 0.035221
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "f4cba931cbc0cc2b21968401cfc3480726443ffc1e970d2e0bb6cfaadd1850c3",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 6,
+    "reviewer_cost_all_attempts": 0.068784,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

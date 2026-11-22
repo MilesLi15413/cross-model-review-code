@@ -32,3 +32,4 @@ results/processed/lcb_pilot/
 results/processed/sweb_pilot/
 results/processed/sweb_smoke_5/
 results/processed/tmp*/
+.venv-bcb/

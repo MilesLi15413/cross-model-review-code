@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_821",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:30:28.659473+00:00",
+  "writer_finished_at": "2026-11-22T16:30:34.605292+00:00",
+  "reviewer_started_at": "2026-11-22T17:04:21.363162+00:00",
+  "reviewer_finished_at": "2026-11-22T17:04:34.696684+00:00",
+  "writer_prompt_sha256": "302b81ed44da7d4edca83303800a916a031039a89a5a18e21ae763579b261154",
+  "reviewer_prompt_sha256": "75e69a8f855ad9890365a4dbcd7847eaecadd5d0a8fe030ff59e5541d55f6a3c",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 13.333524042000136,
+  "total_latency_s": 13.333524042000136,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8299,
+  "reviewer_output_tokens": 1667,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.036602,
+  "total_cost_usd": 0.036602,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"ebcad8e5-9b10-4423-bc40-3c022be38b41\",\n  \"response\": \"<solution>\\nimport time\\nimport threading\\n\\ndef task_func(delay_time: float = 1.0, num_threads: int = 5):\\n    results = [None] * num_threads\\n\\n    def worker(idx):\\n        time.sleep(delay_time)\\n        results[idx] = f'Delay in thread {idx} completed'\\n\\n    threads = []\\n    for i in range(num_threads):\\n        t = threading.Thread(target=worker, args=(i,))\\n        threads.append(t)\\n        t.start()\\n\\n    for t in threads:\\n        t.join()\\n\\n    return results\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 12326,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8299,\n          \"prompt\": 8299,\n          \"candidates\": 147,\n          \"total\": 9966,\n          \"cached\": 0,\n          \"thoughts\": 1520,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 12326,\n            \"tokens\": {\n              \"input\": 8299,\n              \"prompt\": 8299,\n              \"candidates\": 147,\n              \"total\": 9966,\n              \"cached\": 0,\n              \"thoughts\": 1520,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import time\nimport threading\n\ndef task_func(delay_time: float = 1.0, num_threads: int = 5):\n    results = [None] * num_threads\n\n    def worker(idx):\n        time.sleep(delay_time)\n        results[idx] = f'Delay in thread {idx} completed'\n\n    threads = []\n    for i in range(num_threads):\n        t = threading.Thread(target=worker, args=(i,))\n        threads.append(t)\n        t.start()\n\n    for t in threads:\n        t.join()\n\n    return results",
+  "reviewer_artifact": "import time\nimport threading\n\ndef task_func(delay_time: float = 1.0, num_threads: int = 5):\n    results = [None] * num_threads\n\n    def worker(idx):\n        time.sleep(delay_time)\n        results[idx] = f'Delay in thread {idx} completed'\n\n    threads = []\n    for i in range(num_threads):\n        t = threading.Thread(target=worker, args=(i,))\n        threads.append(t)\n        t.start()\n\n    for t in threads:\n        t.join()\n\n    return results",
+  "final_artifact": "import time\nimport threading\n\ndef task_func(delay_time: float = 1.0, num_threads: int = 5):\n    results = [None] * num_threads\n\n    def worker(idx):\n        time.sleep(delay_time)\n        results[idx] = f'Delay in thread {idx} completed'\n\n    threads = []\n    for i in range(num_threads):\n        t = threading.Thread(target=worker, args=(i,))\n        threads.append(t)\n        t.start()\n\n    for t in threads:\n        t.join()\n\n    return results",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_821__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "5cf476cdd66ef3b1223b7df2b3906673549e12018df80a4b216ed3747126fc9d",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 5.945850541999988,
+      "input_tokens": 5,
+      "output_tokens": 234,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.18446900000000002
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "5cf476cdd66ef3b1223b7df2b3906673549e12018df80a4b216ed3747126fc9d",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.036602,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 1.0024056434631348 != 5 within 0 places (3.9975943565368652 difference)",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_542",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T16:42:44.891066+00:00",
+  "writer_finished_at": "2026-11-22T16:44:14.750618+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "8c7c48ef8043d99b0e38c54d8b25403eed738bdffa30ca9ffcb5fbe72474a2bb",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 89.86020337499997,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 89.86020337499997,
+  "writer_input_tokens": 16224,
+  "writer_output_tokens": 10662,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.160392,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.160392,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "{\n  \"session_id\": \"7d999ef2-a2d1-4888-ab3b-718024700108\",\n  \"response\": \"<solution>\\nimport hashlib\\nimport random\\nimport struct\\n\\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\\n\\ndef task_func(hex_keys=KEYS, seed=42):\\n    # Validate that all elements in hex_keys are valid hexadecimal strings\\n    # capable of representing a 32-bit (4-byte) float.\\n    for key in hex_keys:\\n        try:\\n            b = bytes.fromhex(key)\\n        except ValueError:\\n            raise ValueError(\\\"Invalid hexadecimal string\\\")\\n            \\n        if len(b) != 4:\\n            raise ValueError(\\\"Invalid hexadecimal string: length must be exactly 8 hex digits (4 bytes)\\\")\\n\\n    # Use a local Random instance to avoid altering the global random state\\n    rng = random.Random(seed)\\n    chosen_key = rng.choice(hex_keys)\\n    \\n    # Convert the selected hexadecimal string to a floating-point number (IEEE 754 32-bit big-endian)\\n    float_val = struct.unpack('!f', bytes.fromhex(chosen_key))[0]\\n    \\n    # Compute the MD5 hash of the float's string representation\\n    md5_hash = hashlib.md5(str(float_val).encode('utf-8')).hexdigest()\\n    \\n    return md5_hash\\n</solution>\\n\\nConfidence level: High. The solution robustly uses a local `random.Random` instance to avoid global state manipulation, handles IEEE-754 32-bit precision conversion naturally using `struct`, and explicitly validates all keys before selecting. The only uncertain edge case is if the caller expects `0x`-prefixed inputs, which `bytes.fromhex` naturally rejects (as implied by the `KEYS` defaults).\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 2,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 88081,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 16224,\n          \"prompt\": 16224,\n          \"candidates\": 465,\n          \"total\": 26886,\n          \"cached\": 0,\n          \"thoughts\": 10197,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 2,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 88081,\n            \"tokens\": {\n              \"input\": 16224,\n              \"prompt\": 16224,\n              \"candidates\": 465,\n              \"total\": 26886,\n              \"cached\": 0,\n              \"thoughts\": 10197,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import hashlib\nimport random\nimport struct\n\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\n\ndef task_func(hex_keys=KEYS, seed=42):\n    # Validate that all elements in hex_keys are valid hexadecimal strings\n    # capable of representing a 32-bit (4-byte) float.\n    for key in hex_keys:\n        try:\n            b = bytes.fromhex(key)\n        except ValueError:\n            raise ValueError(\"Invalid hexadecimal string\")\n            \n        if len(b) != 4:\n            raise ValueError(\"Invalid hexadecimal string: length must be exactly 8 hex digits (4 bytes)\")\n\n    # Use a local Random instance to avoid altering the global random state\n    rng = random.Random(seed)\n    chosen_key = rng.choice(hex_keys)\n    \n    # Convert the selected hexadecimal string to a floating-point number (IEEE 754 32-bit big-endian)\n    float_val = struct.unpack('!f', bytes.fromhex(chosen_key))[0]\n    \n    # Compute the MD5 hash of the float's string representation\n    md5_hash = hashlib.md5(str(float_val).encode('utf-8')).hexdigest()\n    \n    return md5_hash",
+  "reviewer_artifact": "",
+  "final_artifact": "import hashlib\nimport random\nimport struct\n\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\n\ndef task_func(hex_keys=KEYS, seed=42):\n    # Validate that all elements in hex_keys are valid hexadecimal strings\n    # capable of representing a 32-bit (4-byte) float.\n    for key in hex_keys:\n        try:\n            b = bytes.fromhex(key)\n        except ValueError:\n            raise ValueError(\"Invalid hexadecimal string\")\n            \n        if len(b) != 4:\n            raise ValueError(\"Invalid hexadecimal string: length must be exactly 8 hex digits (4 bytes)\")\n\n    # Use a local Random instance to avoid altering the global random state\n    rng = random.Random(seed)\n    chosen_key = rng.choice(hex_keys)\n    \n    # Convert the selected hexadecimal string to a floating-point number (IEEE 754 32-bit big-endian)\n    float_val = struct.unpack('!f', bytes.fromhex(chosen_key))[0]\n    \n    # Compute the MD5 hash of the float's string representation\n    md5_hash = hashlib.md5(str(float_val).encode('utf-8')).hexdigest()\n    \n    return md5_hash",
+  "writer_confidence_note": "Confidence level: High.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/542",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.160392,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_542",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:33:48.903726+00:00",
+  "writer_finished_at": "2026-11-22T16:34:00.524073+00:00",
+  "reviewer_started_at": "2026-11-22T17:22:53.331242+00:00",
+  "reviewer_finished_at": "2026-11-22T17:23:57.014946+00:00",
+  "writer_prompt_sha256": "8c7c48ef8043d99b0e38c54d8b25403eed738bdffa30ca9ffcb5fbe72474a2bb",
+  "reviewer_prompt_sha256": "2ab5492d6ad84b9008787a3ceff3a081ad4e5acc440bdc510e62c4530ad8173a",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 63.68377333300032,
+  "total_latency_s": 63.68377333300032,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8393,
+  "reviewer_output_tokens": 10770,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.146026,
+  "total_cost_usd": 0.146026,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"2dd2e8bc-72b6-40c6-9dc5-20c0c78bff0c\",\n  \"response\": \"<solution>\\nimport hashlib\\nimport random\\nimport struct\\n\\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\\n\\ndef task_func(hex_keys=KEYS, seed=42):\\n    if not hex_keys:\\n        raise ValueError(\\\"hex_keys must contain at least one hexadecimal string\\\")\\n\\n    # Validate that all keys are valid hexadecimal strings representing exactly 4 bytes\\n    for key in hex_keys:\\n        try:\\n            b = bytes.fromhex(key)\\n            if len(b) != 4:\\n                raise ValueError(\\\"Invalid hexadecimal string\\\")\\n        except (ValueError, TypeError) as e:\\n            raise ValueError(\\\"Invalid hexadecimal string\\\") from e\\n\\n    rng = random.Random(seed)\\n    selected_key = rng.choice(hex_keys)\\n\\n    # Convert the selected valid hex string into a float and compute its MD5 hash\\n    byte_data = bytes.fromhex(selected_key)\\n    float_value = struct.unpack(\\\"!f\\\", byte_data)[0]\\n    \\n    return hashlib.md5(str(float_value).encode(\\\"utf-8\\\")).hexdigest()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 62912,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8393,\n          \"prompt\": 8393,\n          \"candidates\": 289,\n          \"total\": 19163,\n          \"cached\": 0,\n          \"thoughts\": 10481,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 62912,\n            \"tokens\": {\n              \"input\": 8393,\n              \"prompt\": 8393,\n              \"candidates\": 289,\n              \"total\": 19163,\n              \"cached\": 0,\n              \"thoughts\": 10481,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import hashlib\nimport random\nimport struct\n\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\n\ndef task_func(hex_keys=KEYS, seed=42):\n    if not hex_keys:\n        raise ValueError(\"hex_keys must contain at least one hexadecimal string\")\n\n    parsed_keys = []\n    for key in hex_keys:\n        if not isinstance(key, str) or len(key) != 8:\n            raise ValueError(\"All keys must be valid 8-character hexadecimal strings\")\n        try:\n            parsed_keys.append(bytes.fromhex(key))\n        except ValueError as exc:\n            raise ValueError(\"All keys must be valid 8-character hexadecimal strings\") from exc\n\n    rng = random.Random(seed)\n    selected = rng.choice(parsed_keys)\n\n    float_value = struct.unpack(\"!f\", selected)[0]\n    return hashlib.md5(str(float_value).encode(\"utf-8\")).hexdigest()",
+  "reviewer_artifact": "import hashlib\nimport random\nimport struct\n\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\n\ndef task_func(hex_keys=KEYS, seed=42):\n    if not hex_keys:\n        raise ValueError(\"hex_keys must contain at least one hexadecimal string\")\n\n    # Validate that all keys are valid hexadecimal strings representing exactly 4 bytes\n    for key in hex_keys:\n        try:\n            b = bytes.fromhex(key)\n            if len(b) != 4:\n                raise ValueError(\"Invalid hexadecimal string\")\n        except (ValueError, TypeError) as e:\n            raise ValueError(\"Invalid hexadecimal string\") from e\n\n    rng = random.Random(seed)\n    selected_key = rng.choice(hex_keys)\n\n    # Convert the selected valid hex string into a float and compute its MD5 hash\n    byte_data = bytes.fromhex(selected_key)\n    float_value = struct.unpack(\"!f\", byte_data)[0]\n    \n    return hashlib.md5(str(float_value).encode(\"utf-8\")).hexdigest()",
+  "final_artifact": "import hashlib\nimport random\nimport struct\n\nKEYS = ['470FC614', '4A0FC614', '4B9FC614', '4C8FC614', '4D7FC614']\n\ndef task_func(hex_keys=KEYS, seed=42):\n    if not hex_keys:\n        raise ValueError(\"hex_keys must contain at least one hexadecimal string\")\n\n    # Validate that all keys are valid hexadecimal strings representing exactly 4 bytes\n    for key in hex_keys:\n        try:\n            b = bytes.fromhex(key)\n            if len(b) != 4:\n                raise ValueError(\"Invalid hexadecimal string\")\n        except (ValueError, TypeError) as e:\n            raise ValueError(\"Invalid hexadecimal string\") from e\n\n    rng = random.Random(seed)\n    selected_key = rng.choice(hex_keys)\n\n    # Convert the selected valid hex string into a float and compute its MD5 hash\n    byte_data = bytes.fromhex(selected_key)\n    float_value = struct.unpack(\"!f\", byte_data)[0]\n    \n    return hashlib.md5(str(float_value).encode(\"utf-8\")).hexdigest()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_542__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "b0b2c7eb6cc2d755f66921208ae67d9fae6b521c43476d8be23fa538e571aa22",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 11.620421874999977,
+      "input_tokens": 1026,
+      "output_tokens": 762,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.032854
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "f308d9229535cda01f9e756f757be4cea24ca9ee7d8a54c675c4658429c0aee1",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 19,
+    "reviewer_cost_all_attempts": 0.146026,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "ValueError: hex_keys must contain at least one hexadecimal string",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

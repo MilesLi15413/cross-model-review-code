@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_34",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T08:48:39.639708+00:00",
+  "writer_finished_at": "2026-11-22T08:48:55.819863+00:00",
+  "reviewer_started_at": "2026-11-22T09:00:44.824483+00:00",
+  "reviewer_finished_at": "2026-11-22T09:01:10.530885+00:00",
+  "writer_prompt_sha256": "ba9d73408237db88c1b3ae938573d20e54fb1b2b7a6767058a39076c8e479e0e",
+  "reviewer_prompt_sha256": "64f525a53a1ce2731fb4a30262ad87933c531f31471601f1b47c307ee6b2f813",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 25.70628333300556,
+  "total_latency_s": 25.70628333300556,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8298,
+  "reviewer_output_tokens": 3953,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.064032,
+  "total_cost_usd": 0.064032,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"f04fa3e8-ae8f-4545-ad75-fbd8af6aa67f\",\n  \"response\": \"<solution>\\nimport re\\nfrom wordcloud import WordCloud\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(text):\\n    if text is None:\\n        text = \\\"\\\"\\n    elif not isinstance(text, str):\\n        text = str(text)\\n\\n    # Remove URLs (both http(s)://... and www....) ignoring case\\n    cleaned_text = re.sub(r\\\"https?://\\\\S+|www\\\\.\\\\S+\\\", \\\"\\\", text, flags=re.IGNORECASE)\\n\\n    try:\\n        # Generate word cloud\\n        wordcloud = WordCloud().generate(cleaned_text)\\n    except ValueError:\\n        # WordCloud.generate() raises a ValueError if no words are found\\n        raise ValueError(\\\"No words available to generate a word cloud after removing URLs.\\\")\\n\\n    plt.figure(figsize=(10, 5))\\n    plt.imshow(wordcloud, interpolation=\\\"bilinear\\\")\\n    plt.axis(\\\"off\\\")\\n    plt.tight_layout()\\n    plt.show()\\n\\n    return wordcloud\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 24601,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8298,\n          \"prompt\": 8298,\n          \"candidates\": 231,\n          \"total\": 12251,\n          \"cached\": 0,\n          \"thoughts\": 3722,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 24601,\n            \"tokens\": {\n              \"input\": 8298,\n              \"prompt\": 8298,\n              \"candidates\": 231,\n              \"total\": 12251,\n              \"cached\": 0,\n              \"thoughts\": 3722,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import re\nfrom wordcloud import WordCloud\nimport matplotlib.pyplot as plt\n\ndef task_func(text):\n    if text is None:\n        text = \"\"\n    elif not isinstance(text, str):\n        text = str(text)\n\n    url_pattern = re.compile(\n        r\"\"\"\n        \\b(?:\n            https?://[^\\s]+ |\n            www\\.[^\\s]+\n        )\n        \"\"\",\n        re.IGNORECASE | re.VERBOSE,\n    )\n\n    cleaned_text = url_pattern.sub(\" \", text)\n\n    if not re.search(r\"\\b\\w+\\b\", cleaned_text):\n        raise ValueError(\"No words available to generate a word cloud after removing URLs.\")\n\n    wordcloud = WordCloud().generate(cleaned_text)\n\n    plt.figure(figsize=(10, 5))\n    plt.imshow(wordcloud, interpolation=\"bilinear\")\n    plt.axis(\"off\")\n    plt.tight_layout()\n    plt.show()\n\n    return wordcloud",
+  "reviewer_artifact": "import re\nfrom wordcloud import WordCloud\nimport matplotlib.pyplot as plt\n\ndef task_func(text):\n    if text is None:\n        text = \"\"\n    elif not isinstance(text, str):\n        text = str(text)\n\n    # Remove URLs (both http(s)://... and www....) ignoring case\n    cleaned_text = re.sub(r\"https?://\\S+|www\\.\\S+\", \"\", text, flags=re.IGNORECASE)\n\n    try:\n        # Generate word cloud\n        wordcloud = WordCloud().generate(cleaned_text)\n    except ValueError:\n        # WordCloud.generate() raises a ValueError if no words are found\n        raise ValueError(\"No words available to generate a word cloud after removing URLs.\")\n\n    plt.figure(figsize=(10, 5))\n    plt.imshow(wordcloud, interpolation=\"bilinear\")\n    plt.axis(\"off\")\n    plt.tight_layout()\n    plt.show()\n\n    return wordcloud",
+  "final_artifact": "import re\nfrom wordcloud import WordCloud\nimport matplotlib.pyplot as plt\n\ndef task_func(text):\n    if text is None:\n        text = \"\"\n    elif not isinstance(text, str):\n        text = str(text)\n\n    # Remove URLs (both http(s)://... and www....) ignoring case\n    cleaned_text = re.sub(r\"https?://\\S+|www\\.\\S+\", \"\", text, flags=re.IGNORECASE)\n\n    try:\n        # Generate word cloud\n        wordcloud = WordCloud().generate(cleaned_text)\n    except ValueError:\n        # WordCloud.generate() raises a ValueError if no words are found\n        raise ValueError(\"No words available to generate a word cloud after removing URLs.\")\n\n    plt.figure(figsize=(10, 5))\n    plt.imshow(wordcloud, interpolation=\"bilinear\")\n    plt.axis(\"off\")\n    plt.tight_layout()\n    plt.show()\n\n    return wordcloud",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_34__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "c04c2f7028eb826289f16034c1ccda531c944fc689eea5eda019b60dfa198e5b",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 16.18008149999514,
+      "input_tokens": 1866,
+      "output_tokens": 741,
+      "cached_input_tokens": 8832,
+      "cost_usd": 0.035976
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "b393689711a13b4931516f517a12165850cf1dd2176bacee729a961a161c097e",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 21,
+    "reviewer_cost_all_attempts": 0.064032,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

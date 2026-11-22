@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_386",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:30:48.960552+00:00",
+  "writer_finished_at": "2026-11-22T16:30:55.461177+00:00",
+  "reviewer_started_at": "2026-11-22T17:00:12.961526+00:00",
+  "reviewer_finished_at": "2026-11-22T17:00:41.492451+00:00",
+  "writer_prompt_sha256": "ef9fc5d0c7462a16c5d3d264f937b1eda080a4da797744657e2841f8f692ba6d",
+  "reviewer_prompt_sha256": "af7bcb3ad6049e9caba839dc11986421fb7ef3308ceeab9e3fffc36396bb8ac8",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 28.531126582999832,
+  "total_latency_s": 28.531126582999832,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8227,
+  "reviewer_output_tokens": 3959,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.063962,
+  "total_cost_usd": 0.063962,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"52b99c25-1cb7-4cb9-9f1c-022f41d147c1\",\n  \"response\": \"<solution>\\nimport numpy as np\\nimport pandas as pd\\n\\n# Constants\\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\\n\\ndef task_func(length, min_value = 0, max_value = 100):\\n    data = np.random.randint(min_value, max_value + 1, size=(length, len(COLUMNS)))\\n    df = pd.DataFrame(data, columns=COLUMNS)\\n    \\n    # Use normalize=True to calculate the actual probability (CDF) rather than cumulative frequency\\n    cdf = df.apply(lambda x: x.value_counts(normalize=True).sort_index().cumsum())\\n    \\n    # Forward fill NaNs (in case some columns don't have all unique values), and fill leading NaNs with 0\\n    cdf = cdf.ffill().fillna(0)\\n    \\n    return cdf\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 27716,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8227,\n          \"prompt\": 8227,\n          \"candidates\": 212,\n          \"total\": 12186,\n          \"cached\": 0,\n          \"thoughts\": 3747,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 27716,\n            \"tokens\": {\n              \"input\": 8227,\n              \"prompt\": 8227,\n              \"candidates\": 212,\n              \"total\": 12186,\n              \"cached\": 0,\n              \"thoughts\": 3747,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport pandas as pd\n# Constants\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\ndef task_func(length, min_value = 0, max_value = 100):\n    data = np.random.randint(min_value, max_value + 1, size=(length, len(COLUMNS)))\n    df = pd.DataFrame(data, columns=COLUMNS)\n    cdf = df.apply(lambda x: x.value_counts().sort_index().cumsum())\n    return cdf",
+  "reviewer_artifact": "import numpy as np\nimport pandas as pd\n\n# Constants\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\n\ndef task_func(length, min_value = 0, max_value = 100):\n    data = np.random.randint(min_value, max_value + 1, size=(length, len(COLUMNS)))\n    df = pd.DataFrame(data, columns=COLUMNS)\n    \n    # Use normalize=True to calculate the actual probability (CDF) rather than cumulative frequency\n    cdf = df.apply(lambda x: x.value_counts(normalize=True).sort_index().cumsum())\n    \n    # Forward fill NaNs (in case some columns don't have all unique values), and fill leading NaNs with 0\n    cdf = cdf.ffill().fillna(0)\n    \n    return cdf",
+  "final_artifact": "import numpy as np\nimport pandas as pd\n\n# Constants\nCOLUMNS = ['Column1', 'Column2', 'Column3', 'Column4', 'Column5']\n\ndef task_func(length, min_value = 0, max_value = 100):\n    data = np.random.randint(min_value, max_value + 1, size=(length, len(COLUMNS)))\n    df = pd.DataFrame(data, columns=COLUMNS)\n    \n    # Use normalize=True to calculate the actual probability (CDF) rather than cumulative frequency\n    cdf = df.apply(lambda x: x.value_counts(normalize=True).sort_index().cumsum())\n    \n    # Forward fill NaNs (in case some columns don't have all unique values), and fill leading NaNs with 0\n    cdf = cdf.ffill().fillna(0)\n    \n    return cdf",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_386__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "ee3c6c1021ca8868b58c549d64b37deec86cfec4b68a9c28d7f8f5d022bda246",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 6.500665292000008,
+      "input_tokens": 5,
+      "output_tokens": 261,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.18425399999999997
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "b4031208a13e2d8315e79eb42c820af0ea43f455bf620051d35fff3e22be34c9",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 10,
+    "reviewer_cost_all_attempts": 0.063962,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 2 != 1",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

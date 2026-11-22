@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_476",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T16:38:51.797041+00:00",
+  "writer_finished_at": "2026-11-22T16:39:15.514526+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "0bf3e6d9091fbea8243cc98d83ccfca36ca218d43f6c9177934ced7425bac8ba",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 23.717651208000007,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 23.717651208000007,
+  "writer_input_tokens": 8044,
+  "writer_output_tokens": 3267,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.055292,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.055292,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "{\n  \"session_id\": \"74f9a6d4-719a-4cbf-8351-fb912e31ff4b\",\n  \"response\": \"<solution>\\nimport matplotlib.pyplot as plt\\nfrom scipy.optimize import curve_fit\\nimport numpy as np\\n\\ndef task_func(X, Y):\\n    # Define the quadratic function to fit\\n    def quadratic(x, a, b, c):\\n        return a * (x ** 2) + b * x + c\\n    \\n    # Convert input sequences to numpy arrays for curve_fit and plotting\\n    x_arr = np.array(X, dtype=float)\\n    y_arr = np.array(Y, dtype=float)\\n    \\n    # Fit the quadratic function to the data\\n    popt, pcov = curve_fit(quadratic, x_arr, y_arr)\\n    \\n    # Create the plot\\n    fig, ax = plt.subplots()\\n    \\n    # Scatter the original data points\\n    ax.scatter(x_arr, y_arr, label='Data', color='blue')\\n    \\n    # Generate the fitted curve over the range of the given data\\n    if len(x_arr) > 0:\\n        x_fit = np.linspace(x_arr.min(), x_arr.max(), 100)\\n        y_fit = quadratic(x_fit, *popt)\\n        ax.plot(x_fit, y_fit, label='Quadratic Fit', color='red')\\n        \\n    ax.legend()\\n    \\n    # Return the optimized parameters as a list and the plot axes\\n    return list(popt), ax\\n</solution>\\n\\nConfidence Level: High. The `scipy.optimize.curve_fit` method is highly reliable for parameter estimation here, and the output neatly conforms to the tuple requirement `(list, matplotlib.axes.Axes)`. The only assumption is that the inputs `X` and `Y` contain at least 3 valid distinct data points to successfully compute the 3 parameters (a, b, c) of a quadratic function without raising a `TypeError` or `RuntimeError`.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 22699,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8044,\n          \"prompt\": 8044,\n          \"candidates\": 437,\n          \"total\": 11311,\n          \"cached\": 0,\n          \"thoughts\": 2830,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 22699,\n            \"tokens\": {\n              \"input\": 8044,\n              \"prompt\": 8044,\n              \"candidates\": 437,\n              \"total\": 11311,\n              \"cached\": 0,\n              \"thoughts\": 2830,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import matplotlib.pyplot as plt\nfrom scipy.optimize import curve_fit\nimport numpy as np\n\ndef task_func(X, Y):\n    # Define the quadratic function to fit\n    def quadratic(x, a, b, c):\n        return a * (x ** 2) + b * x + c\n    \n    # Convert input sequences to numpy arrays for curve_fit and plotting\n    x_arr = np.array(X, dtype=float)\n    y_arr = np.array(Y, dtype=float)\n    \n    # Fit the quadratic function to the data\n    popt, pcov = curve_fit(quadratic, x_arr, y_arr)\n    \n    # Create the plot\n    fig, ax = plt.subplots()\n    \n    # Scatter the original data points\n    ax.scatter(x_arr, y_arr, label='Data', color='blue')\n    \n    # Generate the fitted curve over the range of the given data\n    if len(x_arr) > 0:\n        x_fit = np.linspace(x_arr.min(), x_arr.max(), 100)\n        y_fit = quadratic(x_fit, *popt)\n        ax.plot(x_fit, y_fit, label='Quadratic Fit', color='red')\n        \n    ax.legend()\n    \n    # Return the optimized parameters as a list and the plot axes\n    return list(popt), ax",
+  "reviewer_artifact": "",
+  "final_artifact": "import matplotlib.pyplot as plt\nfrom scipy.optimize import curve_fit\nimport numpy as np\n\ndef task_func(X, Y):\n    # Define the quadratic function to fit\n    def quadratic(x, a, b, c):\n        return a * (x ** 2) + b * x + c\n    \n    # Convert input sequences to numpy arrays for curve_fit and plotting\n    x_arr = np.array(X, dtype=float)\n    y_arr = np.array(Y, dtype=float)\n    \n    # Fit the quadratic function to the data\n    popt, pcov = curve_fit(quadratic, x_arr, y_arr)\n    \n    # Create the plot\n    fig, ax = plt.subplots()\n    \n    # Scatter the original data points\n    ax.scatter(x_arr, y_arr, label='Data', color='blue')\n    \n    # Generate the fitted curve over the range of the given data\n    if len(x_arr) > 0:\n        x_fit = np.linspace(x_arr.min(), x_arr.max(), 100)\n        y_fit = quadratic(x_fit, *popt)\n        ax.plot(x_fit, y_fit, label='Quadratic Fit', color='red')\n        \n    ax.legend()\n    \n    # Return the optimized parameters as a list and the plot axes\n    return list(popt), ax",
+  "writer_confidence_note": "Confidence Level: High.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/476",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.055292,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: TypeError not raised",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

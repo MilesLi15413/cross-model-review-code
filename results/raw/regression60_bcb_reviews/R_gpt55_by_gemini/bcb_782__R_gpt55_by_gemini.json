@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_782",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T08:48:34.551389+00:00",
+  "writer_finished_at": "2026-11-22T08:48:50.309554+00:00",
+  "reviewer_started_at": "2026-11-22T09:01:43.454276+00:00",
+  "reviewer_finished_at": "2026-11-22T09:03:31.963669+00:00",
+  "writer_prompt_sha256": "fb0fbd9409bf757f64ee7b22537716ce49b60f60679c3bb9de0745c42f9cb63d",
+  "reviewer_prompt_sha256": "a59bf26bff0a64719e71d7857d22dc8cf85ea5282cbb0056ade0b713f8b6f391",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 108.50894145900384,
+  "total_latency_s": 108.50894145900384,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8496,
+  "reviewer_output_tokens": 4610,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.072312,
+  "total_cost_usd": 0.072312,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"f5419f07-a9c9-4e57-a9ee-987de16b298a\",\n  \"response\": \"<solution>\\nimport random\\nimport pandas as pd\\nimport numpy as np\\n\\ndef task_func(n,\\n          domain=\\\"samplewebsite.com\\\",\\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\\n          random_seed=None):\\n    if random_seed is not None:\\n        random.seed(random_seed)\\n        np.random.seed(random_seed)\\n\\n    return pd.DataFrame({\\n        'title': [f\\\"Article {i}\\\" for i in range(n)],\\n        'title_url': [f\\\"{domain}/Article_{i}\\\" for i in range(n)],\\n        'id': list(range(n)),\\n        'category': [random.choice(categories) for _ in range(n)],\\n        'views': np.random.poisson(lam=1000, size=n)\\n    })\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 107448,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8496,\n          \"prompt\": 8496,\n          \"candidates\": 200,\n          \"total\": 13106,\n          \"cached\": 0,\n          \"thoughts\": 4410,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 107448,\n            \"tokens\": {\n              \"input\": 8496,\n              \"prompt\": 8496,\n              \"candidates\": 200,\n              \"total\": 13106,\n              \"cached\": 0,\n              \"thoughts\": 4410,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import random\nimport pandas as pd\nimport numpy as np\n\ndef task_func(n,\n          domain=\"samplewebsite.com\",\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\n          random_seed=None):\n    if not isinstance(n, int):\n        raise TypeError(\"n must be an integer\")\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n    if categories is None or len(categories) == 0:\n        raise ValueError(\"categories must be a non-empty sequence\")\n\n    if random_seed is not None:\n        random.seed(random_seed)\n        np.random.seed(random_seed)\n\n    clean_domain = str(domain).rstrip(\"/\")\n    titles = [f\"Article {i}\" for i in range(n)]\n\n    return pd.DataFrame({\n        \"title\": titles,\n        \"title_url\": [f\"{clean_domain}/Article_{i}\" for i in range(n)],\n        \"id\": list(range(n)),\n        \"category\": [random.choice(categories) for _ in range(n)],\n        \"views\": np.random.poisson(lam=1000, size=n)\n    })",
+  "reviewer_artifact": "import random\nimport pandas as pd\nimport numpy as np\n\ndef task_func(n,\n          domain=\"samplewebsite.com\",\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\n          random_seed=None):\n    if random_seed is not None:\n        random.seed(random_seed)\n        np.random.seed(random_seed)\n\n    return pd.DataFrame({\n        'title': [f\"Article {i}\" for i in range(n)],\n        'title_url': [f\"{domain}/Article_{i}\" for i in range(n)],\n        'id': list(range(n)),\n        'category': [random.choice(categories) for _ in range(n)],\n        'views': np.random.poisson(lam=1000, size=n)\n    })",
+  "final_artifact": "import random\nimport pandas as pd\nimport numpy as np\n\ndef task_func(n,\n          domain=\"samplewebsite.com\",\n          categories=['Sports', 'Technology', 'Health', 'Science', 'Business'],\n          random_seed=None):\n    if random_seed is not None:\n        random.seed(random_seed)\n        np.random.seed(random_seed)\n\n    return pd.DataFrame({\n        'title': [f\"Article {i}\" for i in range(n)],\n        'title_url': [f\"{domain}/Article_{i}\" for i in range(n)],\n        'id': list(range(n)),\n        'category': [random.choice(categories) for _ in range(n)],\n        'views': np.random.poisson(lam=1000, size=n)\n    })",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_782__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "86f8c2f761dcaf6551699625af3f30011ed8b8aaab917cbe037243549363ac56",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 15.75808975000109,
+      "input_tokens": 2129,
+      "output_tokens": 781,
+      "cached_input_tokens": 8704,
+      "cost_usd": 0.038427
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "834345be417a6ba7248e574a4cf78f2af1c3af284189096c11041301c96f0fec",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 20,
+    "reviewer_cost_all_attempts": 0.072312,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_198",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T09:15:56.139516+00:00",
+  "writer_finished_at": "2026-11-22T09:16:02.599014+00:00",
+  "reviewer_started_at": "2026-11-22T16:58:34.861444+00:00",
+  "reviewer_finished_at": "2026-11-22T16:58:53.774422+00:00",
+  "writer_prompt_sha256": "b1802d12f865d29ee1bc01f9db9225cfb6fc94a6c8129e22a74fdfefd394e998",
+  "reviewer_prompt_sha256": "4fb95634d4b6999627c6c63d5aba0b5eb38fafbad360ee6c410ad8c6ef435716",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 18.91310774999988,
+  "total_latency_s": 18.91310774999988,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8262,
+  "reviewer_output_tokens": 2586,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.047556,
+  "total_cost_usd": 0.047556,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"e718c803-dbb3-4a5e-bcb9-56d3d015920b\",\n  \"response\": \"<solution>\\nimport numpy as np\\nimport bisect\\nimport statistics\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(data, value):\\n    if len(data) == 0:\\n        return np.array([]), 0\\n    avg = statistics.mean(data)\\n    greater_than_avg = np.array([x for x in data if x > avg])\\n    sorted_data = sorted(data)\\n    count = len(sorted_data) - bisect.bisect_right(sorted_data, value)\\n    plt.hist(sorted_data)\\n    return greater_than_avg, count\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 17906,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8262,\n          \"prompt\": 8262,\n          \"candidates\": 144,\n          \"total\": 10848,\n          \"cached\": 0,\n          \"thoughts\": 2442,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 17906,\n            \"tokens\": {\n              \"input\": 8262,\n              \"prompt\": 8262,\n              \"candidates\": 144,\n              \"total\": 10848,\n              \"cached\": 0,\n              \"thoughts\": 2442,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport bisect\nimport statistics\nimport matplotlib.pyplot as plt\ndef task_func(data, value):\n    if len(data) == 0:\n        return np.array([]), 0\n    avg = statistics.mean(data)\n    greater_than_avg = np.array([x for x in data if x > avg])\n    sorted_data = sorted(data)\n    count = len(sorted_data) - bisect.bisect_right(sorted_data, value)\n    plt.hist(sorted_data)\n    return greater_than_avg, count",
+  "reviewer_artifact": "import numpy as np\nimport bisect\nimport statistics\nimport matplotlib.pyplot as plt\n\ndef task_func(data, value):\n    if len(data) == 0:\n        return np.array([]), 0\n    avg = statistics.mean(data)\n    greater_than_avg = np.array([x for x in data if x > avg])\n    sorted_data = sorted(data)\n    count = len(sorted_data) - bisect.bisect_right(sorted_data, value)\n    plt.hist(sorted_data)\n    return greater_than_avg, count",
+  "final_artifact": "import numpy as np\nimport bisect\nimport statistics\nimport matplotlib.pyplot as plt\n\ndef task_func(data, value):\n    if len(data) == 0:\n        return np.array([]), 0\n    avg = statistics.mean(data)\n    greater_than_avg = np.array([x for x in data if x > avg])\n    sorted_data = sorted(data)\n    count = len(sorted_data) - bisect.bisect_right(sorted_data, value)\n    plt.hist(sorted_data)\n    return greater_than_avg, count",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_198__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "6128677634a86d411334e675aa7ffcebfaae81d2282fea15b42a39b6a3004f05",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 6.459460957994452,
+      "input_tokens": 5,
+      "output_tokens": 247,
+      "cached_input_tokens": 23848,
+      "cost_usd": 0.183954
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "5a8b2611662f64d639d1aad6cc647840964db76fef2bcb040a8aad6bc4a8571c",
+    "unchanged_exact": false,
+    "unchanged_whitespace": true,
+    "diff_lines": 1,
+    "reviewer_cost_all_attempts": 0.047556,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: Expected 'show' to have been called once. Called 0 times.",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

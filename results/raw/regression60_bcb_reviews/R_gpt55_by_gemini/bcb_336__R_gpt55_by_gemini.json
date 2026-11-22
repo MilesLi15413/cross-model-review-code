@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_336",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:33:34.721719+00:00",
+  "writer_finished_at": "2026-11-22T16:33:50.768401+00:00",
+  "reviewer_started_at": "2026-11-22T17:19:23.286398+00:00",
+  "reviewer_finished_at": "2026-11-22T17:20:02.385824+00:00",
+  "writer_prompt_sha256": "5e3e7e4dd422dd0ca5f4894c550652626d18b1deba42ad3d0aed7a3febf49e2b",
+  "reviewer_prompt_sha256": "befc7289505c9b3fa87ee20b76f6025d08a64cb69ff6c6830dddc6099bd57b57",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 39.09946500000024,
+  "total_latency_s": 39.09946500000024,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8362,
+  "reviewer_output_tokens": 5496,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.082676,
+  "total_cost_usd": 0.082676,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"1a6fa1ff-55e3-44c7-9d1d-cef3118c7a7c\",\n  \"response\": \"<solution>\\nimport re\\nimport os\\nimport glob\\nfrom pathlib import Path\\n\\ndef task_func(pattern, directory, extensions):\\n    matched_files = []\\n    \\n    try:\\n        compiled_pattern = re.compile(pattern, re.IGNORECASE)\\n    except (TypeError, re.error):\\n        return matched_files\\n\\n    try:\\n        directory_path = Path(directory).expanduser()\\n        if not directory_path.is_dir():\\n            return matched_files\\n    except (TypeError, OSError):\\n        return matched_files\\n\\n    if extensions is None:\\n        normalized_exts = None\\n    elif isinstance(extensions, str):\\n        ext = extensions.lower()\\n        normalized_exts = {ext if ext.startswith('.') else f'.{ext}'}\\n    else:\\n        normalized_exts = set()\\n        for ext in extensions:\\n            ext_str = str(ext).lower()\\n            if not ext_str.startswith('.'):\\n                ext_str = '.' + ext_str\\n            normalized_exts.add(ext_str)\\n\\n    try:\\n        # Use iterdir() to search the specific directory (non-recursive)\\n        for file_path in directory_path.iterdir():\\n            if not file_path.is_file():\\n                continue\\n            \\n            if normalized_exts is not None and file_path.suffix.lower() not in normalized_exts:\\n                continue\\n\\n            try:\\n                with file_path.open('r', encoding='utf-8', errors='ignore') as f:\\n                    if compiled_pattern.search(f.read()):\\n                        matched_files.append(os.path.abspath(str(file_path)))\\n            except (OSError, UnicodeError):\\n                continue\\n    except OSError:\\n        pass\\n\\n    return matched_files\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 38311,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8362,\n          \"prompt\": 8362,\n          \"candidates\": 417,\n          \"total\": 13858,\n          \"cached\": 0,\n          \"thoughts\": 5079,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 38311,\n            \"tokens\": {\n              \"input\": 8362,\n              \"prompt\": 8362,\n              \"candidates\": 417,\n              \"total\": 13858,\n              \"cached\": 0,\n              \"thoughts\": 5079,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import re\nimport os\nimport glob\nfrom pathlib import Path\n\ndef task_func(pattern, directory, extensions):\n    try:\n        regex = re.compile(pattern, re.IGNORECASE)\n    except (TypeError, re.error):\n        return []\n\n    base_dir = Path(directory).expanduser()\n    if not base_dir.is_dir():\n        return []\n\n    if extensions is None:\n        normalized_extensions = None\n    elif isinstance(extensions, str):\n        normalized_extensions = {extensions.lower() if extensions.startswith(\".\") else f\".{extensions.lower()}\"}\n    else:\n        normalized_extensions = {\n            ext.lower() if str(ext).startswith(\".\") else f\".{str(ext).lower()}\"\n            for ext in extensions\n        }\n\n    matched_files = []\n\n    for file_path in base_dir.rglob(\"*\"):\n        if not file_path.is_file():\n            continue\n\n        if normalized_extensions is not None and file_path.suffix.lower() not in normalized_extensions:\n            continue\n\n        try:\n            with file_path.open(\"r\", encoding=\"utf-8\", errors=\"ignore\") as file:\n                if regex.search(file.read()):\n                    matched_files.append(str(file_path.resolve()))\n        except (OSError, UnicodeError):\n            continue\n\n    return matched_files",
+  "reviewer_artifact": "import re\nimport os\nimport glob\nfrom pathlib import Path\n\ndef task_func(pattern, directory, extensions):\n    matched_files = []\n    \n    try:\n        compiled_pattern = re.compile(pattern, re.IGNORECASE)\n    except (TypeError, re.error):\n        return matched_files\n\n    try:\n        directory_path = Path(directory).expanduser()\n        if not directory_path.is_dir():\n            return matched_files\n    except (TypeError, OSError):\n        return matched_files\n\n    if extensions is None:\n        normalized_exts = None\n    elif isinstance(extensions, str):\n        ext = extensions.lower()\n        normalized_exts = {ext if ext.startswith('.') else f'.{ext}'}\n    else:\n        normalized_exts = set()\n        for ext in extensions:\n            ext_str = str(ext).lower()\n            if not ext_str.startswith('.'):\n                ext_str = '.' + ext_str\n            normalized_exts.add(ext_str)\n\n    try:\n        # Use iterdir() to search the specific directory (non-recursive)\n        for file_path in directory_path.iterdir():\n            if not file_path.is_file():\n                continue\n            \n            if normalized_exts is not None and file_path.suffix.lower() not in normalized_exts:\n                continue\n\n            try:\n                with file_path.open('r', encoding='utf-8', errors='ignore') as f:\n                    if compiled_pattern.search(f.read()):\n                        matched_files.append(os.path.abspath(str(file_path)))\n            except (OSError, UnicodeError):\n                continue\n    except OSError:\n        pass\n\n    return matched_files",
+  "final_artifact": "import re\nimport os\nimport glob\nfrom pathlib import Path\n\ndef task_func(pattern, directory, extensions):\n    matched_files = []\n    \n    try:\n        compiled_pattern = re.compile(pattern, re.IGNORECASE)\n    except (TypeError, re.error):\n        return matched_files\n\n    try:\n        directory_path = Path(directory).expanduser()\n        if not directory_path.is_dir():\n            return matched_files\n    except (TypeError, OSError):\n        return matched_files\n\n    if extensions is None:\n        normalized_exts = None\n    elif isinstance(extensions, str):\n        ext = extensions.lower()\n        normalized_exts = {ext if ext.startswith('.') else f'.{ext}'}\n    else:\n        normalized_exts = set()\n        for ext in extensions:\n            ext_str = str(ext).lower()\n            if not ext_str.startswith('.'):\n                ext_str = '.' + ext_str\n            normalized_exts.add(ext_str)\n\n    try:\n        # Use iterdir() to search the specific directory (non-recursive)\n        for file_path in directory_path.iterdir():\n            if not file_path.is_file():\n                continue\n            \n            if normalized_exts is not None and file_path.suffix.lower() not in normalized_exts:\n                continue\n\n            try:\n                with file_path.open('r', encoding='utf-8', errors='ignore') as f:\n                    if compiled_pattern.search(f.read()):\n                        matched_files.append(os.path.abspath(str(file_path)))\n            except (OSError, UnicodeError):\n                continue\n    except OSError:\n        pass\n\n    return matched_files",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_336__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "8c40c4a9184e568fdf3f331e6065269516d8f2dd6fda767f7dc9d3d810527bc1",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 16.04677720799998,
+      "input_tokens": 10673,
+      "output_tokens": 805,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.077515
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "d133aa2200d8c8248337a44ef321a43b5085417dd476399ef3d5b1ee9d935624",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 60,
+    "reviewer_cost_all_attempts": 0.082676,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "First has 0, Second has 1:  'sample5.md'",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

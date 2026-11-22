@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_237",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T16:43:33.303757+00:00",
+  "writer_finished_at": "2026-11-22T16:44:19.597707+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "4520992b4801936d4cfb8f664c8056e8b4dbb6fa1bdd25532b42527629aef7c0",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 46.294286333999935,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 46.294286333999935,
+  "writer_input_tokens": 8132,
+  "writer_output_tokens": 5910,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.087184,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.087184,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "{\n  \"session_id\": \"0ec07484-00e8-4f51-a9dc-e9b98a3e12f6\",\n  \"response\": \"<solution>\\nimport numpy as np\\nfrom sklearn.decomposition import PCA\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(data, save_plot=False, plot_path=None):\\n    if save_plot and plot_path is None:\\n        raise ValueError(\\\"If save_plot is True but plot_path is not provided.\\\")\\n        \\n    objects, coords_3d = zip(*data)\\n    \\n    pca = PCA(n_components=2)\\n    coordinates_2d = pca.fit_transform(list(coords_3d))\\n    \\n    fig, ax = plt.subplots()\\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\\n    \\n    if save_plot:\\n        fig.savefig(plot_path)\\n        plt.close(fig)\\n        return coordinates_2d\\n        \\n    return coordinates_2d, ax\\n</solution>\\n\\nConfidence Level: High\\nEdge Cases Considered: I assumed `data` contains at least two elements, as `PCA` with `n_components=2` will raise an exception with fewer than 2 samples. I also assumed `data` conforms to the structure of an iterable yielding `(object, coordinate_3d)` pairs. The memory from open figures is correctly managed by closing the figure when `save_plot` is True.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 45496,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8132,\n          \"prompt\": 8132,\n          \"candidates\": 296,\n          \"total\": 14042,\n          \"cached\": 0,\n          \"thoughts\": 5614,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 45496,\n            \"tokens\": {\n              \"input\": 8132,\n              \"prompt\": 8132,\n              \"candidates\": 296,\n              \"total\": 14042,\n              \"cached\": 0,\n              \"thoughts\": 5614,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import numpy as np\nfrom sklearn.decomposition import PCA\nimport matplotlib.pyplot as plt\n\ndef task_func(data, save_plot=False, plot_path=None):\n    if save_plot and plot_path is None:\n        raise ValueError(\"If save_plot is True but plot_path is not provided.\")\n        \n    objects, coords_3d = zip(*data)\n    \n    pca = PCA(n_components=2)\n    coordinates_2d = pca.fit_transform(list(coords_3d))\n    \n    fig, ax = plt.subplots()\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\n    \n    if save_plot:\n        fig.savefig(plot_path)\n        plt.close(fig)\n        return coordinates_2d\n        \n    return coordinates_2d, ax",
+  "reviewer_artifact": "",
+  "final_artifact": "import numpy as np\nfrom sklearn.decomposition import PCA\nimport matplotlib.pyplot as plt\n\ndef task_func(data, save_plot=False, plot_path=None):\n    if save_plot and plot_path is None:\n        raise ValueError(\"If save_plot is True but plot_path is not provided.\")\n        \n    objects, coords_3d = zip(*data)\n    \n    pca = PCA(n_components=2)\n    coordinates_2d = pca.fit_transform(list(coords_3d))\n    \n    fig, ax = plt.subplots()\n    ax.scatter(coordinates_2d[:, 0], coordinates_2d[:, 1])\n    \n    if save_plot:\n        fig.savefig(plot_path)\n        plt.close(fig)\n        return coordinates_2d\n        \n    return coordinates_2d, ax",
+  "writer_confidence_note": "Confidence Level: High",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/237",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.087184,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "ValueError: too many values to unpack (expected 2)",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

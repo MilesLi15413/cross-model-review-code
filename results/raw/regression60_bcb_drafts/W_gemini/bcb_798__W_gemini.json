@@ -1,0 +1,118 @@
+{
+  "task_id": "bcb_798",
+  "condition": "W_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": null,
+  "writer_effort": "high",
+  "reviewer_effort": null,
+  "writer_cli": "gemini",
+  "reviewer_cli": "",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "",
+  "writer_started_at": "2026-11-22T16:46:57.758397+00:00",
+  "writer_finished_at": "2026-11-22T16:47:28.933057+00:00",
+  "reviewer_started_at": "",
+  "reviewer_finished_at": "",
+  "writer_prompt_sha256": "23c08d090517d3385058ded5be0500b5c25a0f3013e3c5481e6edd920e5828f2",
+  "reviewer_prompt_sha256": "",
+  "writer_latency_s": 31.174882374999925,
+  "reviewer_latency_s": 0.0,
+  "total_latency_s": 31.174882374999925,
+  "writer_input_tokens": 8083,
+  "writer_output_tokens": 4616,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 0,
+  "reviewer_output_tokens": 0,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.071558,
+  "reviewer_cost_usd": 0.0,
+  "total_cost_usd": 0.071558,
+  "writer_parse_method": "tag",
+  "reviewer_parse_method": "",
+  "writer_has_solution_tag": true,
+  "reviewer_has_solution_tag": false,
+  "evaluated_turn": "writer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "{\n  \"session_id\": \"0a1c4b10-e36b-4bba-acd3-15341f131141\",\n  \"response\": \"<solution>\\nimport os\\nimport shutil\\n\\n# Constants\\nBACKUP_DIR = '/tmp/backup'\\n\\ndef task_func(directory):\\n    \\\"\\\"\\\"\\n    Rollback the update of a directory by restoring it from a backup.\\n    \\n    Args:\\n        directory (str): The path to the directory to rollback.\\n        \\n    Returns:\\n        str: The restored directory path if successful, otherwise an error message.\\n    \\\"\\\"\\\"\\n    if not os.path.exists(BACKUP_DIR):\\n        return f'Backup directory {BACKUP_DIR} does not exist. Cannot rollback update.'\\n    \\n    # Identify the backup path based on the directory's base name\\n    base_name = os.path.basename(os.path.normpath(directory))\\n    backup_path = os.path.join(BACKUP_DIR, base_name)\\n    \\n    if not os.path.exists(backup_path):\\n        return f'Backup for {base_name} does not exist in {BACKUP_DIR}. Cannot rollback update.'\\n        \\n    try:\\n        # Clear the current directory or file if it exists to prepare for rollback\\n        if os.path.exists(directory):\\n            if os.path.isdir(directory):\\n                shutil.rmtree(directory)\\n            else:\\n                os.remove(directory)\\n                \\n        # Restore from the backup location\\n        if os.path.isdir(backup_path):\\n            shutil.copytree(backup_path, directory)\\n        else:\\n            # Fallback in case the backup was stored as a single file\\n            shutil.copy2(backup_path, directory)\\n            \\n        return directory\\n    except Exception as e:\\n        return f\\\"Failed to rollback: {e}\\\"\\n</solution>\\n\\nConfidence Level: High. The solution comprehensively manages directories and cleanly handles the explicitly required missing backup directory edge case, while additionally guarding against missing backups or files masking as directories.\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 30407,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8083,\n          \"prompt\": 8083,\n          \"candidates\": 432,\n          \"total\": 12699,\n          \"cached\": 0,\n          \"thoughts\": 4184,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 30407,\n            \"tokens\": {\n              \"input\": 8083,\n              \"prompt\": 8083,\n              \"candidates\": 432,\n              \"total\": 12699,\n              \"cached\": 0,\n              \"thoughts\": 4184,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "writer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "reviewer_stdout": "",
+  "reviewer_stderr": "",
+  "writer_artifact": "import os\nimport shutil\n\n# Constants\nBACKUP_DIR = '/tmp/backup'\n\ndef task_func(directory):\n    \"\"\"\n    Rollback the update of a directory by restoring it from a backup.\n    \n    Args:\n        directory (str): The path to the directory to rollback.\n        \n    Returns:\n        str: The restored directory path if successful, otherwise an error message.\n    \"\"\"\n    if not os.path.exists(BACKUP_DIR):\n        return f'Backup directory {BACKUP_DIR} does not exist. Cannot rollback update.'\n    \n    # Identify the backup path based on the directory's base name\n    base_name = os.path.basename(os.path.normpath(directory))\n    backup_path = os.path.join(BACKUP_DIR, base_name)\n    \n    if not os.path.exists(backup_path):\n        return f'Backup for {base_name} does not exist in {BACKUP_DIR}. Cannot rollback update.'\n        \n    try:\n        # Clear the current directory or file if it exists to prepare for rollback\n        if os.path.exists(directory):\n            if os.path.isdir(directory):\n                shutil.rmtree(directory)\n            else:\n                os.remove(directory)\n                \n        # Restore from the backup location\n        if os.path.isdir(backup_path):\n            shutil.copytree(backup_path, directory)\n        else:\n            # Fallback in case the backup was stored as a single file\n            shutil.copy2(backup_path, directory)\n            \n        return directory\n    except Exception as e:\n        return f\"Failed to rollback: {e}\"",
+  "reviewer_artifact": "",
+  "final_artifact": "import os\nimport shutil\n\n# Constants\nBACKUP_DIR = '/tmp/backup'\n\ndef task_func(directory):\n    \"\"\"\n    Rollback the update of a directory by restoring it from a backup.\n    \n    Args:\n        directory (str): The path to the directory to rollback.\n        \n    Returns:\n        str: The restored directory path if successful, otherwise an error message.\n    \"\"\"\n    if not os.path.exists(BACKUP_DIR):\n        return f'Backup directory {BACKUP_DIR} does not exist. Cannot rollback update.'\n    \n    # Identify the backup path based on the directory's base name\n    base_name = os.path.basename(os.path.normpath(directory))\n    backup_path = os.path.join(BACKUP_DIR, base_name)\n    \n    if not os.path.exists(backup_path):\n        return f'Backup for {base_name} does not exist in {BACKUP_DIR}. Cannot rollback update.'\n        \n    try:\n        # Clear the current directory or file if it exists to prepare for rollback\n        if os.path.exists(directory):\n            if os.path.isdir(directory):\n                shutil.rmtree(directory)\n            else:\n                os.remove(directory)\n                \n        # Restore from the backup location\n        if os.path.isdir(backup_path):\n            shutil.copytree(backup_path, directory)\n        else:\n            # Fallback in case the backup was stored as a single file\n            shutil.copy2(backup_path, directory)\n            \n        return directory\n    except Exception as e:\n        return f\"Failed to rollback: {e}\"",
+  "writer_confidence_note": "Confidence Level: High.",
+  "writer_confidence_label": "high",
+  "extra": {
+    "writer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "attempt_count": 1,
+    "study": "regression60_bcb",
+    "official_task_id": "BigCodeBench/798",
+    "dataset_hash": "acf4f1debe64a10c1a0bf6d4906245b2",
+    "writer_family": "gemini",
+    "template": "harness/prompts/writer_bcb.txt",
+    "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
+    "codex_home": null,
+    "runs_total": 1,
+    "writer_cost_all_runs": 0.071558,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "+ /tmp/nonexistent",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_775",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:35:17.827295+00:00",
+  "writer_finished_at": "2026-11-22T16:35:31.503989+00:00",
+  "reviewer_started_at": "2026-11-22T17:23:57.579662+00:00",
+  "reviewer_finished_at": "2026-11-22T17:24:21.907622+00:00",
+  "writer_prompt_sha256": "abe38dee7fafcdf051596b08bd9ec2c69bd8be9d760002cf2df17a8db8eba0bb",
+  "reviewer_prompt_sha256": "82a1c4706d78d7d171d1e9a736f3c74340c003d5f33123c978a1edb068cb9a77",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 24.327978540999993,
+  "total_latency_s": 24.327978540999993,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8221,
+  "reviewer_output_tokens": 3751,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.061454,
+  "total_cost_usd": 0.061454,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"2c692518-8ead-411a-b4f3-58684dd4738f\",\n  \"response\": \"<solution>\\nfrom string import ascii_lowercase\\nimport re\\nfrom collections import Counter\\n\\n# Constants\\nLETTERS_PATTERN = re.compile(r'^(.*?)-[a-z]$')\\nLETTERS = ascii_lowercase\\n\\ndef task_func(string):\\n    if not isinstance(string, str):\\n        raise TypeError(\\\"string must be a str\\\")\\n\\n    prefix = string.rsplit(\\\"-\\\", 1)[0] if \\\"-\\\" in string else string\\n    counts = Counter(prefix)\\n    \\n    return {letter: counts[letter] for letter in LETTERS}\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 23547,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8221,\n          \"prompt\": 8221,\n          \"candidates\": 128,\n          \"total\": 11972,\n          \"cached\": 0,\n          \"thoughts\": 3623,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 23547,\n            \"tokens\": {\n              \"input\": 8221,\n              \"prompt\": 8221,\n              \"candidates\": 128,\n              \"total\": 11972,\n              \"cached\": 0,\n              \"thoughts\": 3623,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "from string import ascii_lowercase\nimport re\nfrom collections import Counter\n\n# Constants\nLETTERS_PATTERN = re.compile(r'^(.*?)-[a-z]$')\nLETTERS = ascii_lowercase\n\ndef task_func(string):\n    if not isinstance(string, str):\n        raise TypeError(\"string must be a str\")\n\n    match = LETTERS_PATTERN.match(string)\n    prefix = match.group(1) if match else string.rsplit(\"-\", 1)[0] if \"-\" in string else string\n\n    counts = Counter(ch for ch in prefix if ch in LETTERS)\n    return {letter: counts.get(letter, 0) for letter in LETTERS}",
+  "reviewer_artifact": "from string import ascii_lowercase\nimport re\nfrom collections import Counter\n\n# Constants\nLETTERS_PATTERN = re.compile(r'^(.*?)-[a-z]$')\nLETTERS = ascii_lowercase\n\ndef task_func(string):\n    if not isinstance(string, str):\n        raise TypeError(\"string must be a str\")\n\n    prefix = string.rsplit(\"-\", 1)[0] if \"-\" in string else string\n    counts = Counter(prefix)\n    \n    return {letter: counts[letter] for letter in LETTERS}",
+  "final_artifact": "from string import ascii_lowercase\nimport re\nfrom collections import Counter\n\n# Constants\nLETTERS_PATTERN = re.compile(r'^(.*?)-[a-z]$')\nLETTERS = ascii_lowercase\n\ndef task_func(string):\n    if not isinstance(string, str):\n        raise TypeError(\"string must be a str\")\n\n    prefix = string.rsplit(\"-\", 1)[0] if \"-\" in string else string\n    counts = Counter(prefix)\n    \n    return {letter: counts[letter] for letter in LETTERS}",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_775__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "5c93796d3ced905722954da11dfd0dc3f786584a10329386b40df79b48d806dd",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 13.676781167000001,
+      "input_tokens": 975,
+      "output_tokens": 687,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.030349
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "c41291d63208e08888f15e2b74759a3bf3dfc437d13e1dc44c1ed09ed24126aa",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 9,
+    "reviewer_cost_all_attempts": 0.061454,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

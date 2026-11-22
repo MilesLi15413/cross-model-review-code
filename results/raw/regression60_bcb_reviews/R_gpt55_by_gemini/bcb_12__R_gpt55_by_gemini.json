@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_12",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:36:40.996600+00:00",
+  "writer_finished_at": "2026-11-22T16:36:54.028899+00:00",
+  "reviewer_started_at": "2026-11-22T17:17:29.965481+00:00",
+  "reviewer_finished_at": "2026-11-22T17:18:11.562644+00:00",
+  "writer_prompt_sha256": "dece97d9494eff820e543a7bf83576534daeb603779de234302e446d3b185948",
+  "reviewer_prompt_sha256": "909aef74fc96ddb5490fba1084cec95d8df285490d0a742a22793ab656297b95",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 41.5972053749997,
+  "total_latency_s": 41.5972053749997,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8543,
+  "reviewer_output_tokens": 6031,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.089458,
+  "total_cost_usd": 0.089458,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"5655d1d5-37ce-4156-8d47-bb7876d3bcd6\",\n  \"response\": \"<solution>\\nimport subprocess\\nimport os\\nimport json\\nfrom datetime import datetime\\n\\ndef task_func(script_name='backup.sh', log_file='/home/user/backup_log.json'):\\n    if not os.path.isfile(script_name):\\n        raise FileNotFoundError(f\\\"Script file not found: {script_name}\\\")\\n\\n    start_time = datetime.now()\\n\\n    try:\\n        result = subprocess.run(\\n            [\\\"sh\\\", script_name],\\n            stdout=subprocess.PIPE,\\n            stderr=subprocess.PIPE,\\n            text=True,\\n            check=False\\n        )\\n    except Exception as exc:\\n        raise RuntimeError(f\\\"Error executing script: {exc}\\\") from exc\\n\\n    end_time = datetime.now()\\n\\n    log_data = {\\n        \\\"start_time\\\": start_time.strftime(\\\"%Y-%m-%d %H:%M:%S\\\"),\\n        \\\"end_time\\\": end_time.strftime(\\\"%Y-%m-%d %H:%M:%S\\\"),\\n        \\\"exit_status\\\": result.returncode\\n    }\\n\\n    log_dir = os.path.dirname(os.path.abspath(log_file))\\n    if log_dir:\\n        os.makedirs(log_dir, exist_ok=True)\\n\\n    with open(log_file, \\\"w\\\", encoding=\\\"utf-8\\\") as file:\\n        json.dump(log_data, file, indent=4)\\n\\n    return log_data\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 40807,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8543,\n          \"prompt\": 8543,\n          \"candidates\": 334,\n          \"total\": 14574,\n          \"cached\": 0,\n          \"thoughts\": 5697,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 40807,\n            \"tokens\": {\n              \"input\": 8543,\n              \"prompt\": 8543,\n              \"candidates\": 334,\n              \"total\": 14574,\n              \"cached\": 0,\n              \"thoughts\": 5697,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import subprocess\nimport os\nimport json\nfrom datetime import datetime\n\ndef task_func(script_name='backup.sh', log_file='/home/user/backup_log.json'):\n    if not os.path.isfile(script_name):\n        raise FileNotFoundError(f\"Script file not found: {script_name}\")\n\n    start_time = datetime.now()\n    exit_status = None\n\n    try:\n        result = subprocess.run(\n            [\"sh\", script_name],\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            check=False\n        )\n        exit_status = result.returncode\n    except Exception as exc:\n        raise RuntimeError(f\"Error executing script: {exc}\") from exc\n    finally:\n        end_time = datetime.now()\n\n    log_data = {\n        \"start_time\": start_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n        \"end_time\": end_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n        \"exit_status\": exit_status\n    }\n\n    try:\n        log_dir = os.path.dirname(os.path.abspath(log_file))\n        if log_dir:\n            os.makedirs(log_dir, exist_ok=True)\n\n        with open(log_file, \"w\", encoding=\"utf-8\") as file:\n            json.dump(log_data, file, indent=4)\n    except Exception as exc:\n        raise RuntimeError(f\"Error writing log file: {exc}\") from exc\n\n    return log_data",
+  "reviewer_artifact": "import subprocess\nimport os\nimport json\nfrom datetime import datetime\n\ndef task_func(script_name='backup.sh', log_file='/home/user/backup_log.json'):\n    if not os.path.isfile(script_name):\n        raise FileNotFoundError(f\"Script file not found: {script_name}\")\n\n    start_time = datetime.now()\n\n    try:\n        result = subprocess.run(\n            [\"sh\", script_name],\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            check=False\n        )\n    except Exception as exc:\n        raise RuntimeError(f\"Error executing script: {exc}\") from exc\n\n    end_time = datetime.now()\n\n    log_data = {\n        \"start_time\": start_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n        \"end_time\": end_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n        \"exit_status\": result.returncode\n    }\n\n    log_dir = os.path.dirname(os.path.abspath(log_file))\n    if log_dir:\n        os.makedirs(log_dir, exist_ok=True)\n\n    with open(log_file, \"w\", encoding=\"utf-8\") as file:\n        json.dump(log_data, file, indent=4)\n\n    return log_data",
+  "final_artifact": "import subprocess\nimport os\nimport json\nfrom datetime import datetime\n\ndef task_func(script_name='backup.sh', log_file='/home/user/backup_log.json'):\n    if not os.path.isfile(script_name):\n        raise FileNotFoundError(f\"Script file not found: {script_name}\")\n\n    start_time = datetime.now()\n\n    try:\n        result = subprocess.run(\n            [\"sh\", script_name],\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            check=False\n        )\n    except Exception as exc:\n        raise RuntimeError(f\"Error executing script: {exc}\") from exc\n\n    end_time = datetime.now()\n\n    log_data = {\n        \"start_time\": start_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n        \"end_time\": end_time.strftime(\"%Y-%m-%d %H:%M:%S\"),\n        \"exit_status\": result.returncode\n    }\n\n    log_dir = os.path.dirname(os.path.abspath(log_file))\n    if log_dir:\n        os.makedirs(log_dir, exist_ok=True)\n\n    with open(log_file, \"w\", encoding=\"utf-8\") as file:\n        json.dump(log_data, file, indent=4)\n\n    return log_data",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_12__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "e3c5f50a98090201f3e47588130121c8460d4733d7a616294ca0acae0972324f",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 13.032377917000076,
+      "input_tokens": 1064,
+      "output_tokens": 851,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.035714
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "6ee7d2e22902ec939ecbd6a0a1cb99ded5491b8f917c36421ab10b3f52160464",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 21,
+    "reviewer_cost_all_attempts": 0.089458,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "PermissionError: [Errno 13] Permission denied: '/home/user'",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

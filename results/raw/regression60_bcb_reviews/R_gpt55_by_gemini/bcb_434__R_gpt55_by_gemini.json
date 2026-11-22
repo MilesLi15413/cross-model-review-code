@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_434",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:34:30.731196+00:00",
+  "writer_finished_at": "2026-11-22T16:34:46.499227+00:00",
+  "reviewer_started_at": "2026-11-22T17:20:33.436003+00:00",
+  "reviewer_finished_at": "2026-11-22T17:21:31.123600+00:00",
+  "writer_prompt_sha256": "aadf19cc0178d97e5e23c15dd13eb5497ee743e18073632f2f47686c045c19be",
+  "reviewer_prompt_sha256": "5de2ab32130acdab69a3b06992409ac33ab2554285a7204b8d422fe2992a541b",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 57.687663624999914,
+  "total_latency_s": 57.687663624999914,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8612,
+  "reviewer_output_tokens": 9467,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.130828,
+  "total_cost_usd": 0.130828,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"0d47997c-f2ba-4306-8b25-07785e3d90a7\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nimport re\\nimport random\\n\\ndef task_func(s: str, seed: int = 0) -> pd.DataFrame:\\n    columns = [\\\"ID\\\", \\\"Quantity\\\", \\\"Code\\\", \\\"Price\\\", \\\"Product\\\", \\\"Description\\\"]\\n    product_names = [\\\"Apple\\\", \\\"Banana\\\", \\\"Orange\\\", \\\"Pear\\\", \\\"Grape\\\"]\\n    rng = random.Random(seed)\\n    code_to_product = {}\\n    rows = []\\n\\n    if not isinstance(s, str) or not s.strip():\\n        return pd.DataFrame(columns=columns)\\n\\n    for line in s.splitlines():\\n        if not line.strip():\\n            continue\\n\\n        # Split into at most 5 parts using any whitespace\\n        parts = line.split(maxsplit=4)\\n        if len(parts) < 5:\\n            continue\\n\\n        product_id, quantity, code, price, description = parts\\n\\n        try:\\n            quantity = int(quantity)\\n            price = int(price)\\n        except ValueError:\\n            continue\\n\\n        # Remove trailing whitespaces as requested\\n        product_id = product_id.rstrip()\\n        code = code.rstrip()\\n        description = description.rstrip()\\n\\n        # Map each unique code to a consistent, randomly chosen product name\\n        if code not in code_to_product:\\n            code_to_product[code] = rng.choice(product_names)\\n\\n        rows.append([product_id, quantity, code, price, code_to_product[code], description])\\n\\n    return pd.DataFrame(rows, columns=columns)\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 56912,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8612,\n          \"prompt\": 8612,\n          \"candidates\": 361,\n          \"total\": 18079,\n          \"cached\": 0,\n          \"thoughts\": 9106,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 56912,\n            \"tokens\": {\n              \"input\": 8612,\n              \"prompt\": 8612,\n              \"candidates\": 361,\n              \"total\": 18079,\n              \"cached\": 0,\n              \"thoughts\": 9106,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.\n[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).\n",
+  "writer_artifact": "import pandas as pd\nimport re\nimport random\n\ndef task_func(s: str, seed: int = 0) -> pd.DataFrame:\n    columns = [\"ID\", \"Quantity\", \"Code\", \"Price\", \"Product\", \"Description\"]\n    product_names = [\"Apple\", \"Banana\", \"Orange\", \"Pear\", \"Grape\"]\n    rng = random.Random(seed)\n    code_to_product = {}\n    rows = []\n\n    if not isinstance(s, str) or not s.strip():\n        return pd.DataFrame(columns=columns)\n\n    for line in s.splitlines():\n        line = line.rstrip()\n        if not line.strip():\n            continue\n\n        parts = re.split(r\"\\s+\", line.strip(), maxsplit=4)\n        if len(parts) < 5:\n            continue\n\n        product_id, quantity, code, price, description = (part.rstrip() for part in parts)\n\n        try:\n            quantity = int(quantity)\n            price = int(price)\n        except ValueError:\n            continue\n\n        if code not in code_to_product:\n            code_to_product[code] = rng.choice(product_names)\n\n        rows.append([product_id, quantity, code, price, code_to_product[code], description])\n\n    return pd.DataFrame(rows, columns=columns)",
+  "reviewer_artifact": "import pandas as pd\nimport re\nimport random\n\ndef task_func(s: str, seed: int = 0) -> pd.DataFrame:\n    columns = [\"ID\", \"Quantity\", \"Code\", \"Price\", \"Product\", \"Description\"]\n    product_names = [\"Apple\", \"Banana\", \"Orange\", \"Pear\", \"Grape\"]\n    rng = random.Random(seed)\n    code_to_product = {}\n    rows = []\n\n    if not isinstance(s, str) or not s.strip():\n        return pd.DataFrame(columns=columns)\n\n    for line in s.splitlines():\n        if not line.strip():\n            continue\n\n        # Split into at most 5 parts using any whitespace\n        parts = line.split(maxsplit=4)\n        if len(parts) < 5:\n            continue\n\n        product_id, quantity, code, price, description = parts\n\n        try:\n            quantity = int(quantity)\n            price = int(price)\n        except ValueError:\n            continue\n\n        # Remove trailing whitespaces as requested\n        product_id = product_id.rstrip()\n        code = code.rstrip()\n        description = description.rstrip()\n\n        # Map each unique code to a consistent, randomly chosen product name\n        if code not in code_to_product:\n            code_to_product[code] = rng.choice(product_names)\n\n        rows.append([product_id, quantity, code, price, code_to_product[code], description])\n\n    return pd.DataFrame(rows, columns=columns)",
+  "final_artifact": "import pandas as pd\nimport re\nimport random\n\ndef task_func(s: str, seed: int = 0) -> pd.DataFrame:\n    columns = [\"ID\", \"Quantity\", \"Code\", \"Price\", \"Product\", \"Description\"]\n    product_names = [\"Apple\", \"Banana\", \"Orange\", \"Pear\", \"Grape\"]\n    rng = random.Random(seed)\n    code_to_product = {}\n    rows = []\n\n    if not isinstance(s, str) or not s.strip():\n        return pd.DataFrame(columns=columns)\n\n    for line in s.splitlines():\n        if not line.strip():\n            continue\n\n        # Split into at most 5 parts using any whitespace\n        parts = line.split(maxsplit=4)\n        if len(parts) < 5:\n            continue\n\n        product_id, quantity, code, price, description = parts\n\n        try:\n            quantity = int(quantity)\n            price = int(price)\n        except ValueError:\n            continue\n\n        # Remove trailing whitespaces as requested\n        product_id = product_id.rstrip()\n        code = code.rstrip()\n        description = description.rstrip()\n\n        # Map each unique code to a consistent, randomly chosen product name\n        if code not in code_to_product:\n            code_to_product[code] = rng.choice(product_names)\n\n        rows.append([product_id, quantity, code, price, code_to_product[code], description])\n\n    return pd.DataFrame(rows, columns=columns)",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_434__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "a4f2012928a4c0756ce70e2a7c8901b3dad4c1825da663994f7fae07532d6db9",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 15.768128416999957,
+      "input_tokens": 1196,
+      "output_tokens": 807,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.035054
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "180edd28c0d6bb5d6fbb8906f07f476a8343ff65cb534d2dd0831c29b260fb15",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 12,
+    "reviewer_cost_all_attempts": 0.130828,
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: ValueError not raised",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

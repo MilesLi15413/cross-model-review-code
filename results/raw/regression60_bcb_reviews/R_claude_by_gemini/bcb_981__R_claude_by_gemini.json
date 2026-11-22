@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_981",
+  "condition": "R_claude_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:28:59.640082+00:00",
+  "writer_finished_at": "2026-11-22T16:29:08.759135+00:00",
+  "reviewer_started_at": "2026-11-22T17:06:24.128790+00:00",
+  "reviewer_finished_at": "2026-11-22T17:06:51.142829+00:00",
+  "writer_prompt_sha256": "c792c981d8a026a3316abd61149b372f57897f3be7cf41aab197df89552a481d",
+  "reviewer_prompt_sha256": "3295ae969713ef456798fb9c1b3b0463855cea7198026548dcd9a792a8bd8cb8",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 27.014064625000174,
+  "total_latency_s": 27.014064625000174,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8476,
+  "reviewer_output_tokens": 4179,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.0671,
+  "total_cost_usd": 0.0671,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"d579cee6-5266-4307-9046-15b5285390ae\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nfrom datetime import datetime\\nimport random\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(start_date, end_date, num_series, seed=None):\\n    if pd.to_datetime(start_date) > pd.to_datetime(end_date):\\n        raise ValueError(\\\"start_date must not be later than end_date\\\")\\n    if num_series < 1:\\n        raise ValueError(\\\"num_series must be at least 1\\\")\\n\\n    if seed is not None:\\n        random.seed(seed)\\n\\n    date_range = pd.date_range(start=start_date, end=end_date)\\n    data = {}\\n    for i in range(1, num_series + 1):\\n        data[f\\\"series_{i}\\\"] = [random.randint(0, 100) for _ in range(len(date_range))]\\n\\n    df = pd.DataFrame(data, index=date_range)\\n\\n    fig, ax = plt.subplots()\\n    for col in df.columns:\\n        ax.plot(df.index, df[col], label=col)\\n        \\n    ax.set_title(\\\"Random Time Series\\\")\\n    ax.set_xlabel(\\\"Date\\\")\\n    ax.set_ylabel(\\\"Value\\\")\\n    ax.legend()\\n\\n    return df, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 26245,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8476,\n          \"prompt\": 8476,\n          \"candidates\": 309,\n          \"total\": 12655,\n          \"cached\": 0,\n          \"thoughts\": 3870,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 26245,\n            \"tokens\": {\n              \"input\": 8476,\n              \"prompt\": 8476,\n              \"candidates\": 309,\n              \"total\": 12655,\n              \"cached\": 0,\n              \"thoughts\": 3870,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nfrom datetime import datetime\nimport random\nimport matplotlib.pyplot as plt\n\ndef task_func(start_date, end_date, num_series, seed=None):\n    if start_date > end_date:\n        raise ValueError(\"start_date must not be later than end_date\")\n    if num_series < 1:\n        raise ValueError(\"num_series must be at least 1\")\n\n    if seed is not None:\n        random.seed(seed)\n\n    date_range = pd.date_range(start=start_date, end=end_date)\n    data = {}\n    for i in range(1, num_series + 1):\n        data[f\"series_{i}\"] = [random.randint(0, 100) for _ in range(len(date_range))]\n\n    df = pd.DataFrame(data, index=date_range)\n\n    fig, ax = plt.subplots()\n    for col in df.columns:\n        ax.plot(df.index, df[col], label=col)\n    ax.set_title(\"Random Time Series\")\n    ax.set_xlabel(\"Date\")\n    ax.set_ylabel(\"Value\")\n    ax.legend()\n\n    return df, ax",
+  "reviewer_artifact": "import pandas as pd\nfrom datetime import datetime\nimport random\nimport matplotlib.pyplot as plt\n\ndef task_func(start_date, end_date, num_series, seed=None):\n    if pd.to_datetime(start_date) > pd.to_datetime(end_date):\n        raise ValueError(\"start_date must not be later than end_date\")\n    if num_series < 1:\n        raise ValueError(\"num_series must be at least 1\")\n\n    if seed is not None:\n        random.seed(seed)\n\n    date_range = pd.date_range(start=start_date, end=end_date)\n    data = {}\n    for i in range(1, num_series + 1):\n        data[f\"series_{i}\"] = [random.randint(0, 100) for _ in range(len(date_range))]\n\n    df = pd.DataFrame(data, index=date_range)\n\n    fig, ax = plt.subplots()\n    for col in df.columns:\n        ax.plot(df.index, df[col], label=col)\n        \n    ax.set_title(\"Random Time Series\")\n    ax.set_xlabel(\"Date\")\n    ax.set_ylabel(\"Value\")\n    ax.legend()\n\n    return df, ax",
+  "final_artifact": "import pandas as pd\nfrom datetime import datetime\nimport random\nimport matplotlib.pyplot as plt\n\ndef task_func(start_date, end_date, num_series, seed=None):\n    if pd.to_datetime(start_date) > pd.to_datetime(end_date):\n        raise ValueError(\"start_date must not be later than end_date\")\n    if num_series < 1:\n        raise ValueError(\"num_series must be at least 1\")\n\n    if seed is not None:\n        random.seed(seed)\n\n    date_range = pd.date_range(start=start_date, end=end_date)\n    data = {}\n    for i in range(1, num_series + 1):\n        data[f\"series_{i}\"] = [random.randint(0, 100) for _ in range(len(date_range))]\n\n    df = pd.DataFrame(data, index=date_range)\n\n    fig, ax = plt.subplots()\n    for col in df.columns:\n        ax.plot(df.index, df[col], label=col)\n        \n    ax.set_title(\"Random Time Series\")\n    ax.set_xlabel(\"Date\")\n    ax.set_ylabel(\"Value\")\n    ax.legend()\n\n    return df, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_981__W_claude.json",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "6ee311fc224a1319c517b30c52d4bfec75391a3a5e7a84310e2a66ddfc0640b2",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 9.119113499999997,
+      "input_tokens": 5,
+      "output_tokens": 446,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.41683499999999996
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "e9b8a0f7bcdab544b890be20625538eabde74ec947a3b46573a43855cfb0cd44",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 3,
+    "reviewer_cost_all_attempts": 0.0671,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

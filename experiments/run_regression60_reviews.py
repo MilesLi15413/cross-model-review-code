@@ -156,7 +156,7 @@ def family_spend(tracker: CostTracker, checkpoint: str) -> Dict[str, float]:
 
 
 def run_cell(cell: Cell, runner: CLIRunner, rendered_template: str, tracker: CostTracker, checkpoint: str,
-             template_path: Path = TEMPLATE) -> TaskRecord:
+             template_path: Path = TEMPLATE, benchmark: str = "livecodebench") -> TaskRecord:
     draft = cell.draft
     src = draft.record
     reviewer_cfg = REVIEWERS[cell.reviewer]
@@ -170,7 +170,7 @@ def run_cell(cell: Cell, runner: CLIRunner, rendered_template: str, tracker: Cos
     record = TaskRecord(
         task_id=draft.task_id,
         condition=cell.condition,
-        benchmark="livecodebench",
+        benchmark=benchmark,
         writer_model=src.writer_model,
         reviewer_model=str(reviewer_cfg["model"]),
         writer_effort=src.writer_effort,
@@ -268,11 +268,24 @@ def run_cell(cell: Cell, runner: CLIRunner, rendered_template: str, tracker: Cos
     return record
 
 
-def grade(checkpoint: str, regrade: bool = False) -> Dict[str, int]:
-    """Grade every valid reviewed program with the paper's grader (unchanged ones too)."""
-    from analysis.evaluate_writer_artifacts import _score_chunk
-
+def grade(checkpoint: str, regrade: bool = False, benchmark: str = "livecodebench") -> Dict[str, int]:
+    """Grade every valid reviewed program (unchanged ones too): the paper's grader for
+    LiveCodeBench, BigCodeBench's official evaluator (Docker) for BigCodeBench."""
     tracker = CostTracker()
+    if benchmark == "bigcodebench":
+        from harness.benchmarks import bigcodebench as bcb
+        pending = []
+        for cond_dir in sorted(p for p in Path(checkpoint).iterdir() if p.is_dir() and p.name.startswith("R_")):
+            pending += [(r, cond_dir) for r in tracker.load_all(str(cond_dir))
+                        if tracker.record_is_complete(r) and (regrade or r.passed is None)]
+        if not pending:
+            return {"scored": 0, "errors": 0}
+        counts = bcb.grade_records([r for r, _ in pending], Path(checkpoint).name)
+        for r, cond_dir in pending:
+            tracker.save(r, str(cond_dir))
+        return {"scored": counts.get("scored", 0), "errors": 0, "flaky": counts.get("flaky", 0)}
+
+    from analysis.evaluate_writer_artifacts import _score_chunk
     counts = {"scored": 0, "errors": 0}
     for cond_dir in sorted(p for p in Path(checkpoint).iterdir() if p.is_dir() and p.name.startswith("R_")):
         pending = [
@@ -323,11 +336,14 @@ def main() -> None:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--skip-eval", action="store_true")
     ap.add_argument("--grade-only", action="store_true")
+    ap.add_argument("--benchmark", choices=["livecodebench", "bigcodebench"], default="livecodebench")
     args = ap.parse_args()
 
     assert_not_frozen(args.checkpoint)
+    if args.benchmark == "bigcodebench" and Path(args.template).resolve() == TEMPLATE.resolve():
+        raise SystemExit("BigCodeBench needs --template harness/prompts/reviewer_bcb.txt")
     if args.grade_only:
-        print(f"Grading: {grade(args.checkpoint)}")
+        print(f"Grading: {grade(args.checkpoint, benchmark=args.benchmark)}")
         return
 
     reviewers = [r for r in args.reviewers.split(",") if r]
@@ -364,9 +380,15 @@ def main() -> None:
         return
 
     Path(args.checkpoint).mkdir(parents=True, exist_ok=True)
-    adapter = get_adapter("livecodebench", merge_configs(CONFIG, "livecodebench", BENCH_CONFIG))
     template = template_path.read_text()
-    rendered = {t: adapter.render_template(t, template) for t in sorted({c.draft.task_id for c in pending})}
+    pending_tasks = sorted({c.draft.task_id for c in pending})
+    if args.benchmark == "bigcodebench":
+        from harness.benchmarks import bigcodebench as bcb
+        bcb_tasks = bcb.load_tasks()
+        rendered = {t: bcb.render(template, bcb_tasks[t]) for t in pending_tasks}
+    else:
+        adapter = get_adapter("livecodebench", merge_configs(CONFIG, "livecodebench", BENCH_CONFIG))
+        rendered = {t: adapter.render_template(t, template) for t in pending_tasks}
 
     stop = threading.Event()
     spend_lock = threading.Lock()
@@ -386,7 +408,8 @@ def main() -> None:
             timeout_s=int(cfg["timeout_s"]), paused_sentinel_path=sentinel,
             codex_home=cfg.get("codex_home"),
         )
-        record = run_cell(cell, runner, rendered[cell.draft.task_id], tracker, args.checkpoint, template_path)
+        record = run_cell(cell, runner, rendered[cell.draft.task_id], tracker, args.checkpoint, template_path,
+                          benchmark=args.benchmark)
         with spend_lock:
             spend[cell.reviewer] += float(record.extra.get("reviewer_cost_all_attempts", 0.0))
         return record
@@ -419,7 +442,7 @@ def main() -> None:
     if hard_stop is not None:
         raise SystemExit(f"Stopped: {hard_stop}")
     if not args.skip_eval:
-        print(f"Grading: {grade(args.checkpoint)}")
+        print(f"Grading: {grade(args.checkpoint, benchmark=args.benchmark)}")
 
 
 if __name__ == "__main__":

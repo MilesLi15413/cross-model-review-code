@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_438",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:36:06.388838+00:00",
+  "writer_finished_at": "2026-11-22T16:36:19.684707+00:00",
+  "reviewer_started_at": "2026-11-22T17:21:04.701325+00:00",
+  "reviewer_finished_at": "2026-11-22T17:21:26.614930+00:00",
+  "writer_prompt_sha256": "2aa029d4a39d7ab23f8b6f97ad297d586f5592d0beeabc1c337d1ea3276c211a",
+  "reviewer_prompt_sha256": "d26d070d93b27830b2b711f13a8cb81132e70f6199a1c20fa8be781bda042c13",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 21.91361850000021,
+  "total_latency_s": 21.91361850000021,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8314,
+  "reviewer_output_tokens": 2936,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.05186,
+  "total_cost_usd": 0.05186,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"a8662708-f02d-42cc-af9e-9b13942eb420\",\n  \"response\": \"<solution>\\nimport pickle\\nimport os\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(numbers, file_path=\\\"save.pkl\\\"):\\n    if not isinstance(numbers, list):\\n        raise TypeError(\\\"Input must be a list of numbers.\\\")\\n    if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in numbers):\\n        raise TypeError(\\\"Input must be a list of numbers.\\\")\\n\\n    fig, ax = plt.subplots()\\n    ax.plot(numbers)\\n    ax.set_xlabel(\\\"Index\\\")\\n    ax.set_ylabel(\\\"Value\\\")\\n\\n    try:\\n        with open(file_path, \\\"wb\\\") as f:\\n            pickle.dump(fig, f)\\n\\n        plt.close(fig)\\n\\n        with open(file_path, \\\"rb\\\") as f:\\n            loaded_fig = pickle.load(f)\\n    finally:\\n        if os.path.exists(file_path):\\n            os.remove(file_path)\\n\\n    return loaded_fig\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 21138,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8314,\n          \"prompt\": 8314,\n          \"candidates\": 236,\n          \"total\": 11250,\n          \"cached\": 0,\n          \"thoughts\": 2700,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 21138,\n            \"tokens\": {\n              \"input\": 8314,\n              \"prompt\": 8314,\n              \"candidates\": 236,\n              \"total\": 11250,\n              \"cached\": 0,\n              \"thoughts\": 2700,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pickle\nimport os\nimport matplotlib.pyplot as plt\ndef task_func(numbers, file_path=\"save.pkl\"):\n    if not isinstance(numbers, list):\n        raise TypeError(\"Input must be a list of numbers.\")\n    if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in numbers):\n        raise TypeError(\"Input must be a list of numbers.\")\n\n    fig, ax = plt.subplots()\n    ax.plot(numbers)\n    ax.set_xlabel(\"Index\")\n    ax.set_ylabel(\"Value\")\n\n    try:\n        with open(file_path, \"wb\") as f:\n            pickle.dump(fig, f)\n\n        plt.close(fig)\n\n        with open(file_path, \"rb\") as f:\n            loaded_fig = pickle.load(f)\n    finally:\n        if os.path.exists(file_path):\n            os.remove(file_path)\n\n    return loaded_fig",
+  "reviewer_artifact": "import pickle\nimport os\nimport matplotlib.pyplot as plt\n\ndef task_func(numbers, file_path=\"save.pkl\"):\n    if not isinstance(numbers, list):\n        raise TypeError(\"Input must be a list of numbers.\")\n    if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in numbers):\n        raise TypeError(\"Input must be a list of numbers.\")\n\n    fig, ax = plt.subplots()\n    ax.plot(numbers)\n    ax.set_xlabel(\"Index\")\n    ax.set_ylabel(\"Value\")\n\n    try:\n        with open(file_path, \"wb\") as f:\n            pickle.dump(fig, f)\n\n        plt.close(fig)\n\n        with open(file_path, \"rb\") as f:\n            loaded_fig = pickle.load(f)\n    finally:\n        if os.path.exists(file_path):\n            os.remove(file_path)\n\n    return loaded_fig",
+  "final_artifact": "import pickle\nimport os\nimport matplotlib.pyplot as plt\n\ndef task_func(numbers, file_path=\"save.pkl\"):\n    if not isinstance(numbers, list):\n        raise TypeError(\"Input must be a list of numbers.\")\n    if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in numbers):\n        raise TypeError(\"Input must be a list of numbers.\")\n\n    fig, ax = plt.subplots()\n    ax.plot(numbers)\n    ax.set_xlabel(\"Index\")\n    ax.set_ylabel(\"Value\")\n\n    try:\n        with open(file_path, \"wb\") as f:\n            pickle.dump(fig, f)\n\n        plt.close(fig)\n\n        with open(file_path, \"rb\") as f:\n            loaded_fig = pickle.load(f)\n    finally:\n        if os.path.exists(file_path):\n            os.remove(file_path)\n\n    return loaded_fig",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_438__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "499d1285da7dfbbd2687d4e37c9a359b3cce7a43405aa22a767cc047cfbac0b4",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 13.295952166000006,
+      "input_tokens": 986,
+      "output_tokens": 731,
+      "cached_input_tokens": 9728,
+      "cost_usd": 0.031724
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "a688477041333451d119ab304c61b86ea4acb7102a90fdd9a9d303bd2b0b3e20",
+    "unchanged_exact": false,
+    "unchanged_whitespace": true,
+    "diff_lines": 1,
+    "reviewer_cost_all_attempts": 0.05186,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

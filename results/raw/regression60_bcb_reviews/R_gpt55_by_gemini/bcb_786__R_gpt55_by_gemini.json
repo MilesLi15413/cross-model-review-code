@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_786",
+  "condition": "R_gpt55_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:32:20.740123+00:00",
+  "writer_finished_at": "2026-11-22T16:33:35.447066+00:00",
+  "reviewer_started_at": "2026-11-22T17:23:59.427018+00:00",
+  "reviewer_finished_at": "2026-11-22T17:24:39.395243+00:00",
+  "writer_prompt_sha256": "e9d688ab67ddebee3354a0975401016605c5720d49e9fe6c4c8e2e785d3631dc",
+  "reviewer_prompt_sha256": "11d30100ac6811299c5d0a32e8a89b9b7c30e408b8f83adb1abd9627ec5775d7",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 39.96826866599986,
+  "total_latency_s": 39.96826866599986,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8634,
+  "reviewer_output_tokens": 6525,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.095568,
+  "total_cost_usd": 0.095568,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"0469f35a-feaf-4158-94b8-214905434e73\",\n  \"response\": \"<solution>\\nimport pandas as pd\\nimport csv\\nimport random\\n\\ndef task_func(\\n    n, \\n    countries=['USA', 'UK', 'China', 'India', 'Germany'], \\n    products=['Product A', 'Product B', 'Product C', 'Product D', 'Product E'], \\n    output_path=None,\\n    random_seed=None):\\n    \\n    # If a seed is provided, set the global random seed.\\n    # Otherwise, leave it as is (this ensures compatibility if the test runner \\n    # has already set a global seed before calling the function with random_seed=None).\\n    if random_seed is not None:\\n        random.seed(random_seed)\\n\\n    data = []\\n    for _ in range(n):\\n        country = random.choice(countries)\\n        product = random.choice(products)\\n        sales = random.randint(1, 100)\\n        data.append({\\n            'Country': country,\\n            'Product': product,\\n            'Sales': sales\\n        })\\n\\n    df = pd.DataFrame(data, columns=['Country', 'Product', 'Sales'])\\n\\n    if output_path is not None:\\n        df.to_csv(output_path, index=False)\\n\\n    return df\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 39186,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8634,\n          \"prompt\": 8634,\n          \"candidates\": 291,\n          \"total\": 15159,\n          \"cached\": 0,\n          \"thoughts\": 6234,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 39186,\n            \"tokens\": {\n              \"input\": 8634,\n              \"prompt\": 8634,\n              \"candidates\": 291,\n              \"total\": 15159,\n              \"cached\": 0,\n              \"thoughts\": 6234,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nimport csv\nimport random\ndef task_func(\n    n, \n    countries=['USA', 'UK', 'China', 'India', 'Germany'], \n    products=['Product A', 'Product B', 'Product C', 'Product D', 'Product E'], \n    output_path=None,\n    random_seed=None):\n    \n    if isinstance(n, bool) or not isinstance(n, int):\n        raise TypeError(\"n must be a non-negative integer\")\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    if countries is None or products is None:\n        raise ValueError(\"countries and products must be non-empty lists\")\n    if isinstance(countries, (str, bytes)) or isinstance(products, (str, bytes)):\n        raise TypeError(\"countries and products must be lists or other non-string iterables\")\n\n    countries = list(countries)\n    products = list(products)\n\n    if not countries:\n        raise ValueError(\"countries must not be empty\")\n    if not products:\n        raise ValueError(\"products must not be empty\")\n\n    rng = random.Random(random_seed)\n\n    data = [\n        {\n            \"Country\": rng.choice(countries),\n            \"Product\": rng.choice(products),\n            \"Sales\": rng.randint(1, 100),\n        }\n        for _ in range(n)\n    ]\n\n    df = pd.DataFrame(data, columns=[\"Country\", \"Product\", \"Sales\"])\n\n    if output_path is not None:\n        df.to_csv(output_path, index=False, quoting=csv.QUOTE_MINIMAL)\n\n    return df",
+  "reviewer_artifact": "import pandas as pd\nimport csv\nimport random\n\ndef task_func(\n    n, \n    countries=['USA', 'UK', 'China', 'India', 'Germany'], \n    products=['Product A', 'Product B', 'Product C', 'Product D', 'Product E'], \n    output_path=None,\n    random_seed=None):\n    \n    # If a seed is provided, set the global random seed.\n    # Otherwise, leave it as is (this ensures compatibility if the test runner \n    # has already set a global seed before calling the function with random_seed=None).\n    if random_seed is not None:\n        random.seed(random_seed)\n\n    data = []\n    for _ in range(n):\n        country = random.choice(countries)\n        product = random.choice(products)\n        sales = random.randint(1, 100)\n        data.append({\n            'Country': country,\n            'Product': product,\n            'Sales': sales\n        })\n\n    df = pd.DataFrame(data, columns=['Country', 'Product', 'Sales'])\n\n    if output_path is not None:\n        df.to_csv(output_path, index=False)\n\n    return df",
+  "final_artifact": "import pandas as pd\nimport csv\nimport random\n\ndef task_func(\n    n, \n    countries=['USA', 'UK', 'China', 'India', 'Germany'], \n    products=['Product A', 'Product B', 'Product C', 'Product D', 'Product E'], \n    output_path=None,\n    random_seed=None):\n    \n    # If a seed is provided, set the global random seed.\n    # Otherwise, leave it as is (this ensures compatibility if the test runner \n    # has already set a global seed before calling the function with random_seed=None).\n    if random_seed is not None:\n        random.seed(random_seed)\n\n    data = []\n    for _ in range(n):\n        country = random.choice(countries)\n        product = random.choice(products)\n        sales = random.randint(1, 100)\n        data.append({\n            'Country': country,\n            'Product': product,\n            'Sales': sales\n        })\n\n    df = pd.DataFrame(data, columns=['Country', 'Product', 'Sales'])\n\n    if output_path is not None:\n        df.to_csv(output_path, index=False)\n\n    return df",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_786__W_gpt55.json",
+    "writer_family": "gpt55",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "1011fa318ada2ac256688d520afc0953f08f8a9a793c3b050d8829f2284e5e30",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 74.707485625,
+      "input_tokens": 2041,
+      "output_tokens": 4017,
+      "cached_input_tokens": 8832,
+      "cost_usd": 0.135131
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "d2242b7430345549288118aa213da646145a4132e90d09750ed39cc1f0c278e1",
+    "unchanged_exact": false,
+    "unchanged_whitespace": false,
+    "diff_lines": 46,
+    "reviewer_cost_all_attempts": 0.095568,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

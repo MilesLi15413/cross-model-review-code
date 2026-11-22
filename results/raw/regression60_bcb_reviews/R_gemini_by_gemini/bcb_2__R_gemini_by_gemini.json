@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_2",
+  "condition": "R_gemini_by_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "2026-11-22T16:47:29.505178+00:00",
+  "writer_finished_at": "2026-11-22T16:49:04.621673+00:00",
+  "reviewer_started_at": "2026-11-22T17:08:35.977983+00:00",
+  "reviewer_finished_at": "2026-11-22T17:09:02.294123+00:00",
+  "writer_prompt_sha256": "6706b5096f32c1114abf9cd698ee2cded18cc56f653f28701932d0ee9646fd1e",
+  "reviewer_prompt_sha256": "6515beddcdb08b5ba8b43598efebb32c91edfb73cd3ff2984919198c404cc7f8",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 26.316163167000013,
+  "total_latency_s": 26.316163167000013,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8231,
+  "reviewer_output_tokens": 3679,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.06061,
+  "total_cost_usd": 0.06061,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"9c233314-9e0e-4423-9301-4d2ad68fd868\",\n  \"response\": \"<solution>\\nimport random\\nimport statistics\\n\\ndef task_func(LETTERS):\\n    if not LETTERS:\\n        return {}\\n        \\n    d = {}\\n    # Use each unique letter from the input as a key\\n    for letter in set(LETTERS):\\n        # Generate a list of random integers for each key (at least 1 to avoid statistics.mean error on empty lists)\\n        d[letter] = [random.randint(-100, 100) for _ in range(random.randint(1, 20))]\\n        \\n    # Sort the dictionary by the mean of the integer lists in descending order\\n    sorted_d = dict(sorted(d.items(), key=lambda item: statistics.mean(item[1]), reverse=True))\\n    \\n    return sorted_d\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 25298,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8231,\n          \"prompt\": 8231,\n          \"candidates\": 182,\n          \"total\": 11910,\n          \"cached\": 0,\n          \"thoughts\": 3497,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 25298,\n            \"tokens\": {\n              \"input\": 8231,\n              \"prompt\": 8231,\n              \"candidates\": 182,\n              \"total\": 11910,\n              \"cached\": 0,\n              \"thoughts\": 3497,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import random\nimport statistics\n\ndef task_func(LETTERS):\n    if not LETTERS:\n        return {}\n        \n    d = {}\n    # Use each unique letter from the input as a key\n    for letter in set(LETTERS):\n        # Generate a list of random integers for each key (at least 1 to avoid statistics.mean error on empty lists)\n        d[letter] = [random.randint(-100, 100) for _ in range(random.randint(1, 20))]\n        \n    # Sort the dictionary by the mean of the integer lists in descending order\n    sorted_d = dict(sorted(d.items(), key=lambda item: statistics.mean(item[1]), reverse=True))\n    \n    return sorted_d",
+  "reviewer_artifact": "import random\nimport statistics\n\ndef task_func(LETTERS):\n    if not LETTERS:\n        return {}\n        \n    d = {}\n    # Use each unique letter from the input as a key\n    for letter in set(LETTERS):\n        # Generate a list of random integers for each key (at least 1 to avoid statistics.mean error on empty lists)\n        d[letter] = [random.randint(-100, 100) for _ in range(random.randint(1, 20))]\n        \n    # Sort the dictionary by the mean of the integer lists in descending order\n    sorted_d = dict(sorted(d.items(), key=lambda item: statistics.mean(item[1]), reverse=True))\n    \n    return sorted_d",
+  "final_artifact": "import random\nimport statistics\n\ndef task_func(LETTERS):\n    if not LETTERS:\n        return {}\n        \n    d = {}\n    # Use each unique letter from the input as a key\n    for letter in set(LETTERS):\n        # Generate a list of random integers for each key (at least 1 to avoid statistics.mean error on empty lists)\n        d[letter] = [random.randint(-100, 100) for _ in range(random.randint(1, 20))]\n        \n    # Sort the dictionary by the mean of the integer lists in descending order\n    sorted_d = dict(sorted(d.items(), key=lambda item: statistics.mean(item[1]), reverse=True))\n    \n    return sorted_d",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "study": "regression60",
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_2__W_gemini.json",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "author_label": "none",
+    "template": "harness/prompts/reviewer_bcb.txt",
+    "template_sha256": "d08cbbef88623545915b3ce338bd6fec7d614b364f7f86fc10525f747b2d987f",
+    "run_tag": "main",
+    "draft_sha256": "93016037e52b83dae09a7ca2c0b1b05d1f881c319953feeeb0e03b72ce0f204a",
+    "codex_home": null,
+    "source_writer": {
+      "latency_s": 95.117200292,
+      "input_tokens": 16074,
+      "output_tokens": 5834,
+      "cached_input_tokens": 0,
+      "cost_usd": 0.102156
+    },
+    "attempts_total": 1,
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "final_artifact_sha256": "93016037e52b83dae09a7ca2c0b1b05d1f881c319953feeeb0e03b72ce0f204a",
+    "unchanged_exact": true,
+    "unchanged_whitespace": true,
+    "diff_lines": 0,
+    "reviewer_cost_all_attempts": 0.06061,
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}
