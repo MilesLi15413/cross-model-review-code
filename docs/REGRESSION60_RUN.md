@@ -408,9 +408,21 @@ read.
 
 **Only the GPT-5.5 solo condition is affected, and only in the hard slice:** 15
 programs the paper scored as failing pass today, every time, and nothing flips the
-other way. The likeliest cause is a grading fault in the original hard-slice run of
-that one condition. The harness's own notes describe an earlier evaluator that "silently
-scores correct programs as failures"; this is not confirmed.
+other way.
+
+**Cause, confirmed: a Markdown fence, not wrong code.** Regrading with the paper's own
+code (commit 6581226, its in-run batch grading, same configs and 4 workers;
+`scripts/paper_code_regrade/`) reproduces the paper (46/82 vs 44/82 stored on the hard
+slice) and all 15 fail again, each with "invalid syntax" before any test runs. GPT-5.5
+wrapped its code in a ```` ```python ```` fence inside the `<solution>` tags; the paper's
+in-run grading passed the fence to Python, while the later grader strips it
+(`normalize_code_artifact`) and the same programs pass every test. Fenced programs occur
+**only** in GPT-5.5 solo (20 hard, 1 medium, all scored as failing in the paper): in
+every reviewed condition the reviewer's output is graded, so GPT-5.5's fences never
+reach the grader. LiveCodeBench's own pipeline extracts code from inside fences
+(`lcb_runner/utils/extraction_utils.py`), so the official scorer would count these as
+passing. The paper therefore penalised GPT-5.5 solo, and only it, for formatting.
+Only deviation from the paper's setup: Python 3.14 (the paper's version is unrecorded).
 
 **What it does to the paper's headline comparisons against O:**
 
