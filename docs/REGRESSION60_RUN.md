@@ -378,10 +378,10 @@ questions a reviewer will ask:
 | # | Experiment | Cost | Why | Would it help? | Status |
 |---|------------|------|-----|----------------|--------|
 | 1 | **Regrade all 116 paper problems × 6 conditions** with the current grader | Free | Checks whether the grader drift we saw on 60 problems affects the paper's published pass rates (GPT-5.5 solo: 71.6%) | **Yes, essential.** If the paper's numbers are off, it must be corrected before anything else; a referee finding it first would damage credibility | **Done: see "Result of item 1" below** |
-| 2 | **Recheck the paper's GPT-5.5 costs** for the cached-token double count | Free | The same pricing code produced the paper's cost tables | **Yes.** A cost claim that is 2× off undermines any cost-effectiveness argument | To do |
-| 3 | **Classify every break**: wrong answer, too slow, or crash; test whether edit size predicts breaking | Free | Explains *how* review breaks code (e.g. abc388_f was a rewrite that made the program too slow) | **Yes.** A mechanism makes the finding more convincing and more useful | To do |
+| 2 | **Recheck the paper's GPT-5.5 costs** for the cached-token double count | Free | The same pricing code produced the paper's cost tables | **Yes.** A cost claim that is 2× off undermines any cost-effectiveness argument | **Done: see "Result of item 2"** |
+| 3 | **Classify every break**: wrong answer, too slow, or crash; test whether edit size predicts breaking | Free | Explains *how* review breaks code (e.g. abc388_f was a rewrite that made the program too slow) | **Yes.** A mechanism makes the finding more convincing and more useful | **Done: see "Result of item 3"** |
 | 4 | **Repeat GPT-5.5's 180 reviews** (same prompt, fresh calls) | ≈ $8 OpenAI | Shows whether GPT breaks the *same* drafts again or different ones | **Yes.** Separates a consistent weakness from run-to-run noise, the most likely referee objection | **Done: see "Results of items 4 and 5"** |
-| 5 | **"Change as little as possible" prompt** for GPT-5.5's 180 reviews (one added line: `harness/prompts/reviewer_lcb_minimal_edit.txt`) | ≈ $8 OpenAI | Tests whether GPT's heavy rewriting is what causes the breaks | **Yes.** If one line removes most breaks, that is a practical, citable contribution | **Done (1 regrade pending): see "Results of items 4 and 5"** |
+| 5 | **"Change as little as possible" prompt** for GPT-5.5's 180 reviews (one added line: `harness/prompts/reviewer_lcb_minimal_edit.txt`) | ≈ $8 OpenAI | Tests whether GPT's heavy rewriting is what causes the breaks | **Yes.** If one line removes most breaks, that is a practical, citable contribution | **Done: see "Results of items 4 and 5"** |
 | 6 | **BigCodeBench grader check**: install it and grade its own reference solutions twice | Free | BigCodeBench tests depend on pinned libraries and sometimes files or network; a flaky grader would make break counts meaningless | **Decides #7.** Only worth adding BigCodeBench if the grader is reliable | **Done: passed (0 disagreements)** |
 | 7a | **If #6 passes: BigCodeBench**, about 60 tasks sampled from the full set (not Hard), all 9 pairings | ≈ $25–35 Gemini, ≈ $5 OpenAI, Claude free | Real-world library code (pandas, files, APIs) instead of puzzles | **Yes, most for the paper.** Answers "does this only apply to competitive programming?"; the full set gives enough passing drafts | **Done (80 tasks): see "Result of item 7a"** |
 | 7b | **If #6 fails: the other 56 LiveCodeBench problems**, all 9 pairings | ≈ $40 Gemini, ≈ $8 OpenAI, Claude free | About twice the data on the same problems; full coverage of the paper's 116 | **Somewhat.** Tightens GPT-5.5 vs Claude (now 9 vs 1, not significant after correction) but does not address generality | Not run (#6 passed) |
@@ -425,6 +425,70 @@ The paper's large gains from adding a reviewer to GPT-5.5 largely disappear. **T
 must be raised with the coauthors before the paper is used or submitted.** 5 of the 15
 flipped drafts were also written with tool use (see Limitations).
 
+### Result of item 2: the paper's GPT-5.5 costs are overstated by about 45%
+
+`scripts/regression60_cost_recheck.py` prices every turn of the 116 × 6 frozen records
+from token counts exactly as the paper's tables did (`compute_metrics.py
+--recompute-costs`) and reproduces the paper's cost column to the cent. It then removes
+the double count (Codex's `input_tokens` already include the cached tokens, which were
+charged again at the cached rate). Per-task detail:
+`results/processed/regression60_paper_cost_recheck.csv`.
+
+| Label | Paper $/task | Corrected $/task | Change | Paper score/$ | Corrected score/$ |
+|-------|--------------|------------------|--------|---------------|-------------------|
+| A  | $0.226 | $0.226 | 0%   | 4.04 | 4.04 |
+| O  | $0.190 | **$0.105** | −45% | 3.77 | **6.81** (8.05 with the regraded 98/116) |
+| AO | $0.382 | $0.340 | −11% | 2.17 | 2.43 |
+| OA | $0.443 | $0.306 | −31% | 2.02 | 2.93 |
+| AA | $0.389 | $0.389 | 0%   | 2.35 | 2.35 |
+| OO | $0.312 | $0.177 | −43% | 2.71 | 4.77 |
+
+Claude-only conditions are unchanged. **The ranking flips:** GPT-5.5 solo, not Claude
+solo, is the most cost-effective condition, and OO beats both Claude conditions. Any
+cost-effectiveness claim in the paper must be redone; raise with the coauthors together
+with item 1.
+
+### Result of item 3: how reviews break code, and edit size predicts it
+
+`scripts/regression60_classify_breaks.py` re-runs every LiveCodeBench break with the
+paper's grader and reads the first failing test's error code; for BigCodeBench it uses
+the evaluator's stored failure line. Detail: `results/processed/regression60_break_types.csv`.
+
+| Run | Breaks | Wrong answer | Crash | Too slow |
+|-----|--------|--------------|-------|----------|
+| LiveCodeBench Stage 2 | 10 | 6 | 3 | 1 |
+| LiveCodeBench repeat (item 4) | 7 | 5 | 2 | 0 |
+| LiveCodeBench minimal edit (item 5) | 2 | 1 | 0 | 1 |
+| BigCodeBench | 18 | 11 | 7 | 0 |
+
+- **Mostly wrong answers:** the rewrite changes the logic and the program still runs.
+- **GPT-5.5's LiveCodeBench crashes are input parsing** (e.g. `invalid literal for int()
+  with base 2: b'3 3'`, `too many values to unpack`): the rewrite reads the input in a
+  different format from the problem's, which a test run would catch at once.
+- **Claude's only LiveCodeBench break (3784) is a grader-environment artifact:** the review
+  imports `sortedcontainers`, which the grader's Python lacks (LeetCode and AtCoder both
+  provide it). On a real judge it may well pass, which would make Claude's count 0 / 162.
+- **abc388_f is the one real "too slow" case**, in both GPT-5.5 runs on its own draft.
+  The grader's per-test limit did not stop it, so it was capped at 10 minutes per program
+  here (and found unfinished after 58–60 minutes alone in Stage 2 and item 5).
+
+**Does edit size predict breaking?** Yes, for every reviewer with enough breaks.
+Changed lines on passing drafts, breaks vs. reviews that did not break (one-sided
+Mann-Whitney; `results/processed/regression60_edit_size.csv`):
+
+| Run | Reviewer | Breaks: median edit | Others: median edit | p |
+|-----|----------|---------------------|---------------------|---|
+| LCB Stage 2 | GPT-5.5 | 68 (n = 9) | 36 (n = 153) | 0.005 |
+| LCB repeat | GPT-5.5 | 58 (n = 7) | 36 (n = 155) | 0.025 |
+| LCB minimal edit | GPT-5.5 | 21 (n = 2) | 0 (n = 160) | 0.004 |
+| BigCodeBench | GPT-5.5 | 24 (n = 12) | 11 (n = 127) | 0.002 |
+| BigCodeBench | Gemini | 14 (n = 4) | 5 (n = 135) | 0.10 |
+| BigCodeBench | Claude | 7.5 (n = 2) | 2 (n = 137) | 0.24 |
+
+Breaks come from larger rewrites, within GPT-5.5 as well as between reviewers. Together
+with item 5 (smaller edits, far fewer breaks), this is the mechanism: **review breaks
+working code by rewriting it.**
+
 ### Results of items 4 and 5: GPT-5.5 breaks are noisy, and a one-line prompt removes most
 
 Same 180 drafts, GPT-5.5 reviewer, fresh calls (`results/processed/regression60_gpt_rep2_*`,
@@ -434,15 +498,16 @@ Same 180 drafts, GPT-5.5 reviewer, fresh calls (`results/processed/regression60_
 |-----|-------------|---------------------|-------|-----------|-------------------|
 | Stage 2 (original) | 9 / 162 | 5.6% (2.6 – 10.3%) | — | 7% | 46.9 |
 | Item 4: repeat, same prompt | 7 / 162 | 4.3% (1.8 – 8.7%) | 2 / 18 | 7% | 45.9 |
-| Item 5: "change as little as possible" | **1 / 161** | **0.6% (0.0 – 3.4%)** | 3 / 18 | 74% | 5.2 |
+| Item 5: "change as little as possible" | **2 / 162** | **1.2% (0.2 – 4.4%)** | 3 / 18 | 74% | 5.2 |
 
 - **Item 4:** the break *rate* repeats but the *drafts* mostly do not: only 3 of the 7
   repeat-run breaks were also broken in the original run. GPT-5.5's breaking is a stable
   tendency, not a fixed set of hard drafts.
-- **Item 5:** one added prompt line cuts breaks from 9 to 1 and edit size by about 9×,
+- **Item 5:** one added prompt line cuts breaks from 9 to 2 and edit size by about 9×,
   without losing fixes. Heavy rewriting looks like the mechanism.
-- One minimal-edit review (abc388_f) is still being regraded; it can move the count by at
-  most one.
+- One minimal-edit review (abc388_f, GPT-5.5 on its own draft) did not finish the hidden
+  tests in 58 minutes graded alone, so it counts as a fail (too slow), the same rule as the
+  Stage 2 abc388_f break.
 
 ### Result of item 7a: BigCodeBench, all 9 pairings
 

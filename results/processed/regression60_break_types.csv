@@ -1,0 +1,38 @@
+set,problem_id,writer,reviewer,diff_lines,type,detail
+lcb_stage2,3715,claude,gpt55,22,wrong answer,Wrong Answer
+lcb_stage2,abc388_f,claude,gpt55,106,crash,"Runtime Error ValueError('too many values to unpack (expected 2, got 4)')"
+lcb_stage2,abc389_e,claude,gpt55,62,wrong answer,Wrong answer at output_line_idx=0: 1 != 3
+lcb_stage2,abc396_g,claude,gpt55,55,crash,"Runtime Error ValueError(""invalid literal for int() with base 2: b'3 3'"")"
+lcb_stage2,abc399_d,claude,gpt55,76,wrong answer,Wrong answer at output_line_idx=0: 0 != 1
+lcb_stage2,3784,gemini,claude,53,crash,Error during testing: No module named 'sortedcontainers'
+lcb_stage2,3688,gemini,gpt55,114,wrong answer,Wrong Answer
+lcb_stage2,3714,gemini,gpt55,57,wrong answer,Wrong Answer
+lcb_stage2,abc388_f,gpt55,gpt55,68,too slow,did not finish the hidden tests in 600s
+lcb_stage2,abc399_e,gpt55,gpt55,81,wrong answer,Wrong answer at output_line_idx=0: 10 != 9
+lcb_rep2,abc389_e,claude,gpt55,56,wrong answer,Wrong answer at output_line_idx=0: 1 != 3
+lcb_rep2,abc389_f,claude,gpt55,101,crash,"Runtime Error ValueError('not enough values to unpack (expected 2, got 1)')"
+lcb_rep2,abc396_g,claude,gpt55,59,crash,"Runtime Error ValueError(""invalid literal for int() with base 2: b'3 3'"")"
+lcb_rep2,arc194_b,claude,gpt55,51,wrong answer,Wrong answer at output_line_idx=0: 5 != 4
+lcb_rep2,3762,gemini,gpt55,100,wrong answer,Wrong Answer
+lcb_rep2,3688,gpt55,gpt55,32,wrong answer,Wrong Answer
+lcb_rep2,abc399_e,gpt55,gpt55,58,wrong answer,Wrong answer at output_line_idx=0: 10 != 9
+lcb_minedit,abc388_f,gpt55,gpt55,28,too slow,did not finish the hidden tests in 600s
+lcb_minedit,abc399_e,gpt55,gpt55,14,wrong answer,Wrong answer at output_line_idx=0: 10 != 9
+bcb,bcb_1059,claude,gemini,20,wrong answer,+  'Nickel']
+bcb,bcb_12,claude,gemini,17,crash,FileNotFoundError: Script custom_backup.sh does not exist.
+bcb,bcb_1009,claude,gpt55,31,wrong answer,+ [[]]
+bcb,bcb_103,claude,gpt55,60,crash,ValueError: Input DataFrame is not in the expected format or empty.
+bcb,bcb_1059,claude,gpt55,13,wrong answer,+  'Nickel']
+bcb,bcb_12,claude,gpt55,16,wrong answer,AssertionError: 127 != 0
+bcb,bcb_317,claude,gpt55,29,wrong answer,+  'input': 0.5773502691896258}
+bcb,bcb_335,claude,gpt55,21,wrong answer,AssertionError: 5 != 1 : Only one letter should be present for minimum length
+bcb,bcb_979,claude,gpt55,18,crash,IndexError: list index out of range
+bcb,bcb_299,gemini,gemini,2,crash,TypeError: cannot unpack non-iterable int object
+bcb,bcb_2,gemini,gpt55,27,wrong answer,'a' : The dictionary should have all provided letters as keys.
+bcb,bcb_317,gemini,gpt55,32,wrong answer,+  'input': 0.5773502691896258}
+bcb,bcb_448,gemini,gpt55,9,crash,ValueError: sigma must be positive
+bcb,bcb_1074,gpt55,claude,2,wrong answer,?                      +++
+bcb,bcb_775,gpt55,claude,13,wrong answer,   'z': 0}
+bcb,bcb_1074,gpt55,gemini,11,wrong answer,?                      +++
+bcb,bcb_251,gpt55,gpt55,21,crash,KeyError: 'job'
+bcb,bcb_428,gpt55,gpt55,32,crash,ValueError: No variables found for grid columns.

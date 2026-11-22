@@ -41,7 +41,7 @@
   "timed_out": false,
   "cli_error": false,
   "budget_exceeded": false,
-  "passed": null,
+  "passed": false,
   "writer_passed": true,
   "writer_stdout": "",
   "writer_stderr": "",
@@ -82,6 +82,6 @@
     "unchanged_whitespace": false,
     "diff_lines": 28,
     "reviewer_cost_all_attempts": 0.045247,
-    "eval_error": "lcb_eval_wall_timeout_after_300s"
+    "eval_note": "did not finish the hidden tests in 58 min (graded alone, 1 worker at 100% CPU); counted as fail (too slow), same rule as the Stage 2 abc388_f break"
   }
 }

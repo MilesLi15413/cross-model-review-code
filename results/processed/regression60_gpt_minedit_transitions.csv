@@ -1,5 +1,6 @@
 type,problem_id,writer,reviewer,edit_lines,gpt_draft_used_tools,eval_note
 fix,3688,claude,gpt55,35,,
 fix,3754,gpt55,gpt55,4,False,
+regression,abc388_f,gpt55,gpt55,28,True,"did not finish the hidden tests in 58 min (graded alone, 1 worker at 100% CPU); counted as fail (too slow), same rule as the Stage 2 abc388_f break"
 regression,abc399_e,gpt55,gpt55,14,True,
 fix,arc195_e,claude,gpt55,19,,
