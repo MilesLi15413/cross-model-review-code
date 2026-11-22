@@ -55,6 +55,56 @@ Nothing in the paper's frozen results (`results/raw/lcb_hard_full`,
 `results/raw/lcb_medium_100`) was changed. All new output uses the `regression60_`
 prefix.
 
+## Compared with the original paper
+
+**Reproduced, but needs reinterpreting**
+
+| The paper said | What we found |
+|----------------|---------------|
+| GPT-5.5 solo passes 83/116 (71.6%) | **Correct as graded:** the paper's own code reproduces it exactly. But 15 of the failures are correct code inside a Markdown fence; on code correctness it is 98/116 (84.5%). |
+| "If GPT-5.5 writes, review helps": OA +18.1 pp, OO +12.9 pp, both significant | **Correct as graded**, and significant. Most of the gain is the reviewer removing the fence, not fixing code; on code correctness the gains are +5.2 pp (not significant) and 0. |
+
+**Corrected (an actual error)**
+
+| The paper said | What we found |
+|----------------|---------------|
+| GPT-5.5 costs ($0.190/task solo); Claude solo is the most cost-effective | Cached tokens were counted twice, so GPT-5.5 costs are ~45% too high. Corrected, **GPT-5.5 solo is the most cost-effective** condition. |
+
+**Reinforced**
+
+| The paper said | What we found |
+|----------------|---------------|
+| Claude writes + GPT-5.5 reviews (AO) is 8.6 pp worse than Claude alone | Explained directly: GPT-5.5 breaks Claude's working drafts (5/54 LiveCodeBench, 7/57 BigCodeBench), the worst pairing on both. |
+| Claude reviewing itself (AA) adds nothing | Confirmed: Claude leaves most of its own drafts unchanged (73% on BigCodeBench) and broke none. |
+| Scope warning: nothing protects a good draft from a worse rewrite | Shown to happen: every reviewer broke some working code. |
+| Results are writer-conditional; no general ranking of reviewers | Still true: the best reviewer depends on whether you want fewer breaks or more fixes. |
+
+**New (not measurable in the paper's design)**
+
+1. *The reviewer's own effect on a fixed draft.* The paper compared independently sampled
+   pipelines and listed "freeze each candidate and score it before review" as planned
+   follow-up; this run does that, so a break is a direct measurement.
+2. *Break rates:* GPT-5.5 5.6%, Claude 0.6%\*, Gemini 0% (LiveCodeBench); 8.6%, 1.4%,
+   2.9% (BigCodeBench).
+3. *Mechanism:* breaks come from larger rewrites; mostly wrong answers; GPT-5.5's crashes
+   are input-parsing rewrites.
+4. *A one-line fix:* "change as little as possible" cuts GPT-5.5's breaks from 9 to 2
+   with no loss of fixes.
+5. *Stability:* a repeat run gives a similar break rate on mostly different drafts.
+6. *Fix rates:* Claude fixes failing drafts significantly more often (18/99 vs 5 and 6
+   on BigCodeBench).
+7. *Wider scope:* a third model (Gemini) and a second benchmark (BigCodeBench); the main
+   pattern holds on both.
+
+**Still open (same as the paper):** findings-only review with human adjudication,
+reviewers with tools or tests, multiple writer samples per task, and multi-file or
+repository-scale code.
+
+**In one sentence:** the paper's statistics stand as graded, but its main story (review
+improves GPT-5.5's code) is mostly a formatting effect; the better-supported story is
+that a rewrite-style review pass often breaks working code, the choice of reviewer
+matters, and asking for minimal edits largely prevents it.
+
 ## Setup
 
 | Model  | Exact ID                 | Accessed through                | Effort          |
