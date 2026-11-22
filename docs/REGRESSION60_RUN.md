@@ -1,7 +1,40 @@
 # Regression-60 Run: Does Review Break Code That Already Works?
 
 **Started:** 2026-11-21. **Branch:** `regression-60` (from `limited-demo-run`).
-**Status:** complete (2026-11-21). All 540 reviews are valid and graded.
+**Status:** complete (2026-11-21). All 540 reviews are valid and graded. Follow-ups
+(items 1–7a, incl. BigCodeBench) complete 2026-11-22 on branch `bigcodebench-check`.
+
+## Summary of findings
+
+1. **Review breaks working code, and GPT-5.5 does it most.** Passing drafts broken:
+   LiveCodeBench GPT-5.5 9/162, Claude 1/162\*, Gemini 0/162; BigCodeBench GPT-5.5
+   12/139, Gemini 4/139, Claude 2/139.
+2. **The tendency is stable, the drafts are not.** A fresh GPT-5.5 repeat broke 7/162,
+   only 3 of them the same drafts.
+3. **The mechanism is rewriting.** Breaks come from larger edits (p ≤ 0.025 for GPT-5.5
+   in every run), and the one-line "change as little as possible" prompt cuts GPT-5.5's
+   breaks from 9 to 2 with no loss of fixes. Most breaks are wrong answers; GPT-5.5's
+   crashes are input-parsing rewrites.
+4. **Claude is the most useful reviewer** on BigCodeBench: it fixes 18/99 failing drafts
+   (GPT-5.5 5, Gemini 6; significant against both) and breaks the fewest.
+5. **The paper's GPT-5.5 solo score counts formatting as failure.** Its 83/116 is
+   reproducible with the paper's own code, but 15 failures are correct code wrapped in a
+   Markdown fence; on code correctness it is 98/116, and the claimed gains from review
+   (+18.1 / +12.9 pp) shrink to +5.2 pp (not significant) and 0.
+6. **The paper's GPT-5.5 costs are ~45% too high** (cached tokens counted twice); with
+   corrected costs GPT-5.5 solo is the most cost-effective condition.
+
+\* **Note on Claude's one LiveCodeBench break (3784, Claude reviewing Gemini's draft).**
+The review imports `sortedcontainers`, which the paper's grading environment does not
+include, so it crashes there. The official count stays **1/162**, graded like every
+other program. As a separate check (2026-11-22), the same program was graded with
+`sortedcontainers` available from a throwaway folder, without changing the grading
+environment or any record: it **passes every test (twice)**. On a judge that provides
+the library (LeetCode and AtCoder both do), Claude breaks **0/162**. This matters for one
+claim only: GPT-5.5 vs Claude on LiveCodeBench is 9 vs 1 (Holm p = 0.11, not significant)
+as graded, and would be 9 vs 0 (Holm p ≈ 0.02, significant) with the library. Report
+the official result and give this as a footnote; BigCodeBench independently shows the
+same direction (12 vs 2).
 
 This run answers three questions for all 9 writer × reviewer pairings of Claude,
 GPT-5.5 and Gemini:
@@ -262,6 +295,10 @@ be compared draft by draft (exact McNemar test):
 | Claude vs Gemini    | 1                           | 0                     | 1.0    | 1.0                             |
 
 None of the fix-rate comparisons differ (all p = 1.0).
+
+Claude's one break (3784) imports `sortedcontainers`, which the grader lacks; with the
+library available it passes, which would make GPT-5.5 vs Claude 9 vs 0 (Holm p ≈ 0.02).
+See the note under "Summary of findings".
 
 **By pair** (writer → reviewer):
 
