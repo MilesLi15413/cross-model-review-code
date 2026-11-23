@@ -821,7 +821,7 @@ as graders and pass rates differ; report the two side by side.
   it rewrites, and here is a one-line fix", or show that it does not.
 - Item 7 tests whether the finding holds beyond one benchmark.
 
-## Authorship-label study (separate; pilot in progress)
+## Authorship-label study (separate; pilot done)
 
 Regression-60 and BigCodeBench never name an author: every review there is "no label".
 Whether a reviewer treats code differently depending on who it is told wrote it is a
@@ -847,7 +847,7 @@ writer, 3 problems) × 3 reviewers × 4 labels = 72 reviews, all valid.
   tools; the demo's no-label condition uses the label template, not the paper's exact
   prompt.
 
-**Pilot (approved 2026-11-22, running).** 10 problems from the regression-60 sample ×
+**Pilot (approved and run 2026-11-22).** 10 problems from the regression-60 sample ×
 3 writers = 30 drafts (17 passing, 13 failing; every writer has failing drafts): 6
 problems chosen for failing drafts (3763, abc392_d, arc191_c, abc399_e, 3688, 3754) and
 4 drawn at random from all-pass problems (3720, 3794, abc391_e, abc397_c). Each reviewer
@@ -865,7 +865,52 @@ Fixes so the pilot matches regression-60:
 
 Estimated cost: Gemini $27–39, GPT-5.5 $8–14, Claude $0 (Pro plan). Files:
 `experiments/configs/label_pilot_drafts.yaml`, `label_study_pilot.yaml`,
-`results/raw/label_pilot/`, log `results/raw/label_pilot.log`. Results to be added here.
+`results/raw/label_pilot/`, logs `results/raw/label_pilot.log`, `label_pilot_claude.log`.
+
+**Pilot results (2026-11-22).** 447 of 450 reviews done and graded (Claude 150, GPT-5.5
+150, Gemini 147; the Gemini cap stopped 3 reviews, ~$0.60 to finish), 0 invalid, 0
+grading errors. Spend: Gemini $28.58, GPT-5.5 $7.41, Claude $43.10 API-equivalent
+($10.40 on the Pro plan, ~$32.70 from usage credits). Analysis:
+`scripts/label_pilot_analysis.py` → `results/processed/label_pilot_contrasts.csv`
+(per-cell tables: `results/processed/label_pilot_*.csv`). Every comparison is paired on
+the same draft; McNemar for unchanged / pass, Wilcoxon for edit size and issue count,
+Holm within reviewer.
+
+| Reviewer | Contrast (n drafts) | Unchanged | Mean edit (lines) | Passing after review | Holm p (smallest) |
+|---|---|---|---|---|---|
+| Claude | **Noise:** no label vs repeat (30) | 9 vs 9 | 14.6 vs 11.1 | 18 vs 19 | 1.0 |
+| Claude | **Self-pref:** "you wrote it" vs "third model" (20) | 7 vs 7 | 10.2 vs 14.1 | 13 vs 13 | 1.0 |
+| Claude | True label vs no label (30) | 11 vs 9 | 7.3 vs 14.6 (raw p = 0.02) | 19 vs 18 | 0.50 |
+| GPT-5.5 | **Noise** (30) | 6 vs 5 | 34.6 vs 35.1 | 18 vs 18 | 1.0 |
+| GPT-5.5 | **Self-pref** (20) | 0 vs 0 | 50.0 vs 57.5 | 12 vs 12 | 1.0 |
+| GPT-5.5 | True vs no label (30) | 5 vs 6 | 36.2 vs 34.6 | 20 vs 18 | 1.0 |
+| Gemini | **Noise** (29) | 14 vs 14 | 20.7 vs 15.9 | 20 vs 19 | 1.0 |
+| Gemini | **Self-pref** (20) | 5 vs 4 | 26.4 vs 28.4 | 14 vs 14 | 1.0 |
+| Gemini | True vs no label (28) | 13 vs 13 | 17.6 vs 21.5 | 18 vs 19 | 1.0 |
+
+What it shows:
+
+- **No label effect beyond noise.** For every reviewer, the true, false and self labels
+  move unchanged rate, edit size, issues and outcome by no more than two identical
+  no-label runs differ from each other. Nothing is significant after correction.
+- **No self-preference.** Told "you wrote this" vs "a third model wrote this" (same
+  draft, both false), each reviewer fixed exactly as many drafts (Claude 1 vs 1, GPT-5.5
+  1 vs 1, Gemini 3 vs 3) and broke none. The demo's 3-of-6 hint did not replicate.
+- **One weak hint, not significant:** Claude edited less when given the true label
+  (7.3 vs 14.6 lines, raw p = 0.02, Holm 0.50) or told the code was its own (10.2 vs
+  18.1, raw p = 0.03, Holm 0.78). Its own noise contrast differs by 3.5 lines, so this is
+  worth checking in a larger run, not a finding.
+- **Model behavior is far bigger than any label:** GPT-5.5 never left another model's
+  draft unchanged under any label and edits ~35–57 lines; Claude and Gemini leave a third
+  to half unchanged. Breaks: Claude 0, Gemini 0, GPT-5.5 1 across all labels.
+- **Noise floor:** between two identical no-label runs, the pass/fail outcome flipped on
+  1 draft per reviewer and the unchanged status on 2–6.
+
+**Reading:** with 20–30 paired drafts per reviewer, the pilot can rule out large label
+effects, not small ones. A full study aiming at small effects needs several times more
+drafts (the planned hard tier: 183 drafts, ~$280 at demo rates, more with Claude on
+credits). Given no signal here, the label question is lower priority than the
+review-breaks-code findings.
 
 Not yet run: the style-recognition test (can a reviewer tell the author without a
 label?), an optional neutral label ("written by an AI model"), and the full study

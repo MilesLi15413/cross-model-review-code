@@ -1,0 +1,118 @@
+{
+  "task_id": "arc191_c",
+  "condition": "L_gemini_by_gemini_none",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T02:01:20.132807+00:00",
+  "reviewer_finished_at": "2026-11-23T02:01:38.894049+00:00",
+  "writer_prompt_sha256": "db11e128eed0506492d7a5c8344b60d1f9ac2658d6fad99b3a057b60bb869e94",
+  "reviewer_prompt_sha256": "0744c4573876f7c95d324920c49b477bee47bedfdc47e0c955cf42fbf5ad77f2",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 18.76123424999969,
+  "total_latency_s": 18.76123424999969,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8598,
+  "reviewer_output_tokens": 2945,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.052536,
+  "total_cost_usd": 0.052536,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"ac027e24-e47d-4a89-b339-6bdea22c39f2\",\n  \"response\": \"<issues>none</issues>\\n<solution>\\nimport sys\\n\\ndef solve():\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n    T = int(input_data[0])\\n    out = [f\\\"{int(x) + 1} {int(x) * int(x)}\\\" for x in input_data[1:T+1]]\\n    print('\\\\n'.join(out))\\n\\nif __name__ == '__main__':\\n    solve()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 18004,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8598,\n          \"prompt\": 8598,\n          \"candidates\": 120,\n          \"total\": 11543,\n          \"cached\": 0,\n          \"thoughts\": 2825,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 18004,\n            \"tokens\": {\n              \"input\": 8598,\n              \"prompt\": 8598,\n              \"candidates\": 120,\n              \"total\": 11543,\n              \"cached\": 0,\n              \"thoughts\": 2825,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    T = int(input_data[0])\n    out = [f\"{int(x) + 1} {int(x) * int(x)}\" for x in input_data[1:T+1]]\n    print('\\n'.join(out))\n\nif __name__ == '__main__':\n    solve()",
+  "reviewer_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    T = int(input_data[0])\n    out = [f\"{int(x) + 1} {int(x) * int(x)}\" for x in input_data[1:T+1]]\n    print('\\n'.join(out))\n\nif __name__ == '__main__':\n    solve()",
+  "final_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    T = int(input_data[0])\n    out = [f\"{int(x) + 1} {int(x) * int(x)}\" for x in input_data[1:T+1]]\n    print('\\n'.join(out))\n\nif __name__ == '__main__':\n    solve()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/arc191_c__B3_gemini_solo.json",
+    "draft_sha256": "069c4c81890c0c11e509e44de537fa0f048c7ff6804d4101a174a14100553fc7",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "none",
+    "labeled_family": null,
+    "label_text": "",
+    "label_relation": "none",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "32e91f1c1f2c1c375a0dbbd8ecbc6dffc4ed0e5c3f75f0182b6e1e30fbda7375",
+    "attempt_count": 1,
+    "final_artifact_sha256": "069c4c81890c0c11e509e44de537fa0f048c7ff6804d4101a174a14100553fc7",
+    "draft_unchanged": true,
+    "diff_lines": 0,
+    "issues_status": "none_reported",
+    "issue_count": 0,
+    "issues": [],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    }
+  }
+}

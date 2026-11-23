@@ -1,0 +1,118 @@
+{
+  "task_id": "3720",
+  "condition": "L_gemini_by_gemini_true",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T02:02:49.325368+00:00",
+  "reviewer_finished_at": "2026-11-23T02:03:45.070140+00:00",
+  "writer_prompt_sha256": "570dfeb68ed95515304adaf45e256a4ff5f2c3dc8feae4f7d151c46233bdcec8",
+  "reviewer_prompt_sha256": "f667b399d16fa726a899a8dfb90bc5a8242ce19d062652957f9a2a2d25cc2618",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 55.744774957995105,
+  "total_latency_s": 55.744774957995105,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 9086,
+  "reviewer_output_tokens": 8752,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.123196,
+  "total_cost_usd": 0.123196,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"665577e6-7683-4a35-b32e-3d2c313a6b20\",\n  \"response\": \"<issues>none</issues>\\n<solution>\\nimport heapq\\nfrom typing import List\\n\\nclass Solution:\\n    def minMaxWeight(self, n: int, edges: List[List[int]], threshold: int) -> int:\\n        # We need to find the minimum possible maximum edge weight such that all nodes can reach node 0.\\n        # The threshold condition (<= threshold outgoing edges) is a distractor because as long as \\n        # threshold >= 1 (which is guaranteed by constraints), any valid connectivity to node 0 \\n        # can be pruned to a directed tree (arborescence) rooted at 0. In such a tree, every node \\n        # has exactly 1 outgoing edge (except node 0 which has 0), safely satisfying the threshold.\\n        \\n        # We model this as finding the minimax path from all nodes to node 0.\\n        # This is equivalent to finding the minimax path from node 0 to all other nodes in the reversed graph.\\n        \\n        adj = [[] for _ in range(n)]\\n        for u, v, w in edges:\\n            # Build the reversed graph\\n            adj[v].append((u, w))\\n            \\n        dist = [float('inf')] * n\\n        dist[0] = 0\\n        pq = [(0, 0)]  # (current_max_weight_on_path, current_node)\\n        \\n        # Dijkstra's algorithm modified for Bottleneck Path\\n        while pq:\\n            d, u = heapq.heappop(pq)\\n            \\n            if d > dist[u]:\\n                continue\\n                \\n            for v, w in adj[u]:\\n                new_d = max(d, w)\\n                if new_d < dist[v]:\\n                    dist[v] = new_d\\n                    heapq.heappush(pq, (new_d, v))\\n                    \\n        ans = max(dist)\\n        return ans if ans != float('inf') else -1\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 54989,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 9086,\n          \"prompt\": 9086,\n          \"candidates\": 447,\n          \"total\": 17838,\n          \"cached\": 0,\n          \"thoughts\": 8305,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 54989,\n            \"tokens\": {\n              \"input\": 9086,\n              \"prompt\": 9086,\n              \"candidates\": 447,\n              \"total\": 17838,\n              \"cached\": 0,\n              \"thoughts\": 8305,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import heapq\nfrom typing import List\n\nclass Solution:\n    def minMaxWeight(self, n: int, edges: List[List[int]], threshold: int) -> int:\n        # We need to find the minimum possible maximum edge weight such that all nodes can reach node 0.\n        # The threshold condition (<= threshold outgoing edges) is a distractor because as long as \n        # threshold >= 1 (which is guaranteed by constraints), any valid connectivity to node 0 \n        # can be pruned to a directed tree (arborescence) rooted at 0. In such a tree, every node \n        # has exactly 1 outgoing edge (except node 0 which has 0), safely satisfying the threshold.\n        \n        # We model this as finding the minimax path from all nodes to node 0.\n        # This is equivalent to finding the minimax path from node 0 to all other nodes in the reversed graph.\n        \n        adj = [[] for _ in range(n)]\n        for u, v, w in edges:\n            # Build the reversed graph\n            adj[v].append((u, w))\n            \n        dist = [float('inf')] * n\n        dist[0] = 0\n        pq = [(0, 0)]  # (current_max_weight_on_path, current_node)\n        \n        # Dijkstra's algorithm modified for Bottleneck Path\n        while pq:\n            d, u = heapq.heappop(pq)\n            \n            if d > dist[u]:\n                continue\n                \n            for v, w in adj[u]:\n                new_d = max(d, w)\n                if new_d < dist[v]:\n                    dist[v] = new_d\n                    heapq.heappush(pq, (new_d, v))\n                    \n        ans = max(dist)\n        return ans if ans != float('inf') else -1",
+  "reviewer_artifact": "import heapq\nfrom typing import List\n\nclass Solution:\n    def minMaxWeight(self, n: int, edges: List[List[int]], threshold: int) -> int:\n        # We need to find the minimum possible maximum edge weight such that all nodes can reach node 0.\n        # The threshold condition (<= threshold outgoing edges) is a distractor because as long as \n        # threshold >= 1 (which is guaranteed by constraints), any valid connectivity to node 0 \n        # can be pruned to a directed tree (arborescence) rooted at 0. In such a tree, every node \n        # has exactly 1 outgoing edge (except node 0 which has 0), safely satisfying the threshold.\n        \n        # We model this as finding the minimax path from all nodes to node 0.\n        # This is equivalent to finding the minimax path from node 0 to all other nodes in the reversed graph.\n        \n        adj = [[] for _ in range(n)]\n        for u, v, w in edges:\n            # Build the reversed graph\n            adj[v].append((u, w))\n            \n        dist = [float('inf')] * n\n        dist[0] = 0\n        pq = [(0, 0)]  # (current_max_weight_on_path, current_node)\n        \n        # Dijkstra's algorithm modified for Bottleneck Path\n        while pq:\n            d, u = heapq.heappop(pq)\n            \n            if d > dist[u]:\n                continue\n                \n            for v, w in adj[u]:\n                new_d = max(d, w)\n                if new_d < dist[v]:\n                    dist[v] = new_d\n                    heapq.heappush(pq, (new_d, v))\n                    \n        ans = max(dist)\n        return ans if ans != float('inf') else -1",
+  "final_artifact": "import heapq\nfrom typing import List\n\nclass Solution:\n    def minMaxWeight(self, n: int, edges: List[List[int]], threshold: int) -> int:\n        # We need to find the minimum possible maximum edge weight such that all nodes can reach node 0.\n        # The threshold condition (<= threshold outgoing edges) is a distractor because as long as \n        # threshold >= 1 (which is guaranteed by constraints), any valid connectivity to node 0 \n        # can be pruned to a directed tree (arborescence) rooted at 0. In such a tree, every node \n        # has exactly 1 outgoing edge (except node 0 which has 0), safely satisfying the threshold.\n        \n        # We model this as finding the minimax path from all nodes to node 0.\n        # This is equivalent to finding the minimax path from node 0 to all other nodes in the reversed graph.\n        \n        adj = [[] for _ in range(n)]\n        for u, v, w in edges:\n            # Build the reversed graph\n            adj[v].append((u, w))\n            \n        dist = [float('inf')] * n\n        dist[0] = 0\n        pq = [(0, 0)]  # (current_max_weight_on_path, current_node)\n        \n        # Dijkstra's algorithm modified for Bottleneck Path\n        while pq:\n            d, u = heapq.heappop(pq)\n            \n            if d > dist[u]:\n                continue\n                \n            for v, w in adj[u]:\n                new_d = max(d, w)\n                if new_d < dist[v]:\n                    dist[v] = new_d\n                    heapq.heappush(pq, (new_d, v))\n                    \n        ans = max(dist)\n        return ans if ans != float('inf') else -1",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/3720__B3_gemini_solo.json",
+    "draft_sha256": "efb3cf3ffa0b4a50fa1384eb95b441dc7c9ccc23ca27c580fb5a3f36f25a68a2",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "true",
+    "labeled_family": "gemini",
+    "label_text": "This code was written by Gemini.",
+    "label_relation": "self",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "37eae924ae4d148bbacc83244cbe46b032d76415a2aa1a27b913aa49feaae594",
+    "attempt_count": 1,
+    "final_artifact_sha256": "efb3cf3ffa0b4a50fa1384eb95b441dc7c9ccc23ca27c580fb5a3f36f25a68a2",
+    "draft_unchanged": true,
+    "diff_lines": 0,
+    "issues_status": "none_reported",
+    "issue_count": 0,
+    "issues": [],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    }
+  }
+}

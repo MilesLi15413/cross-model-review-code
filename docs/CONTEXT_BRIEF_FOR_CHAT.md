@@ -108,7 +108,7 @@ ranking of reviewers. Claude solo most cost-effective.
 **Spend (approx., API rates, GPT-5.5 corrected):** regression-60 Gemini ~$43, OpenAI
 ~$8; GPT-5.5 repeat ~$7 and minimal-edit ~$7.5; BigCodeBench Gemini ~$25, OpenAI ~$10;
 Claude $0 (Pro plan). Free: regrades, cost recheck, break classification, paper-code
-rerun, sortedcontainers check. Label pilot (running): est. Gemini $27–39, OpenAI $8–14.
+rerun, sortedcontainers check. Label pilot: Gemini $28.58, OpenAI $7.41, Claude ~$32.70 usage credits.
 
 ---
 
@@ -248,7 +248,7 @@ edit 14.5 vs GPT-5.5's 37.5), and 0 vs Claude's 1 out of 162 is noise (95% inter
 0–2.3%); on BCB it broke 4. When it edits, edits are large (mean 37 lines) yet rarely
 break, so it seems to keep the original logic.
 
-### H. Authorship labels (separate study; pilot running)
+### H. Authorship labels (separate study; pilot done)
 
 Regression-60 and BigCodeBench never name an author (all "no label"). The label study
 varies one prompt line: *true* author, *false* × 2 (each model that did not write it;
@@ -263,8 +263,24 @@ often "you wrote this"), *no label*; reviewers also list issues.
 - **Pilot (approved and running 2026-11-22):** 10 problems × 3 writers = 30 drafts (17
   passing, 13 failing), each reviewed 5× per reviewer (true, 2 false, no label, repeated
   no label for a noise floor) = 450 reviews. GPT-5.5 without tools (verified), drafts
-  graded with the fence stripped, spending caps Gemini $29 / OpenAI $16. Estimated cost
-  Gemini $27–39, GPT-5.5 $8–14, Claude $0. Results pending.
+  graded with the fence stripped, spending caps Gemini $29 / OpenAI $16.
+- **Pilot results:** 447/450 reviews done and graded (Gemini cap stopped 3; 0 invalid).
+  Spend: Gemini $28.58, GPT-5.5 $7.41, Claude $43.10 API-equivalent ($10.40 Pro, ~$32.70
+  usage credits). Paired on the same drafts, Holm-corrected:
+  - **No label effect beyond run-to-run noise** for any reviewer (true, false, self, no
+    label all within the difference between two identical no-label runs).
+  - **No self-preference:** "you wrote this" vs "a third model wrote this" gave identical
+    fix counts (Claude 1 vs 1, GPT-5.5 1 vs 1, Gemini 3 vs 3), 0 breaks. Demo hint did not
+    replicate.
+  - Weak, non-significant hint: Claude edits less with the true label (7.3 vs 14.6 lines,
+    raw p = 0.02, Holm 0.50).
+  - Model behavior dwarfs labels: GPT-5.5 never left another model's draft unchanged
+    (edits ~35–57 lines); Claude/Gemini leave a third to half unchanged. Breaks across
+    all labels: Claude 0, Gemini 0, GPT-5.5 1.
+  - Noise floor: identical no-label runs flipped pass/fail on 1 draft per reviewer.
+  - Reading: rules out large label effects, not small ones; a full study for small
+    effects needs several times more drafts (~$280+). Lower priority than the
+    review-breaks-code findings.
 - Not yet run: style-recognition test (can reviewers tell the author unlabeled?), neutral
   label, full study (~$280 hard tier).
 
@@ -326,7 +342,7 @@ matters, and asking for minimal edits largely prevents it.
 ## 6. Status and next steps
 
 - All work committed locally on `bigcodebench-check` (not pushed).
-- Authorship-label pilot running (450 reviews); results to follow.
+- Authorship-label pilot done: no label effect beyond noise (see 3H).
 - **Raise with coauthors before the paper is used or submitted:** (1) the GPT-5.5 solo
   score counts formatting as failure, which removes most of the claimed review benefit;
   (2) the GPT-5.5 cost tables are inflated, which flips the cost-effectiveness claim.
