@@ -61,6 +61,60 @@ Nothing in the paper's frozen results (`results/raw/lcb_hard_full`,
 `results/raw/lcb_medium_100`) was changed. All new output uses the `regression60_`
 prefix.
 
+## Status and next steps
+
+- **Everything above is complete** and committed on `bigcodebench-check` (local, not
+  pushed). Nothing is running.
+- **Raise with the coauthors before the paper is used or submitted:** (1) the GPT-5.5
+  solo score counts formatting as failure, which makes up 71–87% of the claimed gain from
+  review; (2) the GPT-5.5 cost tables are inflated ~45%, which reverses the
+  cost-effectiveness claim.
+- **Optional, needs credits:** Gemini 4 Neon rerun to match training dates (~$40–60);
+  full authorship-label study (~$280+); style-recognition test; neutral label.
+- **Not possible without changing the setup:** the 2 missing Gemini BigCodeBench drafts
+  (consistent failures).
+
+## The original paper: what it ran
+
+**Question:** does having a second AI model review code improve it?
+
+- **Models:** Claude Opus 4.7 (`claude-opus-4-7`, Claude Code CLI) and GPT-5.5
+  (`gpt-5.5`, Codex CLI), both at high reasoning effort. One version each.
+- **Six conditions (whole pipelines):** A = Claude alone; O = GPT-5.5 alone; AO = Claude
+  writes, GPT-5.5 reviews; OA = GPT-5.5 writes, Claude reviews; AA = Claude reviews
+  itself; OO = GPT-5.5 reviews itself. The reviewer outputs the final program.
+- **Benchmark:** LiveCodeBench, hard slice (82 tasks) and medium slice (55). Headline =
+  116 tasks gradable in all six conditions (61 hard + 55 medium), the "complete case";
+  a second "reliability-inclusive" view counts unusable outputs as failures.
+- **Review step:** one static pass, no tests, no tools, must output a full program.
+  Reviewer prompt: "Identify any bugs, incorrect logic, missing edge cases, or
+  inefficiencies. Produce a final corrected solution — either the original if it is
+  correct, or an improved version. Do NOT run or test the code." Output in
+  `<solution>` tags.
+- **Design limit the paper stated itself:** each condition drew its own writer draft, so
+  OA vs O compares two independent pipelines, not what a reviewer did to a given draft;
+  "freeze each draft, score it, then review it" was listed as planned follow-up.
+- **Grading:** LiveCodeBench's evaluator, one batch per condition at the end of the run
+  (commit 6581226). **Costs:** recomputed from stored token counts at list prices.
+- **Note:** the paper's GPT-5.5 writer ran through Codex with its built-in shell, and
+  the records show it used it, although the setup is described as no-tool.
+
+**Paper's results (116 tasks):**
+
+| Label | Passed | Pass rate | Cost/task | Score per $ |
+|-------|--------|-----------|-----------|-------------|
+| A  | 106 | 91.4% | $0.226 | 4.04 |
+| O  | 83  | 71.6% | $0.190 | 3.77 |
+| AO | 96  | 82.8% | $0.382 | 2.17 |
+| OA | 104 | 89.7% | $0.443 | 2.03 |
+| AA | 106 | 91.4% | $0.389 | 2.35 |
+| OO | 98  | 84.5% | $0.312 | 2.71 |
+
+**Paper's claims:** "If GPT-5.5 writes, review helps" (OA +18.1 pp, OO +12.9 pp over O,
+significant after correction). "If Claude writes, handing it to GPT-5.5 did not help"
+(AO −8.6 pp). AA = A. AO vs OA not separable (p_BH = .14), so no general ranking of
+reviewers. Claude solo is the most cost-effective.
+
 ## Compared with the original paper
 
 **Reproduced, but needs reinterpreting**
@@ -965,10 +1019,14 @@ writes.
 | BigCodeBench drafts (240, incl. pilot) | $5.79 | $3.01 | ($15.85) |
 | BigCodeBench reviews (714, incl. pilot) | $19.47 | $7.37 | ($44.13) |
 | Items 1–3, 6, sortedcontainers check, paper-code regrade | $0 | $0 | $0 |
-| **Total follow-ups** | **≈ $25** | **≈ $25** | **$0** (Pro plan) |
+| Authorship-label pilot (450 reviews) | $29.01 | $7.41 | $43.10 ($10.40 Pro + ~$32.70 usage credits) |
+| Third attempt at 2 Gemini BCB drafts | ~$0.10 | n/a | n/a |
+| **Total follow-ups** | **≈ $54** | **≈ $32** | **~$33 usage credits** (rest on Pro) |
 
-All GPT-5.5 figures use the corrected (single-counted) cached tokens. Balances after
-these, per the user: Gemini $21 (then topped up to $31 for the label pilot), OpenAI $18.
+All GPT-5.5 figures use the corrected (single-counted) cached tokens. Balances: before
+the label pilot Gemini $21 (topped up to $31), OpenAI $18; Claude usage credits $90
+loaded for the pilot. **After everything (2026-11-22): Gemini ≈ $1.90, OpenAI ≈ $10,
+Claude credits ≈ $57.**
 
 ### Budget history
 
@@ -1083,6 +1141,32 @@ each account at a spending cap (`--max-spend`).
 - **Review records:** `results/raw/regression60_reviews/R_<writer>_by_<reviewer>/`.
 - **Analysis:** `scripts/regression60_analyze.py`.
 
+Follow-ups (2026-11-22):
+
+- **Paper regrade (item 1):** `scripts/regression60_regrade116.py` →
+  `results/processed/regression60_paper_regrade_116.csv`; paper's own code:
+  `scripts/paper_code_regrade/` (README, `paper_batch_regrade.py`,
+  `paper_batch_meta.py`) → `results/processed/regression60_paper_code_b2_hard_meta.json`.
+- **Cost recheck (item 2):** `scripts/regression60_cost_recheck.py` →
+  `results/processed/regression60_paper_cost_recheck.csv`.
+- **Break classification (item 3):** `scripts/regression60_classify_breaks.py` →
+  `regression60_break_types.csv`, `regression60_edit_size.csv`.
+- **GPT-5.5 repeat / minimal edit (items 4–5):** `results/raw/regression60_gpt_rep2/`,
+  `results/raw/regression60_gpt_minedit/`, prompt
+  `harness/prompts/reviewer_lcb_minimal_edit.txt`, tables `regression60_gpt_rep2_*.csv`,
+  `regression60_gpt_minedit_*.csv`.
+- **BigCodeBench (items 6–7a):** `harness/benchmarks/bigcodebench.py`,
+  `experiments/run_bcb_writers.py`, `experiments/task_lists/bcb_80.txt`, prompts
+  `harness/prompts/writer_bcb.txt` / `reviewer_bcb.txt`, `scripts/resume_bcb.sh`,
+  `tests/test_bigcodebench.py`; records `results/raw/regression60_bcb_drafts/`,
+  `regression60_bcb_reviews/`; tables `regression60_bcb_*.csv`.
+- **sortedcontainers check:** `scripts/regression60_check_3784_sortedcontainers.py`.
+- **Label pilot:** `experiments/configs/label_pilot_drafts.yaml`,
+  `label_study_pilot.yaml` (+ `_no_claude`, `_claude_only`),
+  `experiments/task_lists/label_pilot_10.txt`, records `results/raw/label_pilot/`,
+  analysis `scripts/label_pilot_analysis.py` → `results/processed/label_pilot_*.csv`.
+- **Chat brief:** `docs/CONTEXT_BRIEF_FOR_CHAT.md` (self-contained summary of all of this).
+
 ---
 
 ## For Miles: questions your professor may ask
@@ -1110,19 +1194,72 @@ hundreds of times. In this run the GPT reviewer has no tools, like Claude and Ge
 It thought much longer on these problems. Thinking tokens are billed as output.
 
 **"So which reviewer should you use?"**
-On this sample, GPT-5.5 is the cheapest and fastest reviewer (about $0.05 per review) but the only one that
-regularly breaks working code, by rewriting it heavily. Claude and Gemini almost never
-broke anything, and all three fixed about a third of failing drafts.
+GPT-5.5 is the cheapest reviewer (about $0.03–0.05 per review) but breaks working code
+most often on both benchmarks, by rewriting it. Claude breaks the least and, on
+BigCodeBench, fixes the most (18/99 vs 5 and 6). Gemini is cautious like Claude but fixes
+no more than GPT-5.5. If GPT-5.5 is used, add the minimal-edit line.
 
 **"Is GPT-5.5 significantly worse?"**
-Against Gemini, yes, even after correcting for multiple tests (9 vs 0 regressions on the
-same drafts). Against Claude, the difference (9 vs 1) is suggestive but not significant
-after correction.
+On LiveCodeBench: against Gemini yes (9 vs 0, Holm p = 0.023); against Claude 9 vs 1 is
+not significant (p = 0.11), and would be 9 vs 0 (p ≈ 0.02) if the grader had
+`sortedcontainers`. On BigCodeBench 12 vs 2 against Claude is borderline (Holm p =
+0.052). The direction is the same on both benchmarks.
 
 **"Does self-review break less?"**
 Pooled, a little (1.2% vs 2.5%), but that is mostly GPT-5.5 rewriting other models' code.
 Within each reviewer the samples are too small to say.
 
 **"Are the results comparable with the paper?"**
-Partly. The drafts are the paper's own, but the reviews use newer CLI versions, and the
-GPT reviewer has no tools.
+Partly. The LiveCodeBench drafts are the paper's own, but the reviews use newer CLI
+versions, and the GPT reviewer has no tools. BigCodeBench uses its own official grader
+and fresh drafts, so it is reported beside LiveCodeBench, not pooled.
+
+**"So was the paper wrong?"**
+Its statistics are not wrong: the paper's own code reproduces 83/116 and the review gains
+exactly. But 15 of GPT-5.5 solo's failures are correct code in a Markdown fence, which
+makes up 71% (OA) and 87% (OO) of the claimed gain from review. That needs
+reinterpreting. The cost tables are an actual error (item 2).
+
+**"Why were cached tokens counted twice?"**
+A bug, not a choice. The pricing formula adds input, cached and cache-creation tokens,
+which is right for Anthropic (input excludes cached) but wrong for OpenAI, whose
+`input_tokens` already include the cached tokens. This run had the same bug at first;
+it was caught because spend did not match OpenAI billing, and fixed. Cached tokens are
+still counted once, at the cheap rate.
+
+**"Does the reviewer prompt force a rewrite?"**
+No. It allows returning the original if correct, but asks for "an improved version" and
+"inefficiencies" and requires a full program. Each model chose how much to change; only
+GPT-5.5 rewrote by default. The minimal-edit line was tested only on GPT-5.5 (item 5).
+
+**"Why does GPT-5.5 change so much?"**
+It is a default, not a limit: with one "smallest change needed" line it left 74% of
+drafts unchanged and its mean edit fell from 47 to 5 lines. It rewrites its own drafts
+too, and part of the change is cosmetic. Why it defaults to rewriting (the agentic
+Codex CLI, training) is not tested here.
+
+**"Why did Gemini break 0 on LiveCodeBench?"**
+It changes less, and 0 vs Claude's 1 out of 162 is noise; it broke 4/139 on BigCodeBench.
+
+**"Didn't Claude and GPT-5.5 see these problems in training?"**
+Possibly (cutoffs Jan 2026 and Dec 2025; problems Jan–Apr 2025). Gemini 3.1 Pro's cutoff
+(Jan 2025) is before them, yet it solved the most (56/60), which argues against a large
+contamination advantage, though it is not proof. BigCodeBench (mid-2024) gives an equal-
+exposure comparison, and the pattern holds. Gemini 4 Neon (cutoff Mar 2026) could close
+the gap (~$40–60). Gemini 3.1 Pro was chosen as Google's flagship Pro model when added;
+the cutoff was not considered then.
+
+**"What does 'unusable' mean, and did the paper have any?"**
+No program to grade (CLI error, timeout, nothing extracted), not bad syntax; bad syntax
+is graded and fails. The paper had them on the hard slice only (mostly Claude CLI
+errors) and excluded them from its headline 116 tasks. Here: 0 in the main run; 2
+Gemini BigCodeBench drafts failed all 3 attempts.
+
+**"Did you run all the pairings?"**
+Yes: all 9 writer → reviewer pairings on both benchmarks (see "Results by model and
+pairing").
+
+**"Do authorship labels matter?"**
+Not measurably in the pilot (450 reviews): true, false, "you wrote this" and no label
+differ no more than two identical runs, and there is no self-preference. Small effects
+are not ruled out; the full study (~$280+) would be needed.
