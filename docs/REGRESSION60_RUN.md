@@ -1127,6 +1127,24 @@ Holm within reviewer.
 | Gemini | **Self-pref** (20) | 5 vs 4 | 26.4 vs 28.4 | 14 vs 14 | 1.0 |
 | Gemini | True vs no label (30) | 14 vs 14 | 18.5 vs 21.5 | 20 vs 21 | 1.0 |
 
+In the self-preference rows, both labels are false: "you wrote it" names the reviewer;
+"third model" names the model that is neither the reviewer nor the real author. Split by
+draft author, so the third model is explicit (10 drafts each; A = told "you wrote it",
+B = told the third model wrote it):
+
+| Reviewer | Real author | Third model named (B) | Drafts | Unchanged A vs B | Mean edit A vs B | Passing after A vs B | Fixes A vs B | Breaks A vs B |
+|---|---|---|---|---|---|---|---|---|
+| Claude | GPT-5.5 | Gemini | 10 | 5 vs 6 | 7.0 vs 2.8 | 7 vs 7 | 1 vs 1 | 0 vs 0 |
+| Claude | Gemini | GPT-5.5 | 10 | 2 vs 1 | 13.4 vs 25.3 | 6 vs 6 | 0 vs 0 | 0 vs 0 |
+| GPT-5.5 | Claude | Gemini | 10 | 0 vs 0 | 43.6 vs 54.9 | 6 vs 6 | 1 vs 1 | 0 vs 0 |
+| GPT-5.5 | Gemini | Claude | 10 | 0 vs 0 | 56.4 vs 60.2 | 6 vs 6 | 0 vs 0 | 0 vs 0 |
+| Gemini | Claude | GPT-5.5 | 10 | 1 vs 1 | 37.1 vs 40.3 | 7 vs 7 | 2 vs 2 | 0 vs 0 |
+| Gemini | GPT-5.5 | Claude | 10 | 4 vs 3 | 15.8 vs 16.5 | 7 vs 7 | 1 vs 1 | 0 vs 0 |
+
+Pass/fail, fixes and breaks are identical in every row. Edit size moves in both
+directions (Claude edits more when told Gemini wrote it is false: 2.8 vs 7.0; less when
+told GPT-5.5: 25.3 vs 13.4), with 10 drafts per row, within run-to-run noise.
+
 What it shows:
 
 - **No label effect beyond noise.** For every reviewer, the true, false and self labels
