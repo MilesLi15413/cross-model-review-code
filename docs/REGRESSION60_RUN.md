@@ -714,7 +714,9 @@ as graders and pass rates differ; report the two side by side.
 - **Contamination is partly addressed already for free.** Gemini's training cutoff
   (January 2025) predates every problem, so Gemini likely never saw them; it broke 0
   drafts. GPT-5.5, which may have seen them, broke 9. Prior exposure clearly does not
-  stop a reviewer from breaking code.
+  stop a reviewer from breaking code. As a writer, Gemini also passed the most (56/60 vs Claude 54, GPT-5.5
+  52), evidence against a large contamination effect (not proof; see Limitations, which
+  also notes Gemini 4 Neon as a way to close the training-date gap).
 
 ### How these feed the paper
 
@@ -804,6 +806,23 @@ each account at a spending cap (`--max-spend`).
   inflated. The regression measurement is less affected, since it asks what a reviewer
   does to a fixed draft. Gemini, the one reviewer that likely had not seen the problems,
   broke none of the drafts.
+
+  **Evidence that contamination is small, not proof.** If prior exposure gave Claude
+  and GPT-5.5 a large advantage, they should out-solve a model that never saw the
+  problems. They do not: Gemini, writing without exposure, passed **56/60**, more than
+  Claude (54/60) and GPT-5.5 (52/60). This argues against a large contamination effect.
+  It does not rule out a small one, because the models differ in ability as well as in
+  training dates: a stronger Gemini could hide a modest boost that exposure gave the
+  other two. BigCodeBench (released mid-2024, before all three cutoffs) gives a
+  comparison with equal exposure, and the reviewer pattern holds there.
+
+  **Possible follow-up: Gemini 4 Neon.** `gemini-4-neon` (generally available, training
+  cutoff March 2026) would put all three models after the problems, closing the gap in
+  training dates. It would mean rerunning every Gemini draft and review on both
+  benchmarks (estimated $40–60). Before deciding: confirm the API key can access it
+  (some users report it showing as unavailable) and that it is a comparable tier to
+  Gemini 3.1 Pro. Gemini 3.1 Pro was used because it was Google's flagship Pro model when
+  Gemini was added (2026-11-01); the training cutoff was not considered then.
 - **Gemini is a preview model,** and its behavior may change.
 - **Claude cost.** Claude runs on a Pro subscription, so it costs nothing. Its cost at
   API prices is recorded for comparison.
