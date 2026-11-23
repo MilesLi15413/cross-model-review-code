@@ -1,0 +1,13 @@
+study,reviewer,drafts,n,similarity,spearman_sim_vs_lines,p_spearman,mean_sim_unchanged,mean_sim_changed
+regression60,Claude,other models' only,120,text_sim,-0.393,8.993665040592354e-06,0.571,0.455
+regression60,Claude,other models' only,120,struct_sim,-0.315,0.00045445983538789427,0.649,0.585
+regression60,GPT-5.5,other models' only,120,text_sim,-0.48,3.004564169636222e-08,,0.467
+regression60,GPT-5.5,other models' only,120,struct_sim,-0.477,3.678864534702375e-08,,0.583
+regression60,Gemini,other models' only,120,text_sim,-0.29,0.001335268440425328,0.468,0.414
+regression60,Gemini,other models' only,120,struct_sim,-0.263,0.0036636324297532282,0.623,0.578
+label_pilot_no_label,Claude,other models' only,40,text_sim,-0.006,0.9709061219837976,0.412,0.44
+label_pilot_no_label,Claude,other models' only,40,struct_sim,0.143,0.3776484128871254,0.466,0.571
+label_pilot_no_label,GPT-5.5,other models' only,40,text_sim,-0.3,0.060203663742019124,,0.415
+label_pilot_no_label,GPT-5.5,other models' only,40,struct_sim,-0.253,0.11466364301096735,,0.507
+label_pilot_no_label,Gemini,other models' only,40,text_sim,-0.136,0.4029012917015104,0.422,0.366
+label_pilot_no_label,Gemini,other models' only,40,struct_sim,-0.033,0.8409675864174126,0.544,0.53

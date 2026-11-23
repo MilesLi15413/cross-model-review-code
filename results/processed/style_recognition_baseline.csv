@@ -1,0 +1,7 @@
+condition,classifier,accuracy,recall_claude,recall_gpt55,recall_gemini,confusion_rows_true_cols_pred_claude_gpt55_gemini
+raw,surface features (logistic),0.928,0.933,0.933,0.917,"[[56, 1, 3], [2, 56, 2], [3, 2, 55]]"
+raw,text tokens (naive Bayes),0.867,0.883,0.8,0.917,"[[53, 5, 2], [11, 48, 1], [4, 1, 55]]"
+raw,code structure only (naive Bayes),0.611,0.45,0.767,0.617,"[[27, 20, 13], [8, 46, 6], [12, 11, 37]]"
+nocomments,surface features (logistic),0.922,0.917,0.95,0.9,"[[55, 1, 4], [2, 57, 1], [4, 2, 54]]"
+nocomments,text tokens (naive Bayes),0.817,0.817,0.783,0.85,"[[49, 6, 5], [12, 47, 1], [7, 2, 51]]"
+nocomments,code structure only (naive Bayes),0.611,0.45,0.767,0.617,"[[27, 20, 13], [8, 46, 6], [12, 11, 37]]"

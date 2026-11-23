@@ -1,0 +1,7 @@
+Below is a Python solution to a programming problem. It was written by exactly one of
+these three AI models: {option_1}, {option_2}, {option_3}.
+
+Which model wrote it? Answer with exactly one word from the list above and nothing else.
+
+CODE:
+{code}
