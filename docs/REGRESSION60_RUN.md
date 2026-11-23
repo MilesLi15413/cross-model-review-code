@@ -1142,8 +1142,10 @@ B = told the third model wrote it):
 | Gemini | GPT-5.5 | Claude | 10 | 4 vs 3 | 15.8 vs 16.5 | 7 vs 7 | 1 vs 1 | 0 vs 0 |
 
 Pass/fail, fixes and breaks are identical in every row. Edit size moves in both
-directions (Claude edits more when told Gemini wrote it is false: 2.8 vs 7.0; less when
-told GPT-5.5: 25.3 vs 13.4), with 10 drafts per row, within run-to-run noise.
+directions: on GPT-5.5's drafts Claude edited more when told "you wrote it" than when
+told Gemini wrote it (7.0 vs 2.8 lines), while on Gemini's drafts it edited less when
+told "you wrote it" than when told GPT-5.5 wrote it (13.4 vs 25.3). With 10 drafts per
+row and no consistent direction, this is within run-to-run noise.
 
 What it shows:
 
