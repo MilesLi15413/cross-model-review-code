@@ -1,4 +1,4 @@
 condition,reviewer,own_drafts,said_self_on_own,hit_rate,other_drafts,said_self_on_other,false_alarm_rate,p_fisher,p_holm
 nocomments,Claude,60,15,0.25,120,31,0.258,0.6150861678912409,1.0
 nocomments,GPT-5.5,60,42,0.7,120,89,0.742,0.7802569098141214,1.0
-nocomments,Gemini,58,14,0.241,119,40,0.336,0.9292187096289581,1.0
+nocomments,Gemini,60,14,0.233,120,41,0.342,0.9531180254630753,1.0

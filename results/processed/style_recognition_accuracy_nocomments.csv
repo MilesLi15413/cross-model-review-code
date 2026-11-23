@@ -1,4 +1,4 @@
 condition,reviewer,calls,valid,correct,accuracy,ci_low,ci_high,p_vs_chance,p_holm
 nocomments,Claude,180,180,85,0.472,0.398,0.548,7.789708658060833e-05,0.00023369125974182498
 nocomments,GPT-5.5,180,180,59,0.328,0.26,0.402,0.5904623833330929,1.0
-nocomments,Gemini,177,177,46,0.26,0.197,0.331,0.9857702062883457,1.0
+nocomments,Gemini,180,180,46,0.256,0.194,0.326,0.9902959267766234,1.0
