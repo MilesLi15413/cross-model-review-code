@@ -108,7 +108,7 @@ ranking of reviewers. Claude solo most cost-effective.
 **Spend (approx., API rates, GPT-5.5 corrected):** regression-60 Gemini ~$43, OpenAI
 ~$8; GPT-5.5 repeat ~$7 and minimal-edit ~$7.5; BigCodeBench Gemini ~$25, OpenAI ~$10;
 Claude $0 (Pro plan). Free: regrades, cost recheck, break classification, paper-code
-rerun, sortedcontainers check. Label pilot: Gemini $28.58, OpenAI $7.41, Claude ~$32.70 usage credits.
+rerun, sortedcontainers check. Label pilot: Gemini $29.01, OpenAI $7.41, Claude ~$32.70 usage credits.
 
 ---
 
@@ -264,8 +264,8 @@ often "you wrote this"), *no label*; reviewers also list issues.
   passing, 13 failing), each reviewed 5× per reviewer (true, 2 false, no label, repeated
   no label for a noise floor) = 450 reviews. GPT-5.5 without tools (verified), drafts
   graded with the fence stripped, spending caps Gemini $29 / OpenAI $16.
-- **Pilot results:** 447/450 reviews done and graded (Gemini cap stopped 3; 0 invalid).
-  Spend: Gemini $28.58, GPT-5.5 $7.41, Claude $43.10 API-equivalent ($10.40 Pro, ~$32.70
+- **Pilot results:** all 450 reviews done and graded (0 invalid).
+  Spend: Gemini $29.01, GPT-5.5 $7.41, Claude $43.10 API-equivalent ($10.40 Pro, ~$32.70
   usage credits). Paired on the same drafts, Holm-corrected:
   - **No label effect beyond run-to-run noise** for any reviewer (true, false, self, no
     label all within the difference between two identical no-label runs).
@@ -330,8 +330,10 @@ matters, and asking for minimal edits largely prevents it.
   programs were capped and counted as too slow, the same rule as Stage 2.
 - BigCodeBench differs from LCB in grader, task type and selection (network tasks
   excluded), so report the two side by side, do not pool.
-- BigCodeBench Gemini has 78 drafts, not 80: bcb_303 (Gemini CLI error) and bcb_428
-  (every attempt invalid: "Model stream ended with malformed function call").
+- BigCodeBench Gemini has 78 drafts, not 80; both tasks failed all 3 attempts
+  (consistent, not chance): bcb_303 — Gemini API "malformed function call" error;
+  bcb_428 — complete code but in a Markdown block without the required `<solution>` tags,
+  invalid under the paper's output rule. Kept missing to keep the setup unchanged.
 - "Unusable" output means no program to grade (CLI error, timeout, nothing extracted),
   not bad syntax; bad syntax is graded and fails. The paper had unusable outputs on the
   hard slice only (Claude conditions 15–17 of 82, mostly Claude CLI errors; GPT-5.5

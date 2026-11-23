@@ -1,6 +1,6 @@
 {
   "manifest": "experiments/configs/label_pilot_drafts.yaml",
-  "config": "experiments/configs/label_study_pilot_claude_only.yaml",
+  "config": "experiments/configs/label_study_pilot_no_claude.yaml",
   "benchmark_config": "experiments/configs/livecodebench.yaml",
   "evidence": "none",
   "stop_on_limit": false,
@@ -8,9 +8,17 @@
   "label_seed": 20261101,
   "reviewers": [
     {
-      "family": "claude",
-      "cli": "claude",
-      "model": "claude-opus-4-7",
+      "family": "gpt",
+      "cli": "codex",
+      "model": "gpt-5.5",
+      "effort": "high",
+      "timeout_s": 30000,
+      "codex_home": "/Users/milesli/.codex-regression60"
+    },
+    {
+      "family": "gemini",
+      "cli": "gemini",
+      "model": "gemini-3.1-pro-preview",
       "effort": "high",
       "timeout_s": 30000
     }

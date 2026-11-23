@@ -66,7 +66,7 @@
     "template": "harness/prompts/writer_bcb.txt",
     "template_sha256": "406b0476e330059bdc047a141f80070af7e5734cef17b9d19e2fac0f219c1beb",
     "codex_home": null,
-    "runs_total": 2,
+    "runs_total": 3,
     "writer_cost_all_runs": 0.0
   }
 }

@@ -779,10 +779,13 @@ pairings. Differences:
 | GPT-5.5 | Gemini  | 1/40 | 4/40 | 14% | 13.5 |
 | GPT-5.5 | GPT-5.5 | 2/40 | 3/40 | 14% | 12 |
 
-Gemini has 78 drafts, not 80: on bcb_303 the Gemini CLI returned an error, and on
-bcb_428 every attempt was invalid ("Model stream ended with malformed function call").
-Those two tasks have no Gemini draft; retrying would cost cents and cannot change a
-conclusion.
+Gemini has 78 drafts, not 80. Both tasks failed on all 3 attempts (a third attempt was
+made on 2026-11-22, ~$0.10), so the failure is consistent, not chance: on bcb_303 the
+Gemini API ended with "Model stream ended with malformed function call"; on bcb_428
+Gemini returned complete code but in a Markdown block without the required
+`<solution>` tags, which the parser counts as invalid (the same output rule as the
+paper's). Accepting it would change the setup, so both stay missing; with 238 of 240
+drafts this cannot change a conclusion.
 
 Full tables: `results/processed/regression60_bcb_metrics.csv`, `_by_pair.csv`,
 `_transitions.csv` (every break and fix).
@@ -867,9 +870,9 @@ Estimated cost: Gemini $27–39, GPT-5.5 $8–14, Claude $0 (Pro plan). Files:
 `experiments/configs/label_pilot_drafts.yaml`, `label_study_pilot.yaml`,
 `results/raw/label_pilot/`, logs `results/raw/label_pilot.log`, `label_pilot_claude.log`.
 
-**Pilot results (2026-11-22).** 447 of 450 reviews done and graded (Claude 150, GPT-5.5
-150, Gemini 147; the Gemini cap stopped 3 reviews, ~$0.60 to finish), 0 invalid, 0
-grading errors. Spend: Gemini $28.58, GPT-5.5 $7.41, Claude $43.10 API-equivalent
+**Pilot results (2026-11-22).** All 450 reviews done and graded (150 per reviewer; the
+last 3 Gemini reviews were run after the cap at the user's request), 0 invalid, 0
+grading errors. Spend: Gemini $29.01, GPT-5.5 $7.41, Claude $43.10 API-equivalent
 ($10.40 on the Pro plan, ~$32.70 from usage credits). Analysis:
 `scripts/label_pilot_analysis.py` → `results/processed/label_pilot_contrasts.csv`
 (per-cell tables: `results/processed/label_pilot_*.csv`). Every comparison is paired on
@@ -884,9 +887,9 @@ Holm within reviewer.
 | GPT-5.5 | **Noise** (30) | 6 vs 5 | 34.6 vs 35.1 | 18 vs 18 | 1.0 |
 | GPT-5.5 | **Self-pref** (20) | 0 vs 0 | 50.0 vs 57.5 | 12 vs 12 | 1.0 |
 | GPT-5.5 | True vs no label (30) | 5 vs 6 | 36.2 vs 34.6 | 20 vs 18 | 1.0 |
-| Gemini | **Noise** (29) | 14 vs 14 | 20.7 vs 15.9 | 20 vs 19 | 1.0 |
+| Gemini | **Noise** (30) | 14 vs 14 | 21.5 vs 17.3 | 21 vs 20 | 1.0 |
 | Gemini | **Self-pref** (20) | 5 vs 4 | 26.4 vs 28.4 | 14 vs 14 | 1.0 |
-| Gemini | True vs no label (28) | 13 vs 13 | 17.6 vs 21.5 | 18 vs 19 | 1.0 |
+| Gemini | True vs no label (30) | 14 vs 14 | 18.5 vs 21.5 | 20 vs 21 | 1.0 |
 
 What it shows:
 
