@@ -1,0 +1,133 @@
+{
+  "task_id": "bcb_108",
+  "condition": "L_claude_by_gemini_none",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:38:40.873313+00:00",
+  "reviewer_finished_at": "2026-11-23T22:39:46.602772+00:00",
+  "writer_prompt_sha256": "1fb75c80ede2a37565110cb27897e6decb46b939011d3429c3cbc765c5256f33",
+  "reviewer_prompt_sha256": "1b5671a044d688f6bb7971e8ce28be6cad56d13ac6eae4e84a6cdd0b06985bd1",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 65.72949820899521,
+  "total_latency_s": 65.72949820899521,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8578,
+  "reviewer_output_tokens": 11281,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.152528,
+  "total_cost_usd": 0.152528,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"7672db38-ef4c-42bf-92ac-3e9c364e38fb\",\n  \"response\": \"<issues>\\n- `fig, ax = plt.subplots(figsize=(10, 8))` creates an empty, unused figure leading to a memory leak, because `decomposition.plot()` automatically generates and returns a new figure.\\n- The assignment `ax = plt.gca()` captures only the bottom-most subplot (residuals) of the decomposition figure, leaving the explicitly created `ax` unused.\\n- The check `if 'group' not in df.columns and ...` is arbitrary and checks for a 'group' column that is not part of the requirements.\\n- The single try/except block conflates `pd.to_datetime` and `.asfreq(freq)` errors, making it impossible to correctly separate \\\"invalid data types\\\" errors from \\\"invalid frequency string\\\" errors as required.\\n- The explicit exception messages do not exactly match the conditions given in the prompt instructions.\\n</issues>\\n<solution>\\nimport pandas as pd\\nimport matplotlib.pyplot as plt\\nfrom statsmodels.tsa.seasonal import seasonal_decompose\\n\\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\\n    if not isinstance(df, pd.DataFrame):\\n        raise ValueError(\\\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\\\")\\n    if 'date' not in df.columns or 'value' not in df.columns:\\n        raise ValueError(\\\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\\\")\\n    if not pd.api.types.is_numeric_dtype(df['value']):\\n        raise ValueError(\\\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\\\")\\n        \\n    if not isinstance(freq, str):\\n        raise ValueError(\\\"If 'freq' is not a valid frequency string.\\\")\\n    \\n    if decomposition_model not in ('additive', 'multiplicative'):\\n        raise ValueError(\\\"If 'decomposition_model' is not 'additive' or 'multiplicative'.\\\")\\n\\n    try:\\n        df = df.copy()\\n        df['date'] = pd.to_datetime(df['date'])\\n        df = df.set_index('date')\\n    except Exception:\\n        raise ValueError(\\\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\\\")\\n\\n    try:\\n        series = df['value'].asfreq(freq)\\n    except Exception:\\n        raise ValueError(\\\"If 'freq' is not a valid frequency string.\\\")\\n\\n    try:\\n        decomposition = seasonal_decompose(series, model=decomposition_model)\\n    except Exception as e:\\n        raise ValueError(f\\\"Decomposition failed: {e}\\\")\\n\\n    # decomposition.plot() creates and returns a new figure with 4 subplots\\n    fig = decomposition.plot()\\n    fig.set_size_inches(10, 8)\\n    \\n    # Return the first axes (the observed time series data)\\n    ax = fig.axes[0]\\n\\n    return decomposition, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 64763,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8578,\n          \"prompt\": 8578,\n          \"candidates\": 655,\n          \"total\": 19859,\n          \"cached\": 0,\n          \"thoughts\": 10626,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 64763,\n            \"tokens\": {\n              \"input\": 8578,\n              \"prompt\": 8578,\n              \"candidates\": 655,\n              \"total\": 19859,\n              \"cached\": 0,\n              \"thoughts\": 10626,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n    if 'group' not in df.columns and 'date' not in df.columns and 'value' not in df.columns:\n        raise ValueError(\"DataFrame lacks required columns.\")\n    if 'date' not in df.columns or 'value' not in df.columns:\n        raise ValueError(\"DataFrame must contain 'date' and 'value' columns.\")\n    if not pd.api.types.is_numeric_dtype(df['value']):\n        raise ValueError(\"'value' column must be numeric.\")\n    if not isinstance(freq, str):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n    if decomposition_model not in ('additive', 'multiplicative'):\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        df = df.copy()\n        df['date'] = pd.to_datetime(df['date'])\n        df = df.set_index('date')\n        series = df['value'].asfreq(freq)\n    except Exception as e:\n        raise ValueError(f\"Invalid data or frequency: {e}\")\n\n    try:\n        decomposition = seasonal_decompose(series, model=decomposition_model)\n    except Exception as e:\n        raise ValueError(f\"Decomposition failed: {e}\")\n\n    fig, ax = plt.subplots(figsize=(10, 8))\n    decomposition.plot()\n    ax = plt.gca()\n\n    return decomposition, ax",
+  "reviewer_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n    if 'date' not in df.columns or 'value' not in df.columns:\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n    if not pd.api.types.is_numeric_dtype(df['value']):\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n        \n    if not isinstance(freq, str):\n        raise ValueError(\"If 'freq' is not a valid frequency string.\")\n    \n    if decomposition_model not in ('additive', 'multiplicative'):\n        raise ValueError(\"If 'decomposition_model' is not 'additive' or 'multiplicative'.\")\n\n    try:\n        df = df.copy()\n        df['date'] = pd.to_datetime(df['date'])\n        df = df.set_index('date')\n    except Exception:\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n\n    try:\n        series = df['value'].asfreq(freq)\n    except Exception:\n        raise ValueError(\"If 'freq' is not a valid frequency string.\")\n\n    try:\n        decomposition = seasonal_decompose(series, model=decomposition_model)\n    except Exception as e:\n        raise ValueError(f\"Decomposition failed: {e}\")\n\n    # decomposition.plot() creates and returns a new figure with 4 subplots\n    fig = decomposition.plot()\n    fig.set_size_inches(10, 8)\n    \n    # Return the first axes (the observed time series data)\n    ax = fig.axes[0]\n\n    return decomposition, ax",
+  "final_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n    if 'date' not in df.columns or 'value' not in df.columns:\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n    if not pd.api.types.is_numeric_dtype(df['value']):\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n        \n    if not isinstance(freq, str):\n        raise ValueError(\"If 'freq' is not a valid frequency string.\")\n    \n    if decomposition_model not in ('additive', 'multiplicative'):\n        raise ValueError(\"If 'decomposition_model' is not 'additive' or 'multiplicative'.\")\n\n    try:\n        df = df.copy()\n        df['date'] = pd.to_datetime(df['date'])\n        df = df.set_index('date')\n    except Exception:\n        raise ValueError(\"If 'df' is not a DataFrame, lacks required columns, or contains invalid data types.\")\n\n    try:\n        series = df['value'].asfreq(freq)\n    except Exception:\n        raise ValueError(\"If 'freq' is not a valid frequency string.\")\n\n    try:\n        decomposition = seasonal_decompose(series, model=decomposition_model)\n    except Exception as e:\n        raise ValueError(f\"Decomposition failed: {e}\")\n\n    # decomposition.plot() creates and returns a new figure with 4 subplots\n    fig = decomposition.plot()\n    fig.set_size_inches(10, 8)\n    \n    # Return the first axes (the observed time series data)\n    ax = fig.axes[0]\n\n    return decomposition, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_108__W_claude.json",
+    "draft_sha256": "496704bd5669ecdff9a9eb0c476fc297e3003f9f46b5f7c02202fb93c008d17d",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "none",
+    "labeled_family": null,
+    "label_text": "",
+    "label_relation": "none",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "8e1c622f6ba7b7166019a5f8ee8792cb49b3ed61c2ddf15bd68c74e3efd03b7a",
+    "attempt_count": 1,
+    "final_artifact_sha256": "0b88695d94fa9cc022f716ff47e48f629e42af6dfeeb6604cebeea2a01975264",
+    "draft_unchanged": false,
+    "diff_lines": 32,
+    "issues_status": "tagged",
+    "issue_count": 5,
+    "issues": [
+      "`fig, ax = plt.subplots(figsize=(10, 8))` creates an empty, unused figure leading to a memory leak, because `decomposition.plot()` automatically generates and returns a new figure.",
+      "The assignment `ax = plt.gca()` captures only the bottom-most subplot (residuals) of the decomposition figure, leaving the explicitly created `ax` unused.",
+      "The check `if 'group' not in df.columns and ...` is arbitrary and checks for a 'group' column that is not part of the requirements.",
+      "The single try/except block conflates `pd.to_datetime` and `.asfreq(freq)` errors, making it impossible to correctly separate \"invalid data types\" errors from \"invalid frequency string\" errors as required.",
+      "The explicit exception messages do not exactly match the conditions given in the prompt instructions."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

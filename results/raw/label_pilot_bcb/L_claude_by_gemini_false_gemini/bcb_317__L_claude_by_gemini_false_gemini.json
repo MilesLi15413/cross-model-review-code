@@ -1,0 +1,130 @@
+{
+  "task_id": "bcb_317",
+  "condition": "L_claude_by_gemini_false_gemini",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:24:50.702293+00:00",
+  "reviewer_finished_at": "2026-11-23T22:25:21.912107+00:00",
+  "writer_prompt_sha256": "a631e569be5ee1a823bf62340889ffef9a33a75eaaaf1ee3110514afb8e5af13",
+  "reviewer_prompt_sha256": "46b1378ebb4f72f56be9e716e13d18f37fb12baae4ef3147f449c28277f2b6b4",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 31.209816791990306,
+  "total_latency_s": 31.209816791990306,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 3804,
+  "reviewer_output_tokens": 4798,
+  "reviewer_cached_input_tokens": 4521,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.0660882,
+  "total_cost_usd": 0.0660882,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"f0134afb-85ff-4c4b-9bd2-adaa0eb99460\",\n  \"response\": \"<issues>\\n- The regular expression `r'\\\\[.*?\\\\]'` used in `re.sub` lacks the `re.DOTALL` (or `re.S`) flag, which means it will fail to match and remove square brackets containing newline characters. \\n- Replacing the matched bracketed text with an empty string (`''`) can cause adjacent words outside the brackets to be incorrectly concatenated (e.g., `\\\"hello[world]there\\\"` becomes the single word `\\\"hellothere\\\"`). Replacing it with a space (`' '`) prevents unintended word concatenation.\\n</issues>\\n<solution>\\nimport numpy as np\\nfrom sklearn.feature_extraction.text import TfidfVectorizer\\nimport re\\n\\ndef task_func(example_str):\\n    # Remove text enclosed in square brackets, replacing with space to prevent concatenating adjacent words,\\n    # and using re.DOTALL to handle brackets that span multiple lines.\\n    text_outside = re.sub(r'\\\\[.*?\\\\]', ' ', example_str, flags=re.DOTALL)\\n    \\n    text_outside = text_outside.strip()\\n    if not text_outside:\\n        return {}\\n    \\n    vectorizer = TfidfVectorizer()\\n    try:\\n        # Treat the concatenated text as a single document\\n        tfidf_matrix = vectorizer.fit_transform([text_outside])\\n    except ValueError:\\n        # Happens if the text contains no valid words (e.g., only punctuation)\\n        return {}\\n    \\n    feature_names = vectorizer.get_feature_names_out()\\n    scores = tfidf_matrix.toarray()[0]\\n    \\n    return {word: float(score) for word, score in zip(feature_names, scores)}\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 30230,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 3804,\n          \"prompt\": 8325,\n          \"candidates\": 383,\n          \"total\": 13123,\n          \"cached\": 4521,\n          \"thoughts\": 4415,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 30230,\n            \"tokens\": {\n              \"input\": 3804,\n              \"prompt\": 8325,\n              \"candidates\": 383,\n              \"total\": 13123,\n              \"cached\": 4521,\n              \"thoughts\": 4415,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nimport re\ndef task_func(example_str):\n    # Remove text enclosed in square brackets\n    text_outside = re.sub(r'\\[.*?\\]', '', example_str)\n    # Split into sentences/segments for TF-IDF (treat each as a document)\n    # Use the cleaned text as a single document\n    text_outside = text_outside.strip()\n    if not text_outside:\n        return {}\n    \n    vectorizer = TfidfVectorizer()\n    try:\n        tfidf_matrix = vectorizer.fit_transform([text_outside])\n    except ValueError:\n        return {}\n    \n    feature_names = vectorizer.get_feature_names_out()\n    scores = tfidf_matrix.toarray()[0]\n    \n    return {word: float(score) for word, score in zip(feature_names, scores)}",
+  "reviewer_artifact": "import numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nimport re\n\ndef task_func(example_str):\n    # Remove text enclosed in square brackets, replacing with space to prevent concatenating adjacent words,\n    # and using re.DOTALL to handle brackets that span multiple lines.\n    text_outside = re.sub(r'\\[.*?\\]', ' ', example_str, flags=re.DOTALL)\n    \n    text_outside = text_outside.strip()\n    if not text_outside:\n        return {}\n    \n    vectorizer = TfidfVectorizer()\n    try:\n        # Treat the concatenated text as a single document\n        tfidf_matrix = vectorizer.fit_transform([text_outside])\n    except ValueError:\n        # Happens if the text contains no valid words (e.g., only punctuation)\n        return {}\n    \n    feature_names = vectorizer.get_feature_names_out()\n    scores = tfidf_matrix.toarray()[0]\n    \n    return {word: float(score) for word, score in zip(feature_names, scores)}",
+  "final_artifact": "import numpy as np\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nimport re\n\ndef task_func(example_str):\n    # Remove text enclosed in square brackets, replacing with space to prevent concatenating adjacent words,\n    # and using re.DOTALL to handle brackets that span multiple lines.\n    text_outside = re.sub(r'\\[.*?\\]', ' ', example_str, flags=re.DOTALL)\n    \n    text_outside = text_outside.strip()\n    if not text_outside:\n        return {}\n    \n    vectorizer = TfidfVectorizer()\n    try:\n        # Treat the concatenated text as a single document\n        tfidf_matrix = vectorizer.fit_transform([text_outside])\n    except ValueError:\n        # Happens if the text contains no valid words (e.g., only punctuation)\n        return {}\n    \n    feature_names = vectorizer.get_feature_names_out()\n    scores = tfidf_matrix.toarray()[0]\n    \n    return {word: float(score) for word, score in zip(feature_names, scores)}",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_317__W_claude.json",
+    "draft_sha256": "f17cdace0c44237adc06e64404a363b6d9db5f6a6f452f0126e2aeac90b62b1d",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gemini",
+    "label_text": "This code was written by Gemini.",
+    "label_relation": "self",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "eeaad18991c94e89ef44cb8fc4b0826a3bf42c4ce89703994f386a3627f11905",
+    "attempt_count": 1,
+    "final_artifact_sha256": "4f13bbe47d2a83edb70666afa9d60e5a8991010d3d9b2c3dd57e2f66700a3e61",
+    "draft_unchanged": false,
+    "diff_lines": 11,
+    "issues_status": "tagged",
+    "issue_count": 2,
+    "issues": [
+      "The regular expression `r'\\[.*?\\]'` used in `re.sub` lacks the `re.DOTALL` (or `re.S`) flag, which means it will fail to match and remove square brackets containing newline characters.",
+      "Replacing the matched bracketed text with an empty string (`''`) can cause adjacent words outside the brackets to be incorrectly concatenated (e.g., `\"hello[world]there\"` becomes the single word `\"hellothere\"`). Replacing it with a space (`' '`) prevents unintended word concatenation."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

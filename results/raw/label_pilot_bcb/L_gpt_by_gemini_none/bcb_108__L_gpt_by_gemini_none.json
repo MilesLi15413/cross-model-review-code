@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_108",
+  "condition": "L_gpt_by_gemini_none",
+  "benchmark": "bigcodebench",
+  "writer_model": "gpt-5.5",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "codex",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "codex-cli 0.163.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:20:23.426796+00:00",
+  "reviewer_finished_at": "2026-11-23T22:22:17.276781+00:00",
+  "writer_prompt_sha256": "1fb75c80ede2a37565110cb27897e6decb46b939011d3429c3cbc765c5256f33",
+  "reviewer_prompt_sha256": "6c0b33908f5a9e264b50f2c4b9f83bb35bd332e08cac4460b7adb66fc5581c7c",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 113.84745941699657,
+  "total_latency_s": 113.84745941699657,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8838,
+  "reviewer_output_tokens": 16969,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.221304,
+  "total_cost_usd": 0.221304,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"2f6b57fb-9291-40c0-b217-6f5681da7191\",\n  \"response\": \"<issues>\\n- The calculation for `period` is mathematically incorrect (`total_seconds() / total_seconds()` always equals 1), causing `period=2` to be hardcoded for all frequencies. This disables `seasonal_decompose`'s automatic frequency inferencing and applies incorrect seasonality (e.g., a period of 2 instead of 7 for daily data).\\n- The index validation does not explicitly check for `NaT` (Not-a-Time) values in the input `DatetimeIndex` or `PeriodIndex`, which could later cause reindexing or decomposition errors.\\n- Calling `.asfreq(freq)` may raise unexpected exceptions (e.g., if there are duplicate dates in the index), which should be caught and raised as a distinct `ValueError` to satisfy the requirements cleanly.\\n</issues>\\n<solution>\\nimport pandas as pd\\nimport matplotlib.pyplot as plt\\nfrom statsmodels.tsa.seasonal import seasonal_decompose\\n\\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\\n    if not isinstance(df, pd.DataFrame):\\n        raise ValueError(\\\"'df' must be a pandas DataFrame.\\\")\\n\\n    if 'value' not in df.columns:\\n        raise ValueError(\\\"'df' must contain a 'value' column.\\\")\\n\\n    if decomposition_model not in {'additive', 'multiplicative'}:\\n        raise ValueError(\\\"'decomposition_model' must be 'additive' or 'multiplicative'.\\\")\\n\\n    try:\\n        pd.tseries.frequencies.to_offset(freq)\\n    except (TypeError, ValueError):\\n        raise ValueError(\\\"'freq' must be a valid frequency string.\\\")\\n\\n    if df.empty:\\n        raise ValueError(\\\"'df' must not be empty.\\\")\\n\\n    values = pd.to_numeric(df['value'], errors='coerce')\\n    if values.isna().any():\\n        raise ValueError(\\\"'value' column must contain only valid numeric data.\\\")\\n\\n    if decomposition_model == 'multiplicative' and (values <= 0).any():\\n        raise ValueError(\\\"Multiplicative decomposition requires all values to be positive.\\\")\\n\\n    if isinstance(df.index, pd.DatetimeIndex):\\n        index = df.index\\n        if index.isna().any():\\n            raise ValueError(\\\"DatetimeIndex must not contain NaT.\\\")\\n    elif isinstance(df.index, pd.PeriodIndex):\\n        index = df.index.to_timestamp()\\n        if index.isna().any():\\n            raise ValueError(\\\"PeriodIndex must not contain NaT.\\\")\\n    elif 'date' in df.columns:\\n        dates = pd.to_datetime(df['date'], errors='coerce')\\n        if dates.isna().any():\\n            raise ValueError(\\\"'date' column must contain valid datetime values.\\\")\\n        index = pd.DatetimeIndex(dates)\\n    else:\\n        raise ValueError(\\\"'df' must have a DatetimeIndex, PeriodIndex, or a valid 'date' column.\\\")\\n\\n    series = pd.Series(values.to_numpy(), index=index, name='value')\\n    series = series.sort_index()\\n\\n    try:\\n        series = series.asfreq(freq)\\n    except Exception as e:\\n        raise ValueError(f\\\"Could not apply frequency '{freq}': {e}\\\")\\n\\n    if series.isna().any():\\n        series = series.interpolate(method='time').ffill().bfill()\\n\\n    try:\\n        # Omitting 'period' lets statsmodels automatically infer it from the freq string\\n        result = seasonal_decompose(\\n            series,\\n            model=decomposition_model,\\n            extrapolate_trend='freq'\\n        )\\n    except Exception as exc:\\n        raise ValueError(f\\\"Could not decompose the time series: {exc}\\\")\\n\\n    fig = result.plot()\\n    ax = fig.axes[0] if fig.axes else plt.gca()\\n\\n    return result, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 112823,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8838,\n          \"prompt\": 8838,\n          \"candidates\": 842,\n          \"total\": 25807,\n          \"cached\": 0,\n          \"thoughts\": 16127,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 112823,\n            \"tokens\": {\n              \"input\": 8838,\n              \"prompt\": 8838,\n              \"candidates\": 842,\n              \"total\": 25807,\n              \"cached\": 0,\n              \"thoughts\": 16127,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n\n    if 'value' not in df.columns:\n        raise ValueError(\"'df' must contain a 'value' column.\")\n\n    if decomposition_model not in {'additive', 'multiplicative'}:\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        offset = pd.tseries.frequencies.to_offset(freq)\n    except (TypeError, ValueError):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n\n    if df.empty:\n        raise ValueError(\"'df' must not be empty.\")\n\n    values = pd.to_numeric(df['value'], errors='coerce')\n    if values.isna().any():\n        raise ValueError(\"'value' column must contain only valid numeric data.\")\n\n    if decomposition_model == 'multiplicative' and (values <= 0).any():\n        raise ValueError(\"Multiplicative decomposition requires all values to be positive.\")\n\n    data = df.copy()\n\n    if isinstance(data.index, (pd.DatetimeIndex, pd.PeriodIndex)):\n        series = pd.Series(values.to_numpy(), index=data.index, name='value')\n    elif 'date' in data.columns:\n        dates = pd.to_datetime(data['date'], errors='coerce')\n        if dates.isna().any():\n            raise ValueError(\"'date' column must contain valid datetime values.\")\n        series = pd.Series(values.to_numpy(), index=pd.DatetimeIndex(dates), name='value')\n    else:\n        raise ValueError(\"'df' must have a DatetimeIndex, PeriodIndex, or a valid 'date' column.\")\n\n    series = series.sort_index()\n\n    try:\n        series = series.asfreq(freq)\n    except ValueError:\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n\n    if series.isna().any():\n        series = series.interpolate(method='time').ffill().bfill()\n\n    try:\n        period = max(2, int(round(pd.Timedelta(offset).total_seconds() / pd.Timedelta(offset).total_seconds())))\n    except (TypeError, ValueError):\n        period = None\n\n    try:\n        result = seasonal_decompose(\n            series,\n            model=decomposition_model,\n            period=period,\n            extrapolate_trend='freq'\n        )\n    except Exception as exc:\n        raise ValueError(f\"Could not decompose the time series: {exc}\")\n\n    fig = result.plot()\n    ax = fig.axes[0] if fig.axes else plt.gca()\n\n    return result, ax",
+  "reviewer_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n\n    if 'value' not in df.columns:\n        raise ValueError(\"'df' must contain a 'value' column.\")\n\n    if decomposition_model not in {'additive', 'multiplicative'}:\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        pd.tseries.frequencies.to_offset(freq)\n    except (TypeError, ValueError):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n\n    if df.empty:\n        raise ValueError(\"'df' must not be empty.\")\n\n    values = pd.to_numeric(df['value'], errors='coerce')\n    if values.isna().any():\n        raise ValueError(\"'value' column must contain only valid numeric data.\")\n\n    if decomposition_model == 'multiplicative' and (values <= 0).any():\n        raise ValueError(\"Multiplicative decomposition requires all values to be positive.\")\n\n    if isinstance(df.index, pd.DatetimeIndex):\n        index = df.index\n        if index.isna().any():\n            raise ValueError(\"DatetimeIndex must not contain NaT.\")\n    elif isinstance(df.index, pd.PeriodIndex):\n        index = df.index.to_timestamp()\n        if index.isna().any():\n            raise ValueError(\"PeriodIndex must not contain NaT.\")\n    elif 'date' in df.columns:\n        dates = pd.to_datetime(df['date'], errors='coerce')\n        if dates.isna().any():\n            raise ValueError(\"'date' column must contain valid datetime values.\")\n        index = pd.DatetimeIndex(dates)\n    else:\n        raise ValueError(\"'df' must have a DatetimeIndex, PeriodIndex, or a valid 'date' column.\")\n\n    series = pd.Series(values.to_numpy(), index=index, name='value')\n    series = series.sort_index()\n\n    try:\n        series = series.asfreq(freq)\n    except Exception as e:\n        raise ValueError(f\"Could not apply frequency '{freq}': {e}\")\n\n    if series.isna().any():\n        series = series.interpolate(method='time').ffill().bfill()\n\n    try:\n        # Omitting 'period' lets statsmodels automatically infer it from the freq string\n        result = seasonal_decompose(\n            series,\n            model=decomposition_model,\n            extrapolate_trend='freq'\n        )\n    except Exception as exc:\n        raise ValueError(f\"Could not decompose the time series: {exc}\")\n\n    fig = result.plot()\n    ax = fig.axes[0] if fig.axes else plt.gca()\n\n    return result, ax",
+  "final_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n\n    if 'value' not in df.columns:\n        raise ValueError(\"'df' must contain a 'value' column.\")\n\n    if decomposition_model not in {'additive', 'multiplicative'}:\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        pd.tseries.frequencies.to_offset(freq)\n    except (TypeError, ValueError):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n\n    if df.empty:\n        raise ValueError(\"'df' must not be empty.\")\n\n    values = pd.to_numeric(df['value'], errors='coerce')\n    if values.isna().any():\n        raise ValueError(\"'value' column must contain only valid numeric data.\")\n\n    if decomposition_model == 'multiplicative' and (values <= 0).any():\n        raise ValueError(\"Multiplicative decomposition requires all values to be positive.\")\n\n    if isinstance(df.index, pd.DatetimeIndex):\n        index = df.index\n        if index.isna().any():\n            raise ValueError(\"DatetimeIndex must not contain NaT.\")\n    elif isinstance(df.index, pd.PeriodIndex):\n        index = df.index.to_timestamp()\n        if index.isna().any():\n            raise ValueError(\"PeriodIndex must not contain NaT.\")\n    elif 'date' in df.columns:\n        dates = pd.to_datetime(df['date'], errors='coerce')\n        if dates.isna().any():\n            raise ValueError(\"'date' column must contain valid datetime values.\")\n        index = pd.DatetimeIndex(dates)\n    else:\n        raise ValueError(\"'df' must have a DatetimeIndex, PeriodIndex, or a valid 'date' column.\")\n\n    series = pd.Series(values.to_numpy(), index=index, name='value')\n    series = series.sort_index()\n\n    try:\n        series = series.asfreq(freq)\n    except Exception as e:\n        raise ValueError(f\"Could not apply frequency '{freq}': {e}\")\n\n    if series.isna().any():\n        series = series.interpolate(method='time').ffill().bfill()\n\n    try:\n        # Omitting 'period' lets statsmodels automatically infer it from the freq string\n        result = seasonal_decompose(\n            series,\n            model=decomposition_model,\n            extrapolate_trend='freq'\n        )\n    except Exception as exc:\n        raise ValueError(f\"Could not decompose the time series: {exc}\")\n\n    fig = result.plot()\n    ax = fig.axes[0] if fig.axes else plt.gca()\n\n    return result, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_gpt55/bcb_108__W_gpt55.json",
+    "draft_sha256": "b6db14bf37795948b4935ae8295a5e4c7f56979233014ec14a7d2f3bfbd23675",
+    "writer_family": "gpt",
+    "reviewer_family": "gemini",
+    "label_arm": "none",
+    "labeled_family": null,
+    "label_text": "",
+    "label_relation": "none",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "8e1c622f6ba7b7166019a5f8ee8792cb49b3ed61c2ddf15bd68c74e3efd03b7a",
+    "attempt_count": 1,
+    "final_artifact_sha256": "e0c775c344317acc89d0103cae20a164862e65704ee84a321266321298520d30",
+    "draft_unchanged": false,
+    "diff_lines": 32,
+    "issues_status": "tagged",
+    "issue_count": 3,
+    "issues": [
+      "The calculation for `period` is mathematically incorrect (`total_seconds() / total_seconds()` always equals 1), causing `period=2` to be hardcoded for all frequencies. This disables `seasonal_decompose`'s automatic frequency inferencing and applies incorrect seasonality (e.g., a period of 2 instead of 7 for daily data).",
+      "The index validation does not explicitly check for `NaT` (Not-a-Time) values in the input `DatetimeIndex` or `PeriodIndex`, which could later cause reindexing or decomposition errors.",
+      "Calling `.asfreq(freq)` may raise unexpected exceptions (e.g., if there are duplicate dates in the index), which should be caught and raised as a distinct `ValueError` to satisfy the requirements cleanly."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "Diff is 1374 characters long. Set self.maxDiff to None to see it. : DataFrame contents should match the expected output",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

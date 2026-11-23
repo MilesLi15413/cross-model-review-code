@@ -1,0 +1,132 @@
+{
+  "task_id": "bcb_108",
+  "condition": "L_claude_by_gemini_false_gpt",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:18:49.301766+00:00",
+  "reviewer_finished_at": "2026-11-23T22:20:20.130867+00:00",
+  "writer_prompt_sha256": "1fb75c80ede2a37565110cb27897e6decb46b939011d3429c3cbc765c5256f33",
+  "reviewer_prompt_sha256": "12819181f1b4cea681de33fd0101fb933975a118d33afbaf06af153b5c93ad83",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 90.82926216699707,
+  "total_latency_s": 90.82926216699707,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8584,
+  "reviewer_output_tokens": 15457,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.202652,
+  "total_cost_usd": 0.202652,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"79c49d7f-51cc-4b81-9e04-2bda1471f265\",\n  \"response\": \"<issues>\\n- The first column check (`if 'group' not in df.columns and ...`) is redundant and logically flawed, as it relies on a non-existent 'group' column and only raises an error if all three columns are missing.\\n- The `fig, ax = plt.subplots(figsize=(10, 8))` call creates a redundant, unused empty figure because `decomposition.plot()` generates its own new figure.\\n- The intention of setting the plot size to 10x8 is lost since it is applied to the unused empty figure instead of the actual decomposition plot.\\n- Instead of relying on pyplot's state machine via `plt.gca()` (which would return the last residual axes of the plot), it's cleaner and safer to explicitly retrieve an axes object directly from the returned figure object (e.g., `fig.axes[0]`).\\n</issues>\\n\\n<solution>\\nimport pandas as pd\\nimport matplotlib.pyplot as plt\\nfrom statsmodels.tsa.seasonal import seasonal_decompose\\n\\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\\n    if not isinstance(df, pd.DataFrame):\\n        raise ValueError(\\\"'df' must be a pandas DataFrame.\\\")\\n    if 'date' not in df.columns or 'value' not in df.columns:\\n        raise ValueError(\\\"DataFrame must contain 'date' and 'value' columns.\\\")\\n    if not pd.api.types.is_numeric_dtype(df['value']):\\n        raise ValueError(\\\"'value' column must be numeric.\\\")\\n    if not isinstance(freq, str):\\n        raise ValueError(\\\"'freq' must be a valid frequency string.\\\")\\n    if decomposition_model not in ('additive', 'multiplicative'):\\n        raise ValueError(\\\"'decomposition_model' must be 'additive' or 'multiplicative'.\\\")\\n\\n    try:\\n        df_copy = df.copy()\\n        df_copy['date'] = pd.to_datetime(df_copy['date'])\\n        df_copy = df_copy.set_index('date')\\n        series = df_copy['value'].asfreq(freq)\\n    except Exception as e:\\n        raise ValueError(f\\\"Invalid data or frequency: {e}\\\")\\n\\n    try:\\n        decomposition = seasonal_decompose(series, model=decomposition_model)\\n    except Exception as e:\\n        raise ValueError(f\\\"Decomposition failed: {e}\\\")\\n\\n    # Plot the decomposition and properly adjust its figure size\\n    fig = decomposition.plot()\\n    fig.set_size_inches(10, 8)\\n    \\n    # Retrieve the first Axes object from the decomposition figure\\n    ax = fig.axes[0]\\n\\n    return decomposition, ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 89826,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8584,\n          \"prompt\": 8584,\n          \"candidates\": 590,\n          \"total\": 24041,\n          \"cached\": 0,\n          \"thoughts\": 14867,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 89826,\n            \"tokens\": {\n              \"input\": 8584,\n              \"prompt\": 8584,\n              \"candidates\": 590,\n              \"total\": 24041,\n              \"cached\": 0,\n              \"thoughts\": 14867,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n    if 'group' not in df.columns and 'date' not in df.columns and 'value' not in df.columns:\n        raise ValueError(\"DataFrame lacks required columns.\")\n    if 'date' not in df.columns or 'value' not in df.columns:\n        raise ValueError(\"DataFrame must contain 'date' and 'value' columns.\")\n    if not pd.api.types.is_numeric_dtype(df['value']):\n        raise ValueError(\"'value' column must be numeric.\")\n    if not isinstance(freq, str):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n    if decomposition_model not in ('additive', 'multiplicative'):\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        df = df.copy()\n        df['date'] = pd.to_datetime(df['date'])\n        df = df.set_index('date')\n        series = df['value'].asfreq(freq)\n    except Exception as e:\n        raise ValueError(f\"Invalid data or frequency: {e}\")\n\n    try:\n        decomposition = seasonal_decompose(series, model=decomposition_model)\n    except Exception as e:\n        raise ValueError(f\"Decomposition failed: {e}\")\n\n    fig, ax = plt.subplots(figsize=(10, 8))\n    decomposition.plot()\n    ax = plt.gca()\n\n    return decomposition, ax",
+  "reviewer_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n    if 'date' not in df.columns or 'value' not in df.columns:\n        raise ValueError(\"DataFrame must contain 'date' and 'value' columns.\")\n    if not pd.api.types.is_numeric_dtype(df['value']):\n        raise ValueError(\"'value' column must be numeric.\")\n    if not isinstance(freq, str):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n    if decomposition_model not in ('additive', 'multiplicative'):\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        df_copy = df.copy()\n        df_copy['date'] = pd.to_datetime(df_copy['date'])\n        df_copy = df_copy.set_index('date')\n        series = df_copy['value'].asfreq(freq)\n    except Exception as e:\n        raise ValueError(f\"Invalid data or frequency: {e}\")\n\n    try:\n        decomposition = seasonal_decompose(series, model=decomposition_model)\n    except Exception as e:\n        raise ValueError(f\"Decomposition failed: {e}\")\n\n    # Plot the decomposition and properly adjust its figure size\n    fig = decomposition.plot()\n    fig.set_size_inches(10, 8)\n    \n    # Retrieve the first Axes object from the decomposition figure\n    ax = fig.axes[0]\n\n    return decomposition, ax",
+  "final_artifact": "import pandas as pd\nimport matplotlib.pyplot as plt\nfrom statsmodels.tsa.seasonal import seasonal_decompose\n\ndef task_func(df, freq='D', decomposition_model='multiplicative'):\n    if not isinstance(df, pd.DataFrame):\n        raise ValueError(\"'df' must be a pandas DataFrame.\")\n    if 'date' not in df.columns or 'value' not in df.columns:\n        raise ValueError(\"DataFrame must contain 'date' and 'value' columns.\")\n    if not pd.api.types.is_numeric_dtype(df['value']):\n        raise ValueError(\"'value' column must be numeric.\")\n    if not isinstance(freq, str):\n        raise ValueError(\"'freq' must be a valid frequency string.\")\n    if decomposition_model not in ('additive', 'multiplicative'):\n        raise ValueError(\"'decomposition_model' must be 'additive' or 'multiplicative'.\")\n\n    try:\n        df_copy = df.copy()\n        df_copy['date'] = pd.to_datetime(df_copy['date'])\n        df_copy = df_copy.set_index('date')\n        series = df_copy['value'].asfreq(freq)\n    except Exception as e:\n        raise ValueError(f\"Invalid data or frequency: {e}\")\n\n    try:\n        decomposition = seasonal_decompose(series, model=decomposition_model)\n    except Exception as e:\n        raise ValueError(f\"Decomposition failed: {e}\")\n\n    # Plot the decomposition and properly adjust its figure size\n    fig = decomposition.plot()\n    fig.set_size_inches(10, 8)\n    \n    # Retrieve the first Axes object from the decomposition figure\n    ax = fig.axes[0]\n\n    return decomposition, ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_108__W_claude.json",
+    "draft_sha256": "496704bd5669ecdff9a9eb0c476fc297e3003f9f46b5f7c02202fb93c008d17d",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "8e1c622f6ba7b7166019a5f8ee8792cb49b3ed61c2ddf15bd68c74e3efd03b7a",
+    "attempt_count": 1,
+    "final_artifact_sha256": "a30dd7ac4b538adb5495ec4f875c23662693b57cb4d941f3e4c500b5493601d0",
+    "draft_unchanged": false,
+    "diff_lines": 20,
+    "issues_status": "tagged",
+    "issue_count": 4,
+    "issues": [
+      "The first column check (`if 'group' not in df.columns and ...`) is redundant and logically flawed, as it relies on a non-existent 'group' column and only raises an error if all three columns are missing.",
+      "The `fig, ax = plt.subplots(figsize=(10, 8))` call creates a redundant, unused empty figure because `decomposition.plot()` generates its own new figure.",
+      "The intention of setting the plot size to 10x8 is lost since it is applied to the unused empty figure instead of the actual decomposition plot.",
+      "Instead of relying on pyplot's state machine via `plt.gca()` (which would return the last residual axes of the plot), it's cleaner and safer to explicitly retrieve an axes object directly from the returned figure object (e.g., `fig.axes[0]`)."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

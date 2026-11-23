@@ -38,6 +38,7 @@ CLI_FAMILIES = {"claude": "claude", "codex": "gpt", "gemini": "gemini"}
 ARMS = ("true", "false", "none")
 FROZEN_DIRS = ("results/raw/lcb_hard_full", "results/raw/lcb_medium_100")
 MAX_ATTEMPTS = 2
+BENCHMARK = "livecodebench"
 SPEND_MARGIN_USD = 1.0
 
 
@@ -210,7 +211,7 @@ def new_record(cell: Dict[str, object], label: str, evidence_mode: str, evidence
     return TaskRecord(
         task_id=draft.task_id,
         condition=str(cell["condition"]),
-        benchmark="livecodebench",
+        benchmark=BENCHMARK,
         writer_model=source.writer_model,
         reviewer_model=str(reviewer["model"]),
         writer_effort=source.writer_effort,
@@ -355,6 +356,25 @@ def grade_records(checkpoint_dir: str, config_path: str, benchmark_config_path: 
     return counts
 
 
+def grade_records_bcb(checkpoint_dir: str) -> Dict[str, int]:
+    """BigCodeBench: grade every final program (unchanged ones too) with BigCodeBench's own
+    evaluator, as in the regression-60 BigCodeBench run."""
+
+    from harness.benchmarks import bigcodebench as bcb
+
+    tracker = CostTracker()
+    pending = []
+    for condition_dir in sorted(path for path in Path(checkpoint_dir).iterdir() if path.is_dir()):
+        pending += [(r, condition_dir) for r in tracker.load_all(str(condition_dir))
+                    if r.passed is None and tracker.record_is_complete(r)]
+    if not pending:
+        return {"scored": 0}
+    counts = bcb.grade_records([r for r, _ in pending], Path(checkpoint_dir).name)
+    for record, condition_dir in pending:
+        tracker.save(record, str(condition_dir))
+    return counts
+
+
 def assert_not_frozen(checkpoint_dir: str) -> None:
     target = Path(checkpoint_dir).resolve()
     for frozen in FROZEN_DIRS:
@@ -390,6 +410,10 @@ def main() -> None:
     parser.add_argument("--checkpoint", help="Output directory for reviewer records")
     parser.add_argument("--config", default="experiments/configs/label_study.yaml")
     parser.add_argument("--benchmark-config", default="experiments/configs/livecodebench.yaml")
+    parser.add_argument("--benchmark", choices=["livecodebench", "bigcodebench"], default="livecodebench")
+    parser.add_argument("--limit-per-reviewer", type=int, default=0,
+                        help="Run at most N new reviews per reviewer family (cost pilot)")
+    parser.add_argument("--grade-only", action="store_true")
     parser.add_argument("--evidence", choices=["none", "public_tests"], default="none")
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--stop-on-limit", action="store_true")
@@ -413,12 +437,23 @@ def main() -> None:
         args.evidence = meta["evidence"]
         args.stop_on_limit = meta["stop_on_limit"]
         args.repeat_none = meta.get("repeat_none", False)
+        args.benchmark = meta.get("benchmark", "livecodebench")
         for paused in Path(args.resume).glob("PAUSED"):
             paused.unlink()
     if not args.manifest or not args.checkpoint:
         parser.error("--manifest and --checkpoint are required (or use --resume)")
 
     assert_not_frozen(args.checkpoint)
+    global BENCHMARK
+    BENCHMARK = args.benchmark
+    if args.benchmark == "bigcodebench" and args.evidence != "none":
+        parser.error("BigCodeBench supports --evidence none only")
+    if args.grade_only:
+        if args.benchmark == "bigcodebench":
+            print(f"Grading: {grade_records_bcb(args.checkpoint)}")
+        else:
+            print(f"Grading: {grade_records(args.checkpoint, args.config, args.benchmark_config)}")
+        return
     study = yaml.safe_load(Path(args.config).read_text())
     seed = int(study["label_seed"])
     reviewers = study["reviewers"]
@@ -452,6 +487,7 @@ def main() -> None:
                 "evidence": args.evidence,
                 "stop_on_limit": args.stop_on_limit,
                 "repeat_none": args.repeat_none,
+                "benchmark": args.benchmark,
                 "label_seed": seed,
                 "reviewers": reviewers,
                 "template": study["template"],
@@ -466,12 +502,27 @@ def main() -> None:
         args.skip_preflight,
     )
 
-    config = merge_configs(args.config, "livecodebench", args.benchmark_config)
-    adapter = get_adapter("livecodebench", config)
     task_ids = sorted({draft.task_id for draft in drafts})
-    templates = {task_id: adapter.render_template(task_id, template) for task_id in task_ids}
+    if args.benchmark == "bigcodebench":
+        from harness.benchmarks import bigcodebench as bcb
+
+        bcb_tasks = bcb.load_tasks()
+        templates = {task_id: bcb.render(template, bcb_tasks[task_id]) for task_id in task_ids}
+    else:
+        config = merge_configs(args.config, "livecodebench", args.benchmark_config)
+        adapter = get_adapter("livecodebench", config)
+        templates = {task_id: adapter.render_template(task_id, template) for task_id in task_ids}
     evidence = evidence_for(drafts, args.evidence, args.config, args.benchmark_config)
     pending = [cell for cell in cells if not is_cell_done(tracker, cell, args.checkpoint)]
+    if args.limit_per_reviewer:
+        taken: Dict[str, int] = defaultdict(int)
+        limited = []
+        for cell in pending:
+            family = str(cell["reviewer"]["family"])
+            if taken[family] < args.limit_per_reviewer:
+                taken[family] += 1
+                limited.append(cell)
+        pending = limited
     print(f"{len(cells) - len(pending)} cells already done, {len(pending)} to run.")
 
     stop = threading.Event()
@@ -550,7 +601,10 @@ def main() -> None:
             f"  python experiments/run_label_study.py --resume {args.checkpoint}"
         )
     if not args.skip_eval:
-        print(f"Grading: {grade_records(args.checkpoint, args.config, args.benchmark_config)}")
+        if args.benchmark == "bigcodebench":
+            print(f"Grading: {grade_records_bcb(args.checkpoint)}")
+        else:
+            print(f"Grading: {grade_records(args.checkpoint, args.config, args.benchmark_config)}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,16 @@
+# Same as label_study_bcb.yaml without the Claude reviewer, to run GPT/Gemini cells first. Same checkpoint; finished cells are skipped.
+pricing_path: experiments/configs/pricing.yaml
+template: harness/prompts/reviewer_bcb_label_study.txt
+label_seed: 20261101
+reviewers:
+- family: gpt
+  cli: codex
+  model: gpt-5.5
+  effort: high
+  timeout_s: 30000
+  codex_home: /Users/milesli/.codex-regression60
+- family: gemini
+  cli: gemini
+  model: gemini-3.1-pro-preview
+  effort: high
+  timeout_s: 30000

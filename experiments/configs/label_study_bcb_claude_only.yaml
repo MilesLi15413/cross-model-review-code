@@ -1,0 +1,10 @@
+# Same as label_study_bcb.yaml with only the Claude reviewer, run alongside the GPT/Gemini run. Same checkpoint; finished cells are skipped.
+pricing_path: experiments/configs/pricing.yaml
+template: harness/prompts/reviewer_bcb_label_study.txt
+label_seed: 20261101
+reviewers:
+- family: claude
+  cli: claude
+  model: claude-opus-4-7
+  effort: high
+  timeout_s: 30000

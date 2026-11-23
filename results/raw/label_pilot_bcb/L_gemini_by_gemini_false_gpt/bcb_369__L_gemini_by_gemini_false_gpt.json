@@ -1,0 +1,127 @@
+{
+  "task_id": "bcb_369",
+  "condition": "L_gemini_by_gemini_false_gpt",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:16:24.288269+00:00",
+  "reviewer_finished_at": "2026-11-23T22:16:45.819522+00:00",
+  "writer_prompt_sha256": "e069a4a7ffd98eb32b5032c4617f5088333a1e1744cb9265d2517b2c9d2e9ee2",
+  "reviewer_prompt_sha256": "9dd47302a34eafee44b80dd015cb2ec04926ea990780ad5611dabbf9205efd59",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 21.53128341700358,
+  "total_latency_s": 21.53128341700358,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8375,
+  "reviewer_output_tokens": 2679,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.048898,
+  "total_cost_usd": 0.048898,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"d5d70d91-20e4-4e13-afb8-e2b50a7d2560\",\n  \"response\": \"<issues>none</issues>\\n<solution>\\nimport numpy as np\\nfrom scipy import stats\\nimport matplotlib.pyplot as plt\\n\\ndef task_func(l):\\n    l = np.asarray(l).flatten()\\n    fig, ax = plt.subplots()\\n    if l.size == 0:\\n        return ax\\n        \\n    mu, std = stats.norm.fit(l)\\n    \\n    # Plot the histogram.\\n    ax.hist(l, bins='auto', density=True, alpha=0.7)\\n    \\n    # Plot the Gaussian PDF fit.\\n    xmin, xmax = ax.get_xlim()\\n    x = np.linspace(xmin, xmax, 100)\\n    p = stats.norm.pdf(x, mu, std)\\n    ax.plot(x, p, linewidth=2)\\n    \\n    # Set the title with exactly two spaces after the comma, as specified.\\n    ax.set_title(f\\\"Fit results: mu = {mu:.2f},  std = {std:.2f}\\\")\\n    \\n    return ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 20533,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8375,\n          \"prompt\": 8375,\n          \"candidates\": 250,\n          \"total\": 11054,\n          \"cached\": 0,\n          \"thoughts\": 2429,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 20533,\n            \"tokens\": {\n              \"input\": 8375,\n              \"prompt\": 8375,\n              \"candidates\": 250,\n              \"total\": 11054,\n              \"cached\": 0,\n              \"thoughts\": 2429,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nfrom scipy import stats\nimport matplotlib.pyplot as plt\n\ndef task_func(l):\n    l = np.array(list(l))\n    fig, ax = plt.subplots()\n    if l.size == 0:\n        return ax\n        \n    mu, std = stats.norm.fit(l)\n    \n    # Plot the histogram.\n    ax.hist(l, bins='auto', density=True, alpha=0.7)\n    \n    # Plot the Gaussian PDF fit.\n    xmin, xmax = ax.get_xlim()\n    x = np.linspace(xmin, xmax, 100)\n    p = stats.norm.pdf(x, mu, std)\n    ax.plot(x, p, linewidth=2)\n    \n    # Set the title with exactly two spaces after the comma, as specified.\n    ax.set_title(f\"Fit results: mu = {mu:.2f},  std = {std:.2f}\")\n    \n    return ax",
+  "reviewer_artifact": "import numpy as np\nfrom scipy import stats\nimport matplotlib.pyplot as plt\n\ndef task_func(l):\n    l = np.asarray(l).flatten()\n    fig, ax = plt.subplots()\n    if l.size == 0:\n        return ax\n        \n    mu, std = stats.norm.fit(l)\n    \n    # Plot the histogram.\n    ax.hist(l, bins='auto', density=True, alpha=0.7)\n    \n    # Plot the Gaussian PDF fit.\n    xmin, xmax = ax.get_xlim()\n    x = np.linspace(xmin, xmax, 100)\n    p = stats.norm.pdf(x, mu, std)\n    ax.plot(x, p, linewidth=2)\n    \n    # Set the title with exactly two spaces after the comma, as specified.\n    ax.set_title(f\"Fit results: mu = {mu:.2f},  std = {std:.2f}\")\n    \n    return ax",
+  "final_artifact": "import numpy as np\nfrom scipy import stats\nimport matplotlib.pyplot as plt\n\ndef task_func(l):\n    l = np.asarray(l).flatten()\n    fig, ax = plt.subplots()\n    if l.size == 0:\n        return ax\n        \n    mu, std = stats.norm.fit(l)\n    \n    # Plot the histogram.\n    ax.hist(l, bins='auto', density=True, alpha=0.7)\n    \n    # Plot the Gaussian PDF fit.\n    xmin, xmax = ax.get_xlim()\n    x = np.linspace(xmin, xmax, 100)\n    p = stats.norm.pdf(x, mu, std)\n    ax.plot(x, p, linewidth=2)\n    \n    # Set the title with exactly two spaces after the comma, as specified.\n    ax.set_title(f\"Fit results: mu = {mu:.2f},  std = {std:.2f}\")\n    \n    return ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_369__W_gemini.json",
+    "draft_sha256": "1d3cd3a039237cdcfcf7da9e3d31fb0a5e25c1f6d78ac08c357d37667e297bf8",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "ee35ec0a87de631164d13def59308026e768333609a58f2d870665bdc80e29d0",
+    "attempt_count": 1,
+    "final_artifact_sha256": "b551ee009b0dee842a90dc856ba778a4d5dddf7e92a6de1de8887901a79a1a60",
+    "draft_unchanged": false,
+    "diff_lines": 2,
+    "issues_status": "none_reported",
+    "issue_count": 0,
+    "issues": [],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

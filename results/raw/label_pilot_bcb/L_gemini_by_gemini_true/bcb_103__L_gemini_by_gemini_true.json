@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_103",
+  "condition": "L_gemini_by_gemini_true",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:08:20.293573+00:00",
+  "reviewer_finished_at": "2026-11-23T22:09:51.572100+00:00",
+  "writer_prompt_sha256": "babcd5ec601fdcc4e7c4d9b169f15baffff0172a54c1d025c9af53c97266cd0b",
+  "reviewer_prompt_sha256": "fd522d33e39798e4fbcf517930dc79a202abf08b2e7bcb4c0d74be87ff736991",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 91.27868229200249,
+  "total_latency_s": 91.27868229200249,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8634,
+  "reviewer_output_tokens": 13261,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.1764,
+  "total_cost_usd": 0.1764,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"c8d4d539-d52c-4d3b-92c9-b888b8876b17\",\n  \"response\": \"<issues>\\n- The solution incorrectly assumes the DataFrame contains 'City' and 'Temperature' columns by default. Standard datasets for this type of problem typically use 'Date', 'Time', and 'New York' as columns. The validation should be robust enough to handle the primary expected format or both formats.\\n- The logic for identifying daytime temperatures incorrectly assumes the 'Time' column contains descriptive strings like 'Day' or 'Daytime'. In standard datasets, the 'Time' column contains timestamp values (e.g., '12:00:00'), which requires converting to datetime and filtering by typical daytime hours (e.g., 06:00 to 18:00).\\n- Because of the naive daytime filtering, passing actual time data will trigger the fallback logic (`time_col == 'Day'`), resulting in an empty DataFrame and an empty, flatlined plot. \\n</issues>\\n\\n<solution>\\nimport matplotlib.pyplot as plt\\nimport pandas as pd\\n\\ndef task_func(temperatures):\\n    if not isinstance(temperatures, pd.DataFrame) or temperatures.empty:\\n        raise ValueError(\\\"If the input DataFrame is not in the expected format or empty.\\\")\\n        \\n    # Support both potential DataFrame formats\\n    if 'Date' in temperatures.columns and 'Time' in temperatures.columns and 'New York' in temperatures.columns:\\n        df = temperatures.copy()\\n        temp_col = 'New York'\\n    elif all(col in temperatures.columns for col in ['Date', 'City', 'Time', 'Temperature']):\\n        df = temperatures[temperatures['City'] == 'New York'].copy()\\n        temp_col = 'Temperature'\\n    else:\\n        raise ValueError(\\\"If the input DataFrame is not in the expected format or empty.\\\")\\n        \\n    # Convert 'Date' to datetime for proper sorting and plotting\\n    df['Date'] = pd.to_datetime(df['Date'])\\n    \\n    # Filter for daytime temperatures (typically defined as hours between 6 and 18 inclusive)\\n    time_objs = pd.to_datetime(df['Time'].astype(str), errors='coerce')\\n    if not time_objs.isna().all():\\n        day_mask = (time_objs.dt.hour >= 6) & (time_objs.dt.hour <= 18)\\n    else:\\n        # Fallback if 'Time' is represented purely as string labels (e.g., 'Day')\\n        day_mask = df['Time'].astype(str).str.contains('Day|day', case=False)\\n        \\n    df_day = df[day_mask]\\n    \\n    # Calculate daily average daytime temperatures\\n    df_calc = df_day.groupby('Date')[temp_col].mean().reset_index()\\n    \\n    # Create the plot\\n    fig, ax = plt.subplots()\\n    ax.plot(df_calc['Date'], df_calc[temp_col])\\n    \\n    # Set labels and title with the requested Arial font\\n    ax.set_xlabel('Date', fontname='Arial')\\n    ax.set_ylabel('Temperature (\u00b0C)', fontname='Arial')\\n    ax.set_title('Daily Temperatures in New York', fontname='Arial')\\n    \\n    # Apply Arial font to tick labels\\n    for label in ax.get_xticklabels() + ax.get_yticklabels():\\n        label.set_fontname('Arial')\\n        \\n    return ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 90296,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8634,\n          \"prompt\": 8634,\n          \"candidates\": 762,\n          \"total\": 21895,\n          \"cached\": 0,\n          \"thoughts\": 12499,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 90296,\n            \"tokens\": {\n              \"input\": 8634,\n              \"prompt\": 8634,\n              \"candidates\": 762,\n              \"total\": 21895,\n              \"cached\": 0,\n              \"thoughts\": 12499,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndef task_func(temperatures):\n    if not isinstance(temperatures, pd.DataFrame) or temperatures.empty:\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n        \n    expected_cols = ['Date', 'City', 'Time', 'Temperature']\n    if not all(col in temperatures.columns for col in expected_cols):\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n        \n    # Filter for New York\n    ny_mask = temperatures['City'] == 'New York'\n    \n    # Filter for daytime\n    time_col = temperatures['Time']\n    if (time_col == 'Day').any():\n        day_mask = time_col == 'Day'\n    elif (time_col == 'Daytime').any():\n        day_mask = time_col == 'Daytime'\n    else:\n        day_mask = time_col == 'Day'  # default fallback\n        \n    df = temperatures[ny_mask & day_mask].copy()\n    \n    # Attempt to convert dates for chronological sorting\n    try:\n        df['Date'] = pd.to_datetime(df['Date'])\n    except Exception:\n        pass\n        \n    # Calculate daily daytime temperatures (handles potential duplicates per day)\n    df_calc = df.groupby('Date', dropna=True)['Temperature'].mean().reset_index()\n    \n    # Create the plot\n    fig, ax = plt.subplots()\n    ax.plot(df_calc['Date'], df_calc['Temperature'])\n    \n    # Set labels and title with the requested Arial font\n    ax.set_xlabel('Date', fontname='Arial')\n    ax.set_ylabel('Temperature (\u00b0C)', fontname='Arial')\n    ax.set_title('Daily Temperatures in New York', fontname='Arial')\n    \n    # Apply Arial font to tick labels as well\n    for label in ax.get_xticklabels() + ax.get_yticklabels():\n        label.set_fontname('Arial')\n        \n    return ax",
+  "reviewer_artifact": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndef task_func(temperatures):\n    if not isinstance(temperatures, pd.DataFrame) or temperatures.empty:\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n        \n    # Support both potential DataFrame formats\n    if 'Date' in temperatures.columns and 'Time' in temperatures.columns and 'New York' in temperatures.columns:\n        df = temperatures.copy()\n        temp_col = 'New York'\n    elif all(col in temperatures.columns for col in ['Date', 'City', 'Time', 'Temperature']):\n        df = temperatures[temperatures['City'] == 'New York'].copy()\n        temp_col = 'Temperature'\n    else:\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n        \n    # Convert 'Date' to datetime for proper sorting and plotting\n    df['Date'] = pd.to_datetime(df['Date'])\n    \n    # Filter for daytime temperatures (typically defined as hours between 6 and 18 inclusive)\n    time_objs = pd.to_datetime(df['Time'].astype(str), errors='coerce')\n    if not time_objs.isna().all():\n        day_mask = (time_objs.dt.hour >= 6) & (time_objs.dt.hour <= 18)\n    else:\n        # Fallback if 'Time' is represented purely as string labels (e.g., 'Day')\n        day_mask = df['Time'].astype(str).str.contains('Day|day', case=False)\n        \n    df_day = df[day_mask]\n    \n    # Calculate daily average daytime temperatures\n    df_calc = df_day.groupby('Date')[temp_col].mean().reset_index()\n    \n    # Create the plot\n    fig, ax = plt.subplots()\n    ax.plot(df_calc['Date'], df_calc[temp_col])\n    \n    # Set labels and title with the requested Arial font\n    ax.set_xlabel('Date', fontname='Arial')\n    ax.set_ylabel('Temperature (\u00b0C)', fontname='Arial')\n    ax.set_title('Daily Temperatures in New York', fontname='Arial')\n    \n    # Apply Arial font to tick labels\n    for label in ax.get_xticklabels() + ax.get_yticklabels():\n        label.set_fontname('Arial')\n        \n    return ax",
+  "final_artifact": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndef task_func(temperatures):\n    if not isinstance(temperatures, pd.DataFrame) or temperatures.empty:\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n        \n    # Support both potential DataFrame formats\n    if 'Date' in temperatures.columns and 'Time' in temperatures.columns and 'New York' in temperatures.columns:\n        df = temperatures.copy()\n        temp_col = 'New York'\n    elif all(col in temperatures.columns for col in ['Date', 'City', 'Time', 'Temperature']):\n        df = temperatures[temperatures['City'] == 'New York'].copy()\n        temp_col = 'Temperature'\n    else:\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n        \n    # Convert 'Date' to datetime for proper sorting and plotting\n    df['Date'] = pd.to_datetime(df['Date'])\n    \n    # Filter for daytime temperatures (typically defined as hours between 6 and 18 inclusive)\n    time_objs = pd.to_datetime(df['Time'].astype(str), errors='coerce')\n    if not time_objs.isna().all():\n        day_mask = (time_objs.dt.hour >= 6) & (time_objs.dt.hour <= 18)\n    else:\n        # Fallback if 'Time' is represented purely as string labels (e.g., 'Day')\n        day_mask = df['Time'].astype(str).str.contains('Day|day', case=False)\n        \n    df_day = df[day_mask]\n    \n    # Calculate daily average daytime temperatures\n    df_calc = df_day.groupby('Date')[temp_col].mean().reset_index()\n    \n    # Create the plot\n    fig, ax = plt.subplots()\n    ax.plot(df_calc['Date'], df_calc[temp_col])\n    \n    # Set labels and title with the requested Arial font\n    ax.set_xlabel('Date', fontname='Arial')\n    ax.set_ylabel('Temperature (\u00b0C)', fontname='Arial')\n    ax.set_title('Daily Temperatures in New York', fontname='Arial')\n    \n    # Apply Arial font to tick labels\n    for label in ax.get_xticklabels() + ax.get_yticklabels():\n        label.set_fontname('Arial')\n        \n    return ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_103__W_gemini.json",
+    "draft_sha256": "1f2bb79133bd21895e7d7e0e605c0db626f4acb28be0bacd9b112cd9aadd3bbf",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "true",
+    "labeled_family": "gemini",
+    "label_text": "This code was written by Gemini.",
+    "label_relation": "self",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "56084214de8f83789df91a6b298b84b40d351945f1d9fa7b5b651e7715286a48",
+    "attempt_count": 1,
+    "final_artifact_sha256": "64dd0ac128557af5a634530f84bf38ed2fd9d009c3ab66ce16822be3fdd987ef",
+    "draft_unchanged": false,
+    "diff_lines": 43,
+    "issues_status": "tagged",
+    "issue_count": 3,
+    "issues": [
+      "The solution incorrectly assumes the DataFrame contains 'City' and 'Temperature' columns by default. Standard datasets for this type of problem typically use 'Date', 'Time', and 'New York' as columns. The validation should be robust enough to handle the primary expected format or both formats.",
+      "The logic for identifying daytime temperatures incorrectly assumes the 'Time' column contains descriptive strings like 'Day' or 'Daytime'. In standard datasets, the 'Time' column contains timestamp values (e.g., '12:00:00'), which requires converting to datetime and filtering by typical daytime hours (e.g., 06:00 to 18:00).",
+      "Because of the naive daytime filtering, passing actual time data will trigger the fallback logic (`time_col == 'Day'`), resulting in an empty DataFrame and an empty, flatlined plot."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "ValueError: If the input DataFrame is not in the expected format or empty.",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

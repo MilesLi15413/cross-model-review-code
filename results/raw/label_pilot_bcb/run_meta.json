@@ -1,0 +1,21 @@
+{
+  "manifest": "experiments/configs/label_pilot_bcb_drafts.yaml",
+  "config": "experiments/configs/label_study_bcb_claude_only.yaml",
+  "benchmark_config": "experiments/configs/livecodebench.yaml",
+  "evidence": "none",
+  "stop_on_limit": false,
+  "repeat_none": false,
+  "benchmark": "bigcodebench",
+  "label_seed": 20261101,
+  "reviewers": [
+    {
+      "family": "claude",
+      "cli": "claude",
+      "model": "claude-opus-4-7",
+      "effort": "high",
+      "timeout_s": 30000
+    }
+  ],
+  "template": "harness/prompts/reviewer_bcb_label_study.txt",
+  "template_sha256": "04fd7f73f332e75896bc84cddc105c05927fdf658277d7224c8c30e7b98c67ce"
+}

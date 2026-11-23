@@ -1,0 +1,7 @@
+reviewer,drafts,n,unchanged,unchanged_pct,mean_lines,median_lines,passing,broken,failing,fixed,failing_left_unchanged,p_lines_own_vs_other,p_unchanged_own_vs_other
+Claude,own drafts,80,58,72.5,1.4,0.0,57,0,23,0,14,5.850552508281654e-20,4.801278865786564e-17
+Claude,other models' drafts,158,27,17.1,12.4,10.0,82,2,76,18,10,5.850552508281654e-20,4.801278865786564e-17
+GPT-5.5,own drafts,80,11,13.8,15.0,12.0,40,2,40,3,5,0.009313523358543619,0.00140466368621468
+GPT-5.5,other models' drafts,158,4,2.5,20.1,16.5,99,10,59,2,1,0.009313523358543619,0.00140466368621468
+Gemini,own drafts,78,39,50.0,4.7,0.5,42,1,36,1,16,7.508309478142178e-10,7.432495084661404e-11
+Gemini,other models' drafts,160,17,10.6,13.8,9.0,97,3,63,5,6,7.508309478142178e-10,7.432495084661404e-11

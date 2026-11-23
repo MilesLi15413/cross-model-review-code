@@ -1,0 +1,132 @@
+{
+  "task_id": "bcb_979",
+  "condition": "L_claude_by_gemini_none",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:26:59.388363+00:00",
+  "reviewer_finished_at": "2026-11-23T22:28:12.754444+00:00",
+  "writer_prompt_sha256": "16d96bb7ea6c4c4d7bb18d67bdc8f5b7a3ad43f801d9e1e8a28a5f5ced13a839",
+  "reviewer_prompt_sha256": "4e7d9a7925630f3af0b9e047d8c8e15599dd24e245d31acb03be35238f31de73",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 73.36612991700531,
+  "total_latency_s": 73.36612991700531,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8344,
+  "reviewer_output_tokens": 11656,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.15656,
+  "total_cost_usd": 0.15656,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"a0baf8b2-49a7-4fac-986e-cd7309e2b884\",\n  \"response\": \"<issues>\\n- Setting `np.random.seed(seed)` modifies the global random state, which introduces unintended side effects for other parts of the application. A local random state should be used instead.\\n- If `target_array` is passed as a pandas Series with a non-default index, assigning it via `df[target_name] = target_array` will result in index misalignment, introducing `NaN` values and corrupting the training data.\\n- If `target_name` happens to overlap with a name in `feature_names`, the assignment `df[target_name] = target_array` will silently overwrite one of the feature columns.\\n- Adding the target to the feature DataFrame only to immediately separate them in `clf.fit(df[feature_names], df[target_name])` is redundant. It is cleaner and safer to pass the features and target directly to `fit()`.\\n</issues>\\n<solution>\\nimport numpy as np\\nimport pandas as pd\\nfrom sklearn.ensemble import RandomForestClassifier\\n\\ndef task_func(\\n    feature_array,\\n    target_array,\\n    feature_names=[\\\"f1\\\", \\\"f2\\\", \\\"f3\\\", \\\"f4\\\", \\\"f5\\\"],\\n    target_name=\\\"target\\\",\\n    seed=None,\\n):\\n    # Use a local RandomState to prevent global side effects if a seed is provided, \\n    # but preserve the fallback to global state if seed is None\\n    if seed is not None:\\n        rng = np.random.RandomState(seed)\\n        shuffled_indices = rng.permutation(feature_array.shape[1])\\n    else:\\n        shuffled_indices = np.random.permutation(feature_array.shape[1])\\n        \\n    shuffled_array = feature_array[:, shuffled_indices]\\n    df = pd.DataFrame(shuffled_array, columns=feature_names)\\n    \\n    # Train directly to avoid index alignment issues and column overwriting\\n    clf = RandomForestClassifier(random_state=seed)\\n    clf.fit(df, target_array)\\n    \\n    return clf\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 72371,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8344,\n          \"prompt\": 8344,\n          \"candidates\": 463,\n          \"total\": 20000,\n          \"cached\": 0,\n          \"thoughts\": 11193,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 72371,\n            \"tokens\": {\n              \"input\": 8344,\n              \"prompt\": 8344,\n              \"candidates\": 463,\n              \"total\": 20000,\n              \"cached\": 0,\n              \"thoughts\": 11193,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    if seed is not None:\n        np.random.seed(seed)\n    shuffled_indices = np.random.permutation(feature_array.shape[1])\n    shuffled_array = feature_array[:, shuffled_indices]\n    df = pd.DataFrame(shuffled_array, columns=feature_names)\n    df[target_name] = target_array\n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(df[feature_names], df[target_name])\n    return clf",
+  "reviewer_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    # Use a local RandomState to prevent global side effects if a seed is provided, \n    # but preserve the fallback to global state if seed is None\n    if seed is not None:\n        rng = np.random.RandomState(seed)\n        shuffled_indices = rng.permutation(feature_array.shape[1])\n    else:\n        shuffled_indices = np.random.permutation(feature_array.shape[1])\n        \n    shuffled_array = feature_array[:, shuffled_indices]\n    df = pd.DataFrame(shuffled_array, columns=feature_names)\n    \n    # Train directly to avoid index alignment issues and column overwriting\n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(df, target_array)\n    \n    return clf",
+  "final_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    # Use a local RandomState to prevent global side effects if a seed is provided, \n    # but preserve the fallback to global state if seed is None\n    if seed is not None:\n        rng = np.random.RandomState(seed)\n        shuffled_indices = rng.permutation(feature_array.shape[1])\n    else:\n        shuffled_indices = np.random.permutation(feature_array.shape[1])\n        \n    shuffled_array = feature_array[:, shuffled_indices]\n    df = pd.DataFrame(shuffled_array, columns=feature_names)\n    \n    # Train directly to avoid index alignment issues and column overwriting\n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(df, target_array)\n    \n    return clf",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_979__W_claude.json",
+    "draft_sha256": "334d59fe4d227aea7349ab0da4e02a318f62759dbb963a109f97cd755709769c",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "none",
+    "labeled_family": null,
+    "label_text": "",
+    "label_relation": "none",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "289b29bcf34d457cf132ae96344bf8fc36153f4c00af166c533a7e2fa3806b85",
+    "attempt_count": 1,
+    "final_artifact_sha256": "f5f5bf9999c18ee579c359661a8f47ce72b9a160b8e6d0e4b6d7dbd2b2a2535c",
+    "draft_unchanged": false,
+    "diff_lines": 16,
+    "issues_status": "tagged",
+    "issue_count": 4,
+    "issues": [
+      "Setting `np.random.seed(seed)` modifies the global random state, which introduces unintended side effects for other parts of the application. A local random state should be used instead.",
+      "If `target_array` is passed as a pandas Series with a non-default index, assigning it via `df[target_name] = target_array` will result in index misalignment, introducing `NaN` values and corrupting the training data.",
+      "If `target_name` happens to overlap with a name in `feature_names`, the assignment `df[target_name] = target_array` will silently overwrite one of the feature columns.",
+      "Adding the target to the feature DataFrame only to immediately separate them in `clf.fit(df[feature_names], df[target_name])` is redundant. It is cleaner and safer to pass the features and target directly to `fit()`."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

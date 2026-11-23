@@ -1,0 +1,127 @@
+{
+  "task_id": "bcb_758",
+  "condition": "L_gemini_by_gemini_false_gpt",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:28:25.454787+00:00",
+  "reviewer_finished_at": "2026-11-23T22:29:12.531921+00:00",
+  "writer_prompt_sha256": "04dfa3d201e75ab9dfa567c71c7d3a9ac0ff982d5ed38aa703c51c2f8e0d3509",
+  "reviewer_prompt_sha256": "6efb5117abff204c566aa628960f18ba70692b1cbec887a8cf81ae6a6317a8ee",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 47.07715991699661,
+  "total_latency_s": 47.07715991699661,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8572,
+  "reviewer_output_tokens": 7691,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.109436,
+  "total_cost_usd": 0.109436,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"ad01c3da-47ca-4421-b778-5026dc3440f5\",\n  \"response\": \"<issues>none</issues>\\n<solution>\\nimport pandas as pd\\nimport numpy as np\\nfrom sklearn.preprocessing import LabelEncoder\\n\\ndef task_func(num_samples, countries=['Russia', 'China', 'USA', 'India', 'Brazil'], \\n           ages=np.arange(18, 60), genders=['Male', 'Female'], rng_seed=None):\\n    if not isinstance(num_samples, (int, np.integer)) or isinstance(num_samples, bool):\\n        raise ValueError(\\\"num_samples must be an integer.\\\")\\n        \\n    rng = np.random.default_rng(rng_seed)\\n    \\n    sampled_countries = rng.choice(countries, size=num_samples)\\n    sampled_ages = rng.choice(ages, size=num_samples)\\n    sampled_genders = rng.choice(genders, size=num_samples)\\n    \\n    le = LabelEncoder()\\n    # Fitting on the complete 'genders' list to ensure consistent encoding\\n    # regardless of which classes actually appear in the random sample.\\n    le.fit(list(genders))\\n    encoded_genders = le.transform(sampled_genders)\\n    \\n    df = pd.DataFrame({\\n        'Country': sampled_countries,\\n        'Age': sampled_ages,\\n        'Gender': encoded_genders\\n    })\\n    \\n    return df\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 46094,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8572,\n          \"prompt\": 8572,\n          \"candidates\": 315,\n          \"total\": 16263,\n          \"cached\": 0,\n          \"thoughts\": 7376,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 46094,\n            \"tokens\": {\n              \"input\": 8572,\n              \"prompt\": 8572,\n              \"candidates\": 315,\n              \"total\": 16263,\n              \"cached\": 0,\n              \"thoughts\": 7376,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import pandas as pd\nimport numpy as np\nfrom sklearn.preprocessing import LabelEncoder\n\ndef task_func(num_samples, countries=['Russia', 'China', 'USA', 'India', 'Brazil'], \n           ages=np.arange(18, 60), genders=['Male', 'Female'], rng_seed=None):\n    if not isinstance(num_samples, (int, np.integer)) or isinstance(num_samples, bool):\n        raise ValueError(\"num_samples must be an integer.\")\n        \n    rng = np.random.default_rng(rng_seed)\n    \n    sampled_countries = rng.choice(countries, size=num_samples)\n    sampled_ages = rng.choice(ages, size=num_samples)\n    sampled_genders = rng.choice(genders, size=num_samples)\n    \n    le = LabelEncoder()\n    # Fitting on the complete 'genders' list to ensure consistent encoding\n    # regardless of which classes actually appear in the random sample.\n    le.fit(list(genders))\n    encoded_genders = le.transform(sampled_genders)\n    \n    df = pd.DataFrame({\n        'Country': sampled_countries,\n        'Age': sampled_ages,\n        'Gender': encoded_genders\n    })\n    \n    return df",
+  "reviewer_artifact": "import pandas as pd\nimport numpy as np\nfrom sklearn.preprocessing import LabelEncoder\n\ndef task_func(num_samples, countries=['Russia', 'China', 'USA', 'India', 'Brazil'], \n           ages=np.arange(18, 60), genders=['Male', 'Female'], rng_seed=None):\n    if not isinstance(num_samples, (int, np.integer)) or isinstance(num_samples, bool):\n        raise ValueError(\"num_samples must be an integer.\")\n        \n    rng = np.random.default_rng(rng_seed)\n    \n    sampled_countries = rng.choice(countries, size=num_samples)\n    sampled_ages = rng.choice(ages, size=num_samples)\n    sampled_genders = rng.choice(genders, size=num_samples)\n    \n    le = LabelEncoder()\n    # Fitting on the complete 'genders' list to ensure consistent encoding\n    # regardless of which classes actually appear in the random sample.\n    le.fit(list(genders))\n    encoded_genders = le.transform(sampled_genders)\n    \n    df = pd.DataFrame({\n        'Country': sampled_countries,\n        'Age': sampled_ages,\n        'Gender': encoded_genders\n    })\n    \n    return df",
+  "final_artifact": "import pandas as pd\nimport numpy as np\nfrom sklearn.preprocessing import LabelEncoder\n\ndef task_func(num_samples, countries=['Russia', 'China', 'USA', 'India', 'Brazil'], \n           ages=np.arange(18, 60), genders=['Male', 'Female'], rng_seed=None):\n    if not isinstance(num_samples, (int, np.integer)) or isinstance(num_samples, bool):\n        raise ValueError(\"num_samples must be an integer.\")\n        \n    rng = np.random.default_rng(rng_seed)\n    \n    sampled_countries = rng.choice(countries, size=num_samples)\n    sampled_ages = rng.choice(ages, size=num_samples)\n    sampled_genders = rng.choice(genders, size=num_samples)\n    \n    le = LabelEncoder()\n    # Fitting on the complete 'genders' list to ensure consistent encoding\n    # regardless of which classes actually appear in the random sample.\n    le.fit(list(genders))\n    encoded_genders = le.transform(sampled_genders)\n    \n    df = pd.DataFrame({\n        'Country': sampled_countries,\n        'Age': sampled_ages,\n        'Gender': encoded_genders\n    })\n    \n    return df",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_758__W_gemini.json",
+    "draft_sha256": "723601189af077df0b09c8cfb928279202dfb05e1046d8c57889eb40bd7729dd",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "5b53550355bc5e3293dae940d876d91c9841c55f4a825eb8dae97fd439810c27",
+    "attempt_count": 1,
+    "final_artifact_sha256": "723601189af077df0b09c8cfb928279202dfb05e1046d8c57889eb40bd7729dd",
+    "draft_unchanged": true,
+    "diff_lines": 0,
+    "issues_status": "none_reported",
+    "issue_count": 0,
+    "issues": [],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

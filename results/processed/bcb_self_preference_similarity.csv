@@ -1,0 +1,7 @@
+reviewer,similarity,n_other_drafts,mean_similarity,spearman_vs_lines,p,mean_sim_unchanged,mean_sim_changed
+Claude,text similarity,158,0.629,-0.359,3.5060080730269034e-06,0.68,0.618
+Claude,structure similarity (names hidden),158,0.721,-0.218,0.00593834951391928,0.728,0.72
+GPT-5.5,text similarity,158,0.586,-0.335,1.727274128676156e-05,0.779,0.581
+GPT-5.5,structure similarity (names hidden),158,0.671,-0.263,0.0008312226164881164,0.874,0.666
+Gemini,text similarity,156,0.619,-0.544,2.1348076255118738e-13,0.699,0.609
+Gemini,structure similarity (names hidden),156,0.733,-0.624,3.1639197312722997e-18,0.852,0.718

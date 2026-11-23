@@ -1,0 +1,131 @@
+{
+  "task_id": "bcb_103",
+  "condition": "L_claude_by_gemini_false_gpt",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:32:33.552806+00:00",
+  "reviewer_finished_at": "2026-11-23T22:33:38.309930+00:00",
+  "writer_prompt_sha256": "babcd5ec601fdcc4e7c4d9b169f15baffff0172a54c1d025c9af53c97266cd0b",
+  "reviewer_prompt_sha256": "a0676ea6bad5a90520322c36d693e5f19f5dae808efd3198bbaaf02050308e33",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 64.75716633399134,
+  "total_latency_s": 64.75716633399134,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8413,
+  "reviewer_output_tokens": 10276,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.140138,
+  "total_cost_usd": 0.140138,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"5cad207f-ebac-4925-9df6-808a8b99f9b6\",\n  \"response\": \"<issues>\\n- The original code does not filter or extract the daytime temperatures (typically defined as hours between 06:00 and 18:00). \\n- The original code does not aggregate the temperatures into daily values, despite the title explicitly requiring \\\"Daily Temperatures in New York\\\" and the prompt asking to \\\"calculate\\\" them.\\n- The input validation checks can be consolidated to accurately match the prompt's unified `ValueError` instruction for cases where the DataFrame is not in the expected format or empty.\\n</issues>\\n\\n<solution>\\nimport matplotlib.pyplot as plt\\nimport pandas as pd\\n\\ndef task_func(temperatures):\\n    if (not isinstance(temperatures, pd.DataFrame) or \\n        temperatures.empty or \\n        'temperature' not in temperatures.columns or \\n        not isinstance(temperatures.index, pd.DatetimeIndex)):\\n        raise ValueError(\\\"If the input DataFrame is not in the expected format or empty.\\\")\\n\\n    # Convert or localize the index to New York time\\n    if temperatures.index.tz is None:\\n        data = temperatures.tz_localize('America/New_York')\\n    else:\\n        data = temperatures.tz_convert('America/New_York')\\n\\n    # Filter for daytime temperatures (06:00 to 18:00)\\n    daytime_data = data.between_time('06:00', '18:00')\\n    \\n    # Calculate daily average daytime temperatures\\n    daily_data = daytime_data.resample('D').mean()\\n\\n    # Set the font to Arial\\n    plt.rcParams['font.family'] = 'Arial'\\n    \\n    # Create the plot\\n    fig, ax = plt.subplots(figsize=(10, 6))\\n    ax.plot(daily_data.index, daily_data['temperature'], label='Temperature')\\n    ax.set_xlabel('Date')\\n    ax.set_ylabel('Temperature (\u00b0C)')\\n    ax.set_title('Daily Temperatures in New York')\\n    \\n    return ax\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 63795,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8413,\n          \"prompt\": 8413,\n          \"candidates\": 455,\n          \"total\": 18689,\n          \"cached\": 0,\n          \"thoughts\": 9821,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 63795,\n            \"tokens\": {\n              \"input\": 8413,\n              \"prompt\": 8413,\n              \"candidates\": 455,\n              \"total\": 18689,\n              \"cached\": 0,\n              \"thoughts\": 9821,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import matplotlib.pyplot as plt\nimport pandas as pd\ndef task_func(temperatures):\n    if not isinstance(temperatures, pd.DataFrame) or temperatures.empty:\n        raise ValueError(\"Input must be a non-empty DataFrame.\")\n    if 'temperature' not in temperatures.columns:\n        raise ValueError(\"DataFrame must contain a 'temperature' column.\")\n    if not isinstance(temperatures.index, pd.DatetimeIndex):\n        raise ValueError(\"DataFrame index must be a DatetimeIndex.\")\n\n    try:\n        if temperatures.index.tz is None:\n            data = temperatures.tz_localize('America/New_York')\n        else:\n            data = temperatures.tz_convert('America/New_York')\n    except Exception:\n        data = temperatures\n\n    plt.rcParams['font.family'] = 'Arial'\n    fig, ax = plt.subplots(figsize=(10, 6))\n    ax.plot(data.index, data['temperature'], label='Temperature')\n    ax.set_xlabel('Date')\n    ax.set_ylabel('Temperature (\u00b0C)')\n    ax.set_title('Daily Temperatures in New York')\n    return ax",
+  "reviewer_artifact": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndef task_func(temperatures):\n    if (not isinstance(temperatures, pd.DataFrame) or \n        temperatures.empty or \n        'temperature' not in temperatures.columns or \n        not isinstance(temperatures.index, pd.DatetimeIndex)):\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n\n    # Convert or localize the index to New York time\n    if temperatures.index.tz is None:\n        data = temperatures.tz_localize('America/New_York')\n    else:\n        data = temperatures.tz_convert('America/New_York')\n\n    # Filter for daytime temperatures (06:00 to 18:00)\n    daytime_data = data.between_time('06:00', '18:00')\n    \n    # Calculate daily average daytime temperatures\n    daily_data = daytime_data.resample('D').mean()\n\n    # Set the font to Arial\n    plt.rcParams['font.family'] = 'Arial'\n    \n    # Create the plot\n    fig, ax = plt.subplots(figsize=(10, 6))\n    ax.plot(daily_data.index, daily_data['temperature'], label='Temperature')\n    ax.set_xlabel('Date')\n    ax.set_ylabel('Temperature (\u00b0C)')\n    ax.set_title('Daily Temperatures in New York')\n    \n    return ax",
+  "final_artifact": "import matplotlib.pyplot as plt\nimport pandas as pd\n\ndef task_func(temperatures):\n    if (not isinstance(temperatures, pd.DataFrame) or \n        temperatures.empty or \n        'temperature' not in temperatures.columns or \n        not isinstance(temperatures.index, pd.DatetimeIndex)):\n        raise ValueError(\"If the input DataFrame is not in the expected format or empty.\")\n\n    # Convert or localize the index to New York time\n    if temperatures.index.tz is None:\n        data = temperatures.tz_localize('America/New_York')\n    else:\n        data = temperatures.tz_convert('America/New_York')\n\n    # Filter for daytime temperatures (06:00 to 18:00)\n    daytime_data = data.between_time('06:00', '18:00')\n    \n    # Calculate daily average daytime temperatures\n    daily_data = daytime_data.resample('D').mean()\n\n    # Set the font to Arial\n    plt.rcParams['font.family'] = 'Arial'\n    \n    # Create the plot\n    fig, ax = plt.subplots(figsize=(10, 6))\n    ax.plot(daily_data.index, daily_data['temperature'], label='Temperature')\n    ax.set_xlabel('Date')\n    ax.set_ylabel('Temperature (\u00b0C)')\n    ax.set_title('Daily Temperatures in New York')\n    \n    return ax",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_103__W_claude.json",
+    "draft_sha256": "f12e412bb548f065a82a15aa1b3c85dc6ed1ee3640dc429e5c16af48bd1a3b5e",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "56084214de8f83789df91a6b298b84b40d351945f1d9fa7b5b651e7715286a48",
+    "attempt_count": 1,
+    "final_artifact_sha256": "8653505c399e7f8c8c2b9f7ecfae8249f82f76d86b71c2e2c94ed7d91d6d452d",
+    "draft_unchanged": false,
+    "diff_lines": 36,
+    "issues_status": "tagged",
+    "issue_count": 3,
+    "issues": [
+      "The original code does not filter or extract the daytime temperatures (typically defined as hours between 06:00 and 18:00).",
+      "The original code does not aggregate the temperatures into daily values, despite the title explicitly requiring \"Daily Temperatures in New York\" and the prompt asking to \"calculate\" them.",
+      "The input validation checks can be consolidated to accurately match the prompt's unified `ValueError` instruction for cases where the DataFrame is not in the expected format or empty."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: 0 != 365",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

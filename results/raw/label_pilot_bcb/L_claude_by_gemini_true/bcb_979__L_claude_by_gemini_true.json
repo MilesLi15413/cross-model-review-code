@@ -1,0 +1,130 @@
+{
+  "task_id": "bcb_979",
+  "condition": "L_claude_by_gemini_true",
+  "benchmark": "bigcodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.330 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:16:34.784105+00:00",
+  "reviewer_finished_at": "2026-11-23T22:17:12.247743+00:00",
+  "writer_prompt_sha256": "16d96bb7ea6c4c4d7bb18d67bdc8f5b7a3ad43f801d9e1e8a28a5f5ced13a839",
+  "reviewer_prompt_sha256": "757e5a6fc4810c5bc2c10fecfba6350eb52342b73a4e530e75807a8e1626cba2",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 37.46369591700204,
+  "total_latency_s": 37.46369591700204,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 8356,
+  "reviewer_output_tokens": 5352,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.080936,
+  "total_cost_usd": 0.080936,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"17f18afc-d5ee-4b60-adf9-c9b5ec84c8d4\",\n  \"response\": \"<issues>\\n- Using `np.random.seed(seed)` modifies the global numpy random state, which can cause unexpected side effects in other parts of a larger program; it is safer to use a local random number generator like `np.random.RandomState(seed)`.\\n- Adding `target_array` to the DataFrame and then immediately extracting `df[feature_names]` and `df[target_name]` for fitting is unnecessary and slightly inefficient. We can pass the feature DataFrame and `target_array` directly to the `fit` method.\\n</issues>\\n<solution>\\nimport numpy as np\\nimport pandas as pd\\nfrom sklearn.ensemble import RandomForestClassifier\\n\\ndef task_func(\\n    feature_array,\\n    target_array,\\n    feature_names=[\\\"f1\\\", \\\"f2\\\", \\\"f3\\\", \\\"f4\\\", \\\"f5\\\"],\\n    target_name=\\\"target\\\",\\n    seed=None,\\n):\\n    rng = np.random.RandomState(seed)\\n    shuffled_indices = rng.permutation(feature_array.shape[1])\\n    shuffled_array = feature_array[:, shuffled_indices]\\n    \\n    df = pd.DataFrame(shuffled_array, columns=feature_names)\\n    \\n    clf = RandomForestClassifier(random_state=seed)\\n    clf.fit(df, target_array)\\n    \\n    return clf\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 36498,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 8356,\n          \"prompt\": 8356,\n          \"candidates\": 306,\n          \"total\": 13708,\n          \"cached\": 0,\n          \"thoughts\": 5046,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 36498,\n            \"tokens\": {\n              \"input\": 8356,\n              \"prompt\": 8356,\n              \"candidates\": 306,\n              \"total\": 13708,\n              \"cached\": 0,\n              \"thoughts\": 5046,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    if seed is not None:\n        np.random.seed(seed)\n    shuffled_indices = np.random.permutation(feature_array.shape[1])\n    shuffled_array = feature_array[:, shuffled_indices]\n    df = pd.DataFrame(shuffled_array, columns=feature_names)\n    df[target_name] = target_array\n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(df[feature_names], df[target_name])\n    return clf",
+  "reviewer_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    rng = np.random.RandomState(seed)\n    shuffled_indices = rng.permutation(feature_array.shape[1])\n    shuffled_array = feature_array[:, shuffled_indices]\n    \n    df = pd.DataFrame(shuffled_array, columns=feature_names)\n    \n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(df, target_array)\n    \n    return clf",
+  "final_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    rng = np.random.RandomState(seed)\n    shuffled_indices = rng.permutation(feature_array.shape[1])\n    shuffled_array = feature_array[:, shuffled_indices]\n    \n    df = pd.DataFrame(shuffled_array, columns=feature_names)\n    \n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(df, target_array)\n    \n    return clf",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_claude/bcb_979__W_claude.json",
+    "draft_sha256": "334d59fe4d227aea7349ab0da4e02a318f62759dbb963a109f97cd755709769c",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "true",
+    "labeled_family": "claude",
+    "label_text": "This code was written by Claude.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "289b29bcf34d457cf132ae96344bf8fc36153f4c00af166c533a7e2fa3806b85",
+    "attempt_count": 1,
+    "final_artifact_sha256": "bbaa66b3e7aca35db0000fc09594c1f451e02f0fc2a6bff4a7cdb157d7dc5bfa",
+    "draft_unchanged": false,
+    "diff_lines": 12,
+    "issues_status": "tagged",
+    "issue_count": 2,
+    "issues": [
+      "Using `np.random.seed(seed)` modifies the global numpy random state, which can cause unexpected side effects in other parts of a larger program; it is safer to use a local random number generator like `np.random.RandomState(seed)`.",
+      "Adding `target_array` to the DataFrame and then immediately extracting `df[feature_names]` and `df[target_name]` for fitting is unnecessary and slightly inefficient. We can pass the feature DataFrame and `target_array` directly to the `fit` method."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "pass",
+        "pass"
+      ],
+      "flaky": false,
+      "detail": "",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

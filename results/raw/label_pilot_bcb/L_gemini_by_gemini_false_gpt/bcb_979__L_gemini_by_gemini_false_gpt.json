@@ -1,0 +1,129 @@
+{
+  "task_id": "bcb_979",
+  "condition": "L_gemini_by_gemini_false_gpt",
+  "benchmark": "bigcodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-23T22:25:31.707008+00:00",
+  "reviewer_finished_at": "2026-11-23T22:26:07.520678+00:00",
+  "writer_prompt_sha256": "16d96bb7ea6c4c4d7bb18d67bdc8f5b7a3ad43f801d9e1e8a28a5f5ced13a839",
+  "reviewer_prompt_sha256": "eca0150ce7b8a09d5dadbae67e27109a8c54853312e73a4d7430fceba3efe9ed",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 35.81368929200107,
+  "total_latency_s": 35.81368929200107,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 4049,
+  "reviewer_output_tokens": 5956,
+  "reviewer_cached_input_tokens": 4522,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.08047439999999999,
+  "total_cost_usd": 0.08047439999999999,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": false,
+  "writer_passed": false,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"1dfa2206-a996-47da-bdd2-d6a5324c4625\",\n  \"response\": \"<issues>\\n- Modifies the global numpy random state by calling `np.random.seed(seed)`, which is a bad practice and can interfere with other random processes outside this function. A local random number generator (e.g., `np.random.RandomState` or `np.random.default_rng`) should be used instead.\\n</issues>\\n<solution>\\nimport numpy as np\\nimport pandas as pd\\nfrom sklearn.ensemble import RandomForestClassifier\\n\\ndef task_func(\\n    feature_array,\\n    target_array,\\n    feature_names=[\\\"f1\\\", \\\"f2\\\", \\\"f3\\\", \\\"f4\\\", \\\"f5\\\"],\\n    target_name=\\\"target\\\",\\n    seed=None,\\n):\\n    feature_array = np.asarray(feature_array)\\n    target_array = np.asarray(target_array)\\n    \\n    if feature_array.ndim == 1:\\n        feature_array = feature_array.reshape(-1, 1)\\n        \\n    n_cols = feature_array.shape[1]\\n    \\n    # Use a local random state to avoid modifying the global numpy seed\\n    rng = np.random.RandomState(seed)\\n        \\n    indices = np.arange(n_cols)\\n    rng.shuffle(indices)\\n    \\n    shuffled_array = feature_array[:, indices]\\n    \\n    # Apply column names if valid, otherwise use default RangeIndex\\n    if feature_names is not None and len(feature_names) == n_cols:\\n        shuffled_names = [feature_names[i] for i in indices]\\n        X = pd.DataFrame(shuffled_array, columns=shuffled_names)\\n    else:\\n        X = pd.DataFrame(shuffled_array)\\n        \\n    # Wrap target in pandas Series to preserve target_name\\n    if target_name is not None and target_array.ndim == 1:\\n        y = pd.Series(target_array, name=target_name)\\n    else:\\n        y = target_array\\n        \\n    clf = RandomForestClassifier(random_state=seed)\\n    clf.fit(X, y)\\n    \\n    return clf\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 34832,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 4049,\n          \"prompt\": 8571,\n          \"candidates\": 490,\n          \"total\": 14527,\n          \"cached\": 4522,\n          \"thoughts\": 5466,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 34832,\n            \"tokens\": {\n              \"input\": 4049,\n              \"prompt\": 8571,\n              \"candidates\": 490,\n              \"total\": 14527,\n              \"cached\": 4522,\n              \"thoughts\": 5466,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    feature_array = np.asarray(feature_array)\n    target_array = np.asarray(target_array)\n    \n    if feature_array.ndim == 1:\n        feature_array = feature_array.reshape(-1, 1)\n        \n    n_cols = feature_array.shape[1]\n    \n    # Shuffle indices to handle duplicate feature names safely\n    if seed is not None:\n        np.random.seed(seed)\n        \n    indices = np.arange(n_cols)\n    np.random.shuffle(indices)\n    \n    shuffled_array = feature_array[:, indices]\n    \n    # Apply column names if valid, otherwise use default RangeIndex\n    if feature_names is not None and len(feature_names) == n_cols:\n        shuffled_names = [feature_names[i] for i in indices]\n        X = pd.DataFrame(shuffled_array, columns=shuffled_names)\n    else:\n        X = pd.DataFrame(shuffled_array)\n        \n    # Wrap target in pandas Series to preserve target_name\n    if target_name is not None and target_array.ndim == 1:\n        y = pd.Series(target_array, name=target_name)\n    else:\n        y = target_array\n        \n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(X, y)\n    \n    return clf",
+  "reviewer_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    feature_array = np.asarray(feature_array)\n    target_array = np.asarray(target_array)\n    \n    if feature_array.ndim == 1:\n        feature_array = feature_array.reshape(-1, 1)\n        \n    n_cols = feature_array.shape[1]\n    \n    # Use a local random state to avoid modifying the global numpy seed\n    rng = np.random.RandomState(seed)\n        \n    indices = np.arange(n_cols)\n    rng.shuffle(indices)\n    \n    shuffled_array = feature_array[:, indices]\n    \n    # Apply column names if valid, otherwise use default RangeIndex\n    if feature_names is not None and len(feature_names) == n_cols:\n        shuffled_names = [feature_names[i] for i in indices]\n        X = pd.DataFrame(shuffled_array, columns=shuffled_names)\n    else:\n        X = pd.DataFrame(shuffled_array)\n        \n    # Wrap target in pandas Series to preserve target_name\n    if target_name is not None and target_array.ndim == 1:\n        y = pd.Series(target_array, name=target_name)\n    else:\n        y = target_array\n        \n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(X, y)\n    \n    return clf",
+  "final_artifact": "import numpy as np\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier\n\ndef task_func(\n    feature_array,\n    target_array,\n    feature_names=[\"f1\", \"f2\", \"f3\", \"f4\", \"f5\"],\n    target_name=\"target\",\n    seed=None,\n):\n    feature_array = np.asarray(feature_array)\n    target_array = np.asarray(target_array)\n    \n    if feature_array.ndim == 1:\n        feature_array = feature_array.reshape(-1, 1)\n        \n    n_cols = feature_array.shape[1]\n    \n    # Use a local random state to avoid modifying the global numpy seed\n    rng = np.random.RandomState(seed)\n        \n    indices = np.arange(n_cols)\n    rng.shuffle(indices)\n    \n    shuffled_array = feature_array[:, indices]\n    \n    # Apply column names if valid, otherwise use default RangeIndex\n    if feature_names is not None and len(feature_names) == n_cols:\n        shuffled_names = [feature_names[i] for i in indices]\n        X = pd.DataFrame(shuffled_array, columns=shuffled_names)\n    else:\n        X = pd.DataFrame(shuffled_array)\n        \n    # Wrap target in pandas Series to preserve target_name\n    if target_name is not None and target_array.ndim == 1:\n        y = pd.Series(target_array, name=target_name)\n    else:\n        y = target_array\n        \n    clf = RandomForestClassifier(random_state=seed)\n    clf.fit(X, y)\n    \n    return clf",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_bcb_drafts/W_gemini/bcb_979__W_gemini.json",
+    "draft_sha256": "9fecb8b9b24b376d8ca387c7fcd8d993ddfaefe1f2fa384e15dbde4b4c56f293",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "289b29bcf34d457cf132ae96344bf8fc36153f4c00af166c533a7e2fa3806b85",
+    "attempt_count": 1,
+    "final_artifact_sha256": "2fd7e1e460d36be8a6e3be163cbea806037894bc0451a181e5f2da340ecbe4f6",
+    "draft_unchanged": false,
+    "diff_lines": 7,
+    "issues_status": "tagged",
+    "issue_count": 1,
+    "issues": [
+      "Modifies the global numpy random state by calling `np.random.seed(seed)`, which is a bad practice and can interfere with other random processes outside this function. A local random number generator (e.g., `np.random.RandomState` or `np.random.default_rng`) should be used instead."
+    ],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    },
+    "bcb_grade": {
+      "statuses": [
+        "fail",
+        "fail"
+      ],
+      "flaky": false,
+      "detail": "AssertionError: ValueError not raised",
+      "image": "bigcodebench/bigcodebench-evaluate@sha256:a3cd34ec3840a49d6b7afb240f4bdd47c350bc5991043fd0a91773830f7cd405"
+    }
+  }
+}

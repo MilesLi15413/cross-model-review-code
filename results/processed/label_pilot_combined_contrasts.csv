@@ -1,0 +1,16 @@
+reviewer,a,b,n,unchanged_a,unchanged_b,unchanged_disc,unchanged_p,passed_a,passed_b,passed_disc,passed_p,lines_mean_a,lines_mean_b,lines_p,issues_mean_a,issues_mean_b,issues_p,breaks_a,breaks_b,fixes_a,fixes_b,contrast,lines_holm,passed_holm,issues_holm,unchanged_holm
+claude,false_self,false_other,60,12,12,3 vs 3,1.0,39,37,3 vs 1,0.625,14.8,16.2,0.276,1.8,1.8,0.8077,0,1,7,6,self_pref,1.0,1.0,1.0,1.0
+claude,true,none,90,26,23,4 vs 1,0.375,57,59,1 vs 3,0.625,11.4,14.0,0.2287,1.7,1.8,0.2382,2,1,6,7,true_none,1.0,1.0,1.0,1.0
+claude,false_self,none,60,12,12,2 vs 2,1.0,39,38,4 vs 3,1.0,14.8,18.3,0.0549,1.8,2.0,0.1171,0,1,7,7,self_none,1.0,1.0,1.0,1.0
+claude,false_other,none,90,26,23,6 vs 3,0.5078,55,59,1 vs 5,0.2188,12.6,14.0,0.4763,1.6,1.8,0.0793,4,1,6,7,other_none,1.0,1.0,1.0,1.0
+claude,true,none,30,14,11,3 vs 0,0.25,22,21,1 vs 0,1.0,3.4,5.3,0.1445,1.2,1.4,0.2482,0,0,1,0,true_own_none,1.0,1.0,1.0,1.0
+gpt,false_self,false_other,60,6,4,2 vs 0,0.5,37,37,3 vs 3,1.0,30.7,33.7,0.0853,1.5,1.5,0.8131,2,4,2,4,self_pref,1.0,1.0,1.0,1.0
+gpt,true,none,90,21,18,9 vs 6,0.6072,54,52,6 vs 4,0.7539,24.2,23.5,0.8799,1.3,1.2,0.9553,4,8,5,7,true_none,1.0,1.0,1.0,1.0
+gpt,false_self,none,60,6,6,2 vs 2,1.0,37,34,5 vs 2,0.4531,30.7,31.3,0.9732,1.5,1.4,0.0836,2,6,2,3,self_none,1.0,1.0,1.0,1.0
+gpt,false_other,none,90,20,18,7 vs 5,0.7744,56,52,6 vs 2,0.2891,25.2,23.5,0.539,1.3,1.2,0.3879,4,8,7,7,other_none,1.0,1.0,1.0,1.0
+gpt,true,none,30,14,12,5 vs 3,0.7266,18,18,2 vs 2,1.0,7.7,7.8,0.7047,0.8,1.0,0.3053,0,2,2,4,true_own_none,1.0,1.0,1.0,1.0
+gemini,false_self,false_other,60,17,14,5 vs 2,0.4531,40,38,2 vs 0,0.5,14.0,16.4,0.0497,1.1,1.3,0.2111,1,2,4,3,self_pref,0.8947,1.0,1.0,1.0
+gemini,true,none,90,40,38,8 vs 6,0.7905,55,53,3 vs 1,0.625,12.3,12.9,0.3595,0.8,1.1,0.0216,2,4,4,4,true_none,1.0,1.0,0.4315,1.0
+gemini,false_self,none,60,17,16,4 vs 3,1.0,40,36,4 vs 0,0.125,14.0,17.5,0.1335,1.1,1.5,0.0422,1,4,4,3,self_none,1.0,1.0,0.8013,1.0
+gemini,false_other,none,90,36,38,5 vs 7,0.7744,54,53,2 vs 1,1.0,12.4,12.9,0.6672,1.0,1.1,0.2362,3,4,4,4,other_none,1.0,1.0,1.0,1.0
+gemini,true,none,30,22,22,2 vs 2,1.0,17,17,0 vs 0,1.0,5.3,3.6,0.4811,0.5,0.5,0.9153,0,0,1,1,true_own_none,1.0,1.0,1.0,1.0
