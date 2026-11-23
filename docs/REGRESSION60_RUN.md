@@ -1115,37 +1115,122 @@ grading errors. Spend: Gemini $29.01, GPT-5.5 $7.41, Claude $43.10 API-equivalen
 the same draft; McNemar for unchanged / pass, Wilcoxon for edit size and issue count,
 Holm within reviewer.
 
-| Reviewer | Contrast (n drafts) | Unchanged | Mean edit (lines) | Passing after review | Holm p (smallest) |
+**Summary: each label compared with the same reviewer's noise.** All counts are on
+the same drafts. "Noise" = two identical runs with no author line. "Told it wrote the
+code (false) vs told the other model wrote it (false)" uses only drafts the reviewer did
+NOT write, so both lines are equally wrong and the only difference is whether the false
+name is the reviewer's own (self-preference test).
+
+| Reviewer | Comparison: first condition vs second condition | Drafts | Left unchanged | Mean lines edited | Passing after review | Holm p (smallest) |
+|---|---|---|---|---|---|---|
+| Claude | Noise: no author line, run 1 vs run 2 | 30 | 9 vs 9 | 14.6 vs 11.1 | 18 vs 19 | 1.0 |
+| Claude | Self-preference: told "written by Claude" (false) vs told the other non-author wrote it (false) | 20 | 7 vs 7 | 10.2 vs 14.1 | 13 vs 13 | 1.0 |
+| Claude | Told the real author vs no author line | 30 | 11 vs 9 | 7.3 vs 14.6 (raw p = 0.02) | 19 vs 18 | 0.50 |
+| GPT-5.5 | Noise: no author line, run 1 vs run 2 | 30 | 6 vs 5 | 34.6 vs 35.1 | 18 vs 18 | 1.0 |
+| GPT-5.5 | Self-preference: told "written by GPT/Codex" (false) vs told the other non-author wrote it (false) | 20 | 0 vs 0 | 50.0 vs 57.5 | 12 vs 12 | 1.0 |
+| GPT-5.5 | Told the real author vs no author line | 30 | 5 vs 6 | 36.2 vs 34.6 | 20 vs 18 | 1.0 |
+| Gemini | Noise: no author line, run 1 vs run 2 | 30 | 14 vs 14 | 21.5 vs 17.3 | 21 vs 20 | 1.0 |
+| Gemini | Self-preference: told "written by Gemini" (false) vs told the other non-author wrote it (false) | 20 | 5 vs 4 | 26.4 vs 28.4 | 14 vs 14 | 1.0 |
+| Gemini | Told the real author vs no author line | 30 | 14 vs 14 | 18.5 vs 21.5 | 20 vs 21 | 1.0 |
+
+**Full results, every draft group and every label.** Each row is 10 drafts (the same
+10 problems) written by one model and reviewed by one model, with one exact author line
+in the prompt. Within a block, every row reviews the *same* 10 drafts; only the author
+line differs. "TRUE" = the line names the real author; "FALSE" = it names a model that
+did not write the code (either the reviewer itself or the other model). The two
+"No author line" rows are identical prompts run twice: their difference is pure
+run-to-run noise, the yardstick for every other row.
+
+
+Reviewer **Claude** · drafts written by **Claude (5 pass, 5 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
 |---|---|---|---|---|---|
-| Claude | **Noise:** no label vs repeat (30) | 9 vs 9 | 14.6 vs 11.1 | 18 vs 19 | 1.0 |
-| Claude | **Self-pref:** "you wrote it" vs "third model" (20) | 7 vs 7 | 10.2 vs 14.1 | 13 vs 13 | 1.0 |
-| Claude | True label vs no label (30) | 11 vs 9 | 7.3 vs 14.6 (raw p = 0.02) | 19 vs 18 | 0.50 |
-| GPT-5.5 | **Noise** (30) | 6 vs 5 | 34.6 vs 35.1 | 18 vs 18 | 1.0 |
-| GPT-5.5 | **Self-pref** (20) | 0 vs 0 | 50.0 vs 57.5 | 12 vs 12 | 1.0 |
-| GPT-5.5 | True vs no label (30) | 5 vs 6 | 36.2 vs 34.6 | 20 vs 18 | 1.0 |
-| Gemini | **Noise** (30) | 14 vs 14 | 21.5 vs 17.3 | 21 vs 20 | 1.0 |
-| Gemini | **Self-pref** (20) | 5 vs 4 | 26.4 vs 28.4 | 14 vs 14 | 1.0 |
-| Gemini | True vs no label (30) | 14 vs 14 | 18.5 vs 21.5 | 20 vs 21 | 1.0 |
+| No author line (run 1) | 1 | 7.5 | 5 | 0 of 5 | 0 of 5 |
+| No author line (run 2, identical repeat) | 3 | 13.4 | 6 | 1 of 5 | 0 of 5 |
+| "written by Claude" — TRUE (it is the reviewer's own draft) | 3 | 4.7 | 6 | 1 of 5 | 0 of 5 |
+| "written by Gemini" — FALSE: names another model | 3 | 12.3 | 6 | 1 of 5 | 0 of 5 |
+| "written by GPT/Codex" — FALSE: names another model | 3 | 7.3 | 5 | 0 of 5 | 0 of 5 |
 
-In the self-preference rows, both labels are false: "you wrote it" names the reviewer;
-"third model" names the model that is neither the reviewer nor the real author. Split by
-draft author, so the third model is explicit (10 drafts each; A = told "you wrote it",
-B = told the third model wrote it):
+Reviewer **Claude** · drafts written by **GPT-5.5 (6 pass, 4 fail before review)**
 
-| Reviewer | Real author | Third model named (B) | Drafts | Unchanged A vs B | Mean edit A vs B | Passing after A vs B | Fixes A vs B | Breaks A vs B |
-|---|---|---|---|---|---|---|---|---|
-| Claude | GPT-5.5 | Gemini | 10 | 5 vs 6 | 7.0 vs 2.8 | 7 vs 7 | 1 vs 1 | 0 vs 0 |
-| Claude | Gemini | GPT-5.5 | 10 | 2 vs 1 | 13.4 vs 25.3 | 6 vs 6 | 0 vs 0 | 0 vs 0 |
-| GPT-5.5 | Claude | Gemini | 10 | 0 vs 0 | 43.6 vs 54.9 | 6 vs 6 | 1 vs 1 | 0 vs 0 |
-| GPT-5.5 | Gemini | Claude | 10 | 0 vs 0 | 56.4 vs 60.2 | 6 vs 6 | 0 vs 0 | 0 vs 0 |
-| Gemini | Claude | GPT-5.5 | 10 | 1 vs 1 | 37.1 vs 40.3 | 7 vs 7 | 2 vs 2 | 0 vs 0 |
-| Gemini | GPT-5.5 | Claude | 10 | 4 vs 3 | 15.8 vs 16.5 | 7 vs 7 | 1 vs 1 | 0 vs 0 |
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 6 | 7.3 | 7 | 1 of 4 | 0 of 6 |
+| No author line (run 2, identical repeat) | 6 | 1.8 | 7 | 1 of 4 | 0 of 6 |
+| "written by GPT/Codex" — TRUE | 6 | 4.6 | 7 | 1 of 4 | 0 of 6 |
+| "written by Claude" — FALSE: names the reviewer itself | 5 | 7.0 | 7 | 1 of 4 | 0 of 6 |
+| "written by Gemini" — FALSE: names the third model | 6 | 2.8 | 7 | 1 of 4 | 0 of 6 |
 
-Pass/fail, fixes and breaks are identical in every row. Edit size moves in both
-directions: on GPT-5.5's drafts Claude edited more when told "you wrote it" than when
-told Gemini wrote it (7.0 vs 2.8 lines), while on Gemini's drafts it edited less when
-told "you wrote it" than when told GPT-5.5 wrote it (13.4 vs 25.3). With 10 drafts per
-row and no consistent direction, this is within run-to-run noise.
+Reviewer **Claude** · drafts written by **Gemini (6 pass, 4 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 2 | 29.0 | 6 | 0 of 4 | 0 of 6 |
+| No author line (run 2, identical repeat) | 0 | 18.1 | 6 | 0 of 4 | 0 of 6 |
+| "written by Gemini" — TRUE | 2 | 12.7 | 6 | 0 of 4 | 0 of 6 |
+| "written by Claude" — FALSE: names the reviewer itself | 2 | 13.4 | 6 | 0 of 4 | 0 of 6 |
+| "written by GPT/Codex" — FALSE: names the third model | 1 | 25.3 | 6 | 0 of 4 | 0 of 6 |
+
+Reviewer **GPT-5.5** · drafts written by **Claude (5 pass, 5 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 0 | 49.5 | 6 | 1 of 5 | 0 of 5 |
+| No author line (run 2, identical repeat) | 0 | 51.8 | 5 | 0 of 5 | 0 of 5 |
+| "written by Claude" — TRUE | 0 | 49.5 | 7 | 2 of 5 | 0 of 5 |
+| "written by GPT/Codex" — FALSE: names the reviewer itself | 0 | 43.6 | 6 | 1 of 5 | 0 of 5 |
+| "written by Gemini" — FALSE: names the third model | 0 | 54.9 | 6 | 1 of 5 | 0 of 5 |
+
+Reviewer **GPT-5.5** · drafts written by **GPT-5.5 (6 pass, 4 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 6 | 2.4 | 7 | 1 of 4 | 0 of 6 |
+| No author line (run 2, identical repeat) | 5 | 1.4 | 7 | 1 of 4 | 0 of 6 |
+| "written by GPT/Codex" — TRUE (it is the reviewer's own draft) | 4 | 3.1 | 7 | 1 of 4 | 0 of 6 |
+| "written by Claude" — FALSE: names another model | 6 | 2.0 | 7 | 1 of 4 | 0 of 6 |
+| "written by Gemini" — FALSE: names another model | 4 | 3.4 | 7 | 1 of 4 | 0 of 6 |
+
+Reviewer **GPT-5.5** · drafts written by **Gemini (6 pass, 4 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 0 | 51.9 | 5 | 0 of 4 | 1 of 6 |
+| No author line (run 2, identical repeat) | 0 | 52.1 | 6 | 0 of 4 | 0 of 6 |
+| "written by Gemini" — TRUE | 1 | 56.1 | 6 | 0 of 4 | 0 of 6 |
+| "written by GPT/Codex" — FALSE: names the reviewer itself | 0 | 56.4 | 6 | 0 of 4 | 0 of 6 |
+| "written by Claude" — FALSE: names the third model | 0 | 60.2 | 6 | 0 of 4 | 0 of 6 |
+
+Reviewer **Gemini** · drafts written by **Claude (5 pass, 5 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 1 | 40.1 | 7 | 2 of 5 | 0 of 5 |
+| No author line (run 2, identical repeat) | 1 | 36.8 | 7 | 2 of 5 | 0 of 5 |
+| "written by Claude" — TRUE | 2 | 27.8 | 6 | 1 of 5 | 0 of 5 |
+| "written by Gemini" — FALSE: names the reviewer itself | 1 | 37.1 | 7 | 2 of 5 | 0 of 5 |
+| "written by GPT/Codex" — FALSE: names the third model | 1 | 40.3 | 7 | 2 of 5 | 0 of 5 |
+
+Reviewer **Gemini** · drafts written by **GPT-5.5 (6 pass, 4 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 4 | 21.5 | 7 | 1 of 4 | 0 of 6 |
+| No author line (run 2, identical repeat) | 4 | 13.4 | 7 | 1 of 4 | 0 of 6 |
+| "written by GPT/Codex" — TRUE | 4 | 20.7 | 7 | 1 of 4 | 0 of 6 |
+| "written by Gemini" — FALSE: names the reviewer itself | 4 | 15.8 | 7 | 1 of 4 | 0 of 6 |
+| "written by Claude" — FALSE: names the third model | 3 | 16.5 | 7 | 1 of 4 | 0 of 6 |
+
+Reviewer **Gemini** · drafts written by **Gemini (6 pass, 4 fail before review)**
+
+| What the reviewer was told | Left unchanged (of 10) | Mean lines edited | Passing after review (of 10) | Failing drafts fixed | Passing drafts broken |
+|---|---|---|---|---|---|
+| No author line (run 1) | 9 | 2.8 | 7 | 1 of 4 | 0 of 6 |
+| No author line (run 2, identical repeat) | 9 | 1.6 | 6 | 0 of 4 | 0 of 6 |
+| "written by Gemini" — TRUE (it is the reviewer's own draft) | 8 | 6.9 | 7 | 1 of 4 | 0 of 6 |
+| "written by Claude" — FALSE: names another model | 9 | 3.8 | 7 | 1 of 4 | 0 of 6 |
+| "written by GPT/Codex" — FALSE: names another model | 8 | 4.9 | 7 | 1 of 4 | 0 of 6 |
 
 What it shows:
 
