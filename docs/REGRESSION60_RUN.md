@@ -105,6 +105,84 @@ improves GPT-5.5's code) is mostly a formatting effect; the better-supported sto
 that a rewrite-style review pass often breaks working code, the choice of reviewer
 matters, and asking for minimal edits largely prevents it.
 
+## Results by model and pairing
+
+All 9 writer → reviewer pairings were run on both benchmarks (every draft reviewed by
+every reviewer, paper's reviewer prompt, no authorship label).
+
+**Each model at a glance** (LCB = LiveCodeBench, BCB = BigCodeBench):
+
+| | Claude | GPT-5.5 | Gemini |
+|---|---|---|---|
+| As writer: drafts passing | LCB 54/60; BCB **57/80** (best) | LCB 52/60; BCB 40/80 | LCB **56/60** (best); BCB 42/78 |
+| Working drafts broken | LCB 1/162\*; BCB 2/139 | LCB **9/162**; BCB **12/139** (most) | LCB **0/162**; BCB 4/139 |
+| Failing drafts fixed | LCB 6/18; BCB **18/99** (most) | LCB 5/18; BCB 5/99 | LCB 6/18; BCB 6/99 |
+| Drafts left unchanged (LCB / BCB) | 22% / 36% | 7% / 6% (fewest) | 29% / 24% |
+| Median edit, lines (LCB / BCB) | 7.5 / 6 | 37.5 / 15 (largest) | 14.5 / 6 |
+| Cost per review (LCB / BCB) | $0.21 / $0.12 (API-equivalent; ran on Pro) | **$0.05 / $0.03** (cheapest) | $0.18 / $0.08 |
+| Median review time (LCB / BCB) | 21 s / 6 s | 14 s / 13 s | 82 s / 24 s (slowest) |
+
+\* 0/162 with `sortedcontainers` available; see the note under "Summary of findings".
+
+**All 9 pairings** (broken = passing drafts that fail after review; fixed = failing
+drafts that pass after review):
+
+| Writer → reviewer | LCB broken | LCB fixed | BCB broken | BCB fixed |
+|---|---|---|---|---|
+| Claude → Claude   | 0/54 | 2/6 | 0/57 | 0/23 |
+| Claude → Gemini   | 0/54 | 2/6 | 2/57 | 1/23 |
+| Claude → GPT-5.5  | **5/54** | 3/6 | **7/57** | 0/23 |
+| Gemini → Claude   | 1/56 | 0/4 | 0/42 | 7/36 |
+| Gemini → Gemini   | 0/56 | 0/4 | 1/42 | 1/36 |
+| Gemini → GPT-5.5  | 2/56 | 0/4 | 3/42 | 2/36 |
+| GPT-5.5 → Claude  | 0/52 | 4/8 | 2/40 | **11/40** |
+| GPT-5.5 → Gemini  | 0/52 | 4/8 | 1/40 | 4/40 |
+| GPT-5.5 → GPT-5.5 | 2/52 | 2/8 | 2/40 | 3/40 |
+
+Unchanged rate and median edit per pair: LCB `results/processed/regression60_by_pair.csv`,
+BCB `results/processed/regression60_bcb_by_pair.csv`.
+
+**What the pairings show:**
+
+- GPT-5.5 is the riskiest reviewer of other models' code, worst on Claude's drafts.
+- On its own drafts GPT-5.5 breaks less (2 on each benchmark), though it still rewrites.
+- The best fixer depends on the writer: Claude fixes GPT-5.5's failing drafts most
+  (11/40 BCB); Claude and Gemini each fix 4/8 on LCB.
+- Self-review is mostly a no-op for Claude and Gemini: they leave half or more of their
+  own drafts unchanged, with almost no breaks and almost no fixes.
+- GPT-5.5 drafts reviewed by Gemini are a safe pairing: 0/52 and 1/40 broken, 4/8 and
+  4/40 fixed.
+
+**What the reviewer prompt asks.** Every reviewer got the paper's prompt unchanged:
+"Identify any bugs, incorrect logic, missing edge cases, or inefficiencies. Produce a
+final corrected solution — either the original if it is correct, or an improved version.
+Do NOT run or test the code." It neither forces a rewrite nor asks for minimal edits: a
+reviewer may return the draft unchanged, but must output a full program, and "improved
+version" / "inefficiencies" leave room to rewrite. How much to change was each model's
+own choice. The "smallest change needed" line was used only in item 5, only for GPT-5.5.
+
+**Why GPT-5.5 changes so much.** What the data shows:
+
+- Rewriting is its default, not a limit: with the minimal-edit line it left 74% of
+  drafts unchanged (from 7%) and its mean edit fell from 47 to 5 lines.
+- It rewrites its own code too: unchanged on only 14% of its own BCB drafts (Claude
+  73%), so this is not distrust of other models' code.
+- Part of it is cosmetic: on BCB it returned 4% of Claude's drafts exactly unchanged,
+  but 16% ignoring whitespace.
+- The prompt's "improved version" invites it; Claude and Gemini read it as "fix if
+  broken", GPT-5.5 as "produce a better version".
+
+Plausible but untested: GPT-5.5 runs through the Codex CLI, built as an agent that makes
+changes, and models differ in training on how much to defer to existing code. Safe
+claim: GPT-5.5 rewrites by default, and an explicit minimal-edit instruction largely
+switches that off.
+
+**Why Gemini broke 0 on LCB.** It changes less (31% of passing drafts unchanged vs 8% for
+GPT-5.5; median edit 14.5 vs 37.5 lines), and 0/162 vs Claude's 1/162 is within noise
+(95% interval 0–2.3%). It is not perfect: 4/139 on BCB, more than Claude. When it does
+edit, its edits average 37 lines (Claude 19), yet it broke none on LCB, so its edits seem
+to keep the original logic more often.
+
 ## Setup
 
 | Model  | Exact ID                 | Accessed through                | Effort          |
@@ -680,13 +758,24 @@ pairings. Differences:
 | Fixes: Claude vs Gemini   | 15 | 3 | 0.008 | **0.038, significant** |
 | Fixes: Gemini vs GPT-5.5  | 5  | 4 | 1.0   | 1.0 |
 
-**By pair** (writer → reviewer), regressions on passing drafts:
+**By pair** (writer → reviewer):
 
-| Writer ↓ / Reviewer → | Claude | GPT-5.5 | Gemini |
-|-----------------------|--------|---------|--------|
-| Claude (57 passing)   | 0      | **7**   | 2      |
-| GPT-5.5 (40 passing)  | 2      | 2       | 1      |
-| Gemini (42 passing)   | 0      | 3       | 1      |
+| Writer | Reviewer | Broken | Fixed | Unchanged | Median edit |
+|--------|----------|--------|-------|-----------|-------------|
+| Claude  | Claude  | 0/57 | 0/23 | 73% | 0 |
+| Claude  | Gemini  | 2/57 | 1/23 | 8% | 6 |
+| Claude  | GPT-5.5 | **7/57** | 0/23 | 4% | 11.5 |
+| Gemini  | Claude  | 0/42 | 7/36 | 4% | 11.5 |
+| Gemini  | Gemini  | 1/42 | 1/36 | 50% | 0.5 |
+| Gemini  | GPT-5.5 | 3/42 | 2/36 | 1% | 21.5 |
+| GPT-5.5 | Claude  | 2/40 | **11/40** | 30% | 7 |
+| GPT-5.5 | Gemini  | 1/40 | 4/40 | 14% | 13.5 |
+| GPT-5.5 | GPT-5.5 | 2/40 | 3/40 | 14% | 12 |
+
+Gemini has 78 drafts, not 80: on bcb_303 the Gemini CLI returned an error, and on
+bcb_428 every attempt was invalid ("Model stream ended with malformed function call").
+Those two tasks have no Gemini draft; retrying would cost cents and cannot change a
+conclusion.
 
 Full tables: `results/processed/regression60_bcb_metrics.csv`, `_by_pair.csv`,
 `_transitions.csv` (every break and fix).
@@ -725,6 +814,56 @@ as graders and pass rates differ; report the two side by side.
   it rewrites, and here is a one-line fix", or show that it does not.
 - Item 7 tests whether the finding holds beyond one benchmark.
 
+## Authorship-label study (separate; pilot in progress)
+
+Regression-60 and BigCodeBench never name an author: every review there is "no label".
+Whether a reviewer treats code differently depending on who it is told wrote it is a
+separate study (design: `docs/AUTHORSHIP_LABEL_STUDY.md`).
+
+**Labels.** For each draft and reviewer, reviews identical except for one prompt line:
+*true* (real author), *false* × 2 (each model that did not write it; often one of them
+is the reviewer itself, i.e. "you wrote this"), and *no label*. The label template also
+asks for an `<issues>` list before the solution.
+
+**Demo (2026-11-01 to 11-04, before this run):** 6 drafts (one passing, one failing per
+writer, 3 problems) × 3 reviewers × 4 labels = 72 reviews, all valid.
+
+- Passing drafts: 0 breaks under any label (36 reviews).
+- Failing drafts: 19 fixed, 12 changed but still failing, 5 unchanged.
+- All 81 paired tests p = 1.0 after correction: no evidence either way.
+- Cleanest self-preference comparison (two equally false labels, "you wrote this" vs "a
+  third model wrote this"): the reviewer fixed the draft only when told it was its own in
+  3 of 6, the reverse in 1, same in 2. Worth testing, not a finding (one draft, one
+  review per comparison).
+- Gemini returned its own drafts unchanged in 7 of 8 reviews regardless of label.
+- Caveat: the demo's GPT reviewer used the default Codex setup, which likely had shell
+  tools; the demo's no-label condition uses the label template, not the paper's exact
+  prompt.
+
+**Pilot (approved 2026-11-22, running).** 10 problems from the regression-60 sample ×
+3 writers = 30 drafts (17 passing, 13 failing; every writer has failing drafts): 6
+problems chosen for failing drafts (3763, abc392_d, arc191_c, abc399_e, 3688, 3754) and
+4 drawn at random from all-pass problems (3720, 3794, abc391_e, abc397_c). Each reviewer
+reviews each draft 5 times: true, both false labels, no label, and a **repeated no-label
+review to measure run-to-run noise**. 450 reviews (150 per reviewer).
+
+Fixes so the pilot matches regression-60:
+
+- GPT-5.5 reviews **without tools** (isolated Codex home); verified, 0 tool calls.
+- Draft pass/fail from the **regression-60 regrade** (fence stripped), not the paper's
+  stored grade, which would have marked 2 passing GPT-5.5 drafts as failing.
+- **Spending caps** (`--max-spend`): Gemini $29, OpenAI $16 (balances $31 and $18). If
+  a cap is reached the run stops starting new reviews for that model, keeps finished
+  ones, and can resume after a top-up.
+
+Estimated cost: Gemini $27–39, GPT-5.5 $8–14, Claude $0 (Pro plan). Files:
+`experiments/configs/label_pilot_drafts.yaml`, `label_study_pilot.yaml`,
+`results/raw/label_pilot/`, log `results/raw/label_pilot.log`. Results to be added here.
+
+Not yet run: the style-recognition test (can a reviewer tell the author without a
+label?), an optional neutral label ("written by an AI model"), and the full study
+(~$280 for the hard tier).
+
 ## Cost: actual spend
 
 | Part                                   | Gemini       | OpenAI (GPT-5.5) | Claude (API-equivalent) |
@@ -755,6 +894,20 @@ writes.
 
 **Per review** (average): Claude $0.214 (API-equivalent), GPT-5.5 $0.046, Gemini $0.178.
 **Time per review** (median): Claude 21 s, GPT-5.5 14 s, Gemini 82 s.
+
+### Follow-up spend (2026-11-22)
+
+| Part | Gemini | OpenAI (GPT-5.5) | Claude (API-equivalent) |
+|------|--------|------------------|-------------------------|
+| Item 4: GPT-5.5 repeat (180 reviews) | n/a | $7.02 | n/a |
+| Item 5: minimal-edit prompt (180 reviews) | n/a | $7.53 | n/a |
+| BigCodeBench drafts (240, incl. pilot) | $5.79 | $3.01 | ($15.85) |
+| BigCodeBench reviews (714, incl. pilot) | $19.47 | $7.37 | ($44.13) |
+| Items 1–3, 6, sortedcontainers check, paper-code regrade | $0 | $0 | $0 |
+| **Total follow-ups** | **≈ $25** | **≈ $25** | **$0** (Pro plan) |
+
+All GPT-5.5 figures use the corrected (single-counted) cached tokens. Balances after
+these, per the user: Gemini $21 (then topped up to $31 for the label pilot), OpenAI $18.
 
 ### Budget history
 
@@ -791,10 +944,14 @@ each account at a spending cap (`--max-spend`).
   in the paper: 9 of its 369 writer calls took 2–3 turns, and the rest took 1.
 - **GPT reviews here differ from the demo.** The demo's GPT reviewer loaded the user's
   Codex settings, including tools. This run's GPT reviewer has no tools.
-- **Grader drift.** 8 of the paper's GPT-5.5 "failing" drafts pass today (see Step 2).
+- **Grader drift, explained.** 8 of the paper's GPT-5.5 "failing" drafts pass today
+  (Step 2); across 116 problems, 15. Cause confirmed: GPT-5.5 wrapped code in a Markdown
+  fence that the paper's grading did not strip (see "Result of item 1"). The rerun of
+  the paper's own code used Python 3.14; the paper's Python version is unrecorded.
 - **Few failing drafts.** Only 18 drafts failed (Claude 6, GPT-5.5 8, Gemini 4), so the
   fix rates are very rough. Gemini's 4 failing drafts include 3 problems no writer solved.
-- **One review per draft.** Each draft was reviewed once per reviewer, so run-to-run
+- **One review per draft** in the main run (GPT-5.5 was repeated once, item 4: similar
+  rate, mostly different drafts; Claude and Gemini were not repeated). Each draft was reviewed once per reviewer, so run-to-run
   variation is not measured.
 - **Not a pre-registered test.** The significance tests were chosen after seeing the
   data; treat them as a guide, not a confirmed finding.
@@ -824,6 +981,19 @@ each account at a spending cap (`--max-spend`).
   Gemini 3.1 Pro. Gemini 3.1 Pro was used because it was Google's flagship Pro model when
   Gemini was added (2026-11-01); the training cutoff was not considered then.
 - **Gemini is a preview model,** and its behavior may change.
+- **The paper had unusable outputs** (no program to grade: CLI error, timeout, nothing
+  extracted), all on the hard slice: Claude conditions 15–17 of 82 (mostly Claude CLI
+  errors), GPT-5.5 conditions 2–6. The paper's headline uses only the 116 tasks where all
+  six conditions were gradable, and reports a second view counting them as failures.
+  "Unusable" is not bad syntax: code with bad syntax is graded and fails.
+- **The grader's per-test time limit does not stop every hung program.** abc388_f ran
+  for an hour at 100% CPU; such programs were capped and counted as too slow, the same
+  rule as the Stage 2 abc388_f break.
+- **The grading environment lacks some judge libraries** (`sortedcontainers`), which
+  turned Claude's 3784 review into a crash; kept as graded, noted separately.
+- **BigCodeBench is not pooled with LiveCodeBench:** different grader (official Docker
+  evaluator, 20 s per task), different tasks (network-using tasks and 5 always-failing
+  references excluded), fresh drafts. Report side by side.
 - **Claude cost.** Claude runs on a Pro subscription, so it costs nothing. Its cost at
   API prices is recorded for comparison.
 - **Gemini's cost varies a lot by problem,** from $0.05 to $0.40 per call in Stage 1a,
