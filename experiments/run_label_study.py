@@ -38,6 +38,7 @@ CLI_FAMILIES = {"claude": "claude", "codex": "gpt", "gemini": "gemini"}
 ARMS = ("true", "false", "none")
 FROZEN_DIRS = ("results/raw/lcb_hard_full", "results/raw/lcb_medium_100")
 MAX_ATTEMPTS = 2
+SPEND_MARGIN_USD = 1.0
 
 
 def sha256(text: str) -> str:
@@ -65,13 +66,17 @@ def family_of(record: TaskRecord) -> str:
     raise ValueError(f"Cannot tell the model family of {record.writer_model!r}")
 
 
-def load_draft(path: str) -> Draft:
+def load_draft(path: str, passed_override: Optional[bool] = None) -> Draft:
+    """Load a graded draft. `passed_override` (from the manifest) replaces the stored grade,
+    e.g. the regression-60 regrade, which strips the Markdown fence the paper's grading kept."""
     payload = json.loads(Path(path).read_text())
     record = TaskRecord(**payload)
     code = record.writer_artifact or ""
     passed = record.writer_passed
     if passed is None and record.reviewer_model is None:
         passed = record.passed
+    if passed_override is not None:
+        passed = passed_override
     if not code.strip() or passed is None:
         raise ValueError(f"{path} has no graded writer draft")
     return Draft(record.task_id, family_of(record), code, bool(passed), record, path)
@@ -79,7 +84,7 @@ def load_draft(path: str) -> Draft:
 
 def load_manifest(path: str) -> List[Draft]:
     entries = (yaml.safe_load(Path(path).read_text()) or {}).get("drafts", [])
-    drafts = [load_draft(str(entry["record"])) for entry in entries]
+    drafts = [load_draft(str(entry["record"]), entry.get("passed")) for entry in entries]
     seen = set()
     for draft in drafts:
         key = (draft.task_id, draft.family)
@@ -135,8 +140,11 @@ def diff_line_count(before: str, after: str) -> int:
     )
 
 
-def build_cells(drafts: List[Draft], reviewers: List[Dict[str, object]], seed: int) -> List[Dict[str, object]]:
-    """One true, one no-label, and one false-label cell per wrong model, for each draft and reviewer."""
+def build_cells(
+    drafts: List[Draft], reviewers: List[Dict[str, object]], seed: int, repeat_none: bool = False
+) -> List[Dict[str, object]]:
+    """One true, one no-label, and one false-label cell per wrong model, for each draft and reviewer.
+    With repeat_none, a second identical no-label review (arm "none_repeat") measures run-to-run noise."""
 
     cells = []
     for draft in drafts:
@@ -144,6 +152,8 @@ def build_cells(drafts: List[Draft], reviewers: List[Dict[str, object]], seed: i
             base = f"L_{draft.family}_by_{reviewer['family']}"
             arms = [("true", draft.family, f"{base}_true"), ("none", None, f"{base}_none")]
             arms += [("false", family, f"{base}_false_{family}") for family in false_families(draft.family)]
+            if repeat_none:
+                arms.append(("none_repeat", None, f"{base}_none_rep2"))
             for arm, family, condition in arms:
                 cells.append(
                     {
@@ -156,6 +166,20 @@ def build_cells(drafts: List[Draft], reviewers: List[Dict[str, object]], seed: i
                 )
     random.Random(seed).shuffle(cells)
     return cells
+
+
+def family_spend(tracker: CostTracker, checkpoint_dir: str) -> Dict[str, float]:
+    """Reviewer spend (API rates) per reviewer family already recorded in a checkpoint."""
+    spend: Dict[str, float] = defaultdict(float)
+    root = Path(checkpoint_dir)
+    if not root.exists():
+        return spend
+    for condition_dir in (p for p in root.iterdir() if p.is_dir()):
+        for record in tracker.load_all(str(condition_dir)):
+            family = record.extra.get("reviewer_family")
+            if family:
+                spend[str(family)] += record.reviewer_cost_usd
+    return spend
 
 
 def is_cell_done(tracker: CostTracker, cell: Dict[str, object], checkpoint_dir: str) -> bool:
@@ -373,6 +397,11 @@ def main() -> None:
     parser.add_argument("--skip-preflight", action="store_true")
     parser.add_argument("--dry-run", action="store_true", help="List the planned calls; call no model")
     parser.add_argument("--resume", metavar="CHECKPOINT_DIR")
+    parser.add_argument("--repeat-none", action="store_true",
+                        help="Add a second no-label review per draft and reviewer (noise floor)")
+    parser.add_argument("--max-spend", action="append", default=[], metavar="FAMILY=USD",
+                        help="Stop starting new reviews for a reviewer family once its recorded spend "
+                             "in this checkpoint (API rates) is within $1 of USD. Repeatable.")
     args = parser.parse_args()
 
     if args.resume:
@@ -383,6 +412,7 @@ def main() -> None:
         args.benchmark_config = meta["benchmark_config"]
         args.evidence = meta["evidence"]
         args.stop_on_limit = meta["stop_on_limit"]
+        args.repeat_none = meta.get("repeat_none", False)
         for paused in Path(args.resume).glob("PAUSED"):
             paused.unlink()
     if not args.manifest or not args.checkpoint:
@@ -394,7 +424,11 @@ def main() -> None:
     reviewers = study["reviewers"]
     template = Path(study["template"]).read_text()
     drafts = load_manifest(args.manifest)
-    cells = build_cells(drafts, reviewers, seed)
+    cells = build_cells(drafts, reviewers, seed, args.repeat_none)
+    caps = {k: float(v) for k, v in (item.split("=", 1) for item in args.max_spend)}
+    unknown = set(caps) - {str(r["family"]) for r in reviewers}
+    if unknown:
+        parser.error(f"--max-spend names unknown families: {sorted(unknown)}")
     tracker = CostTracker(pricing_path=study["pricing_path"])
 
     if args.dry_run:
@@ -417,6 +451,7 @@ def main() -> None:
                 "benchmark_config": args.benchmark_config,
                 "evidence": args.evidence,
                 "stop_on_limit": args.stop_on_limit,
+                "repeat_none": args.repeat_none,
                 "label_seed": seed,
                 "reviewers": reviewers,
                 "template": study["template"],
@@ -441,11 +476,21 @@ def main() -> None:
 
     stop = threading.Event()
     sentinel = str(Path(args.checkpoint) / "PAUSED")
+    spend_lock = threading.Lock()
+    spend = family_spend(tracker, args.checkpoint)
+    capped: set = set()
+    if caps:
+        print(f"Spend already recorded in this checkpoint: { {k: round(v, 2) for k, v in spend.items()} }; caps: {caps}")
 
     def work(cell: Dict[str, object]) -> Optional[TaskRecord]:
         if stop.is_set():
             return None
         reviewer = cell["reviewer"]
+        family = str(reviewer["family"])
+        with spend_lock:
+            if family in caps and spend[family] + SPEND_MARGIN_USD >= caps[family]:
+                capped.add(family)
+                return None
         runner = CLIRunner(
             cli=str(reviewer["cli"]),
             model=str(reviewer["model"]),
@@ -453,9 +498,10 @@ def main() -> None:
             timeout_s=int(reviewer.get("timeout_s", 300)),
             paused_sentinel_path=sentinel,
             stop_on_limit=args.stop_on_limit,
+            codex_home=reviewer.get("codex_home"),
         )
         draft: Draft = cell["draft"]
-        return run_cell(
+        record = run_cell(
             cell,
             runner,
             templates[draft.task_id],
@@ -465,6 +511,9 @@ def main() -> None:
             evidence[sha256(draft.code)],
             seed,
         )
+        with spend_lock:
+            spend[family] += record.reviewer_cost_usd
+        return record
 
     limit_error: Optional[UsageLimitError] = None
     total_cost = 0.0
@@ -489,6 +538,10 @@ def main() -> None:
             )
 
     print(f"Reviewer spend at API rates this session: ${total_cost:.2f}")
+    print(f"Recorded spend in this checkpoint by reviewer: { {k: round(v, 2) for k, v in spend.items()} }")
+    if capped:
+        raise SystemExit(f"Spending cap reached for {sorted(capped)}; finished cells are saved. "
+                         f"Raise the cap and --resume to continue.")
     if isinstance(limit_error, OutOfCreditsError):
         raise SystemExit(f"HARD STOP: {limit_error}\nFinished cells are saved; the failed call was not.")
     if limit_error:

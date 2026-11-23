@@ -81,6 +81,17 @@ class LabelAssignmentTest(unittest.TestCase):
             self.assertEqual(2, len(wrong))
             self.assertNotIn(family, wrong)
 
+    def test_repeat_none_adds_one_unlabeled_repeat_per_draft_and_reviewer(self):
+        drafts = [_draft(family=family) for family in study.FAMILY_LABELS]
+
+        cells = study.build_cells(drafts, REVIEWERS, 7, repeat_none=True)
+
+        repeats = [cell for cell in cells if cell["arm"] == "none_repeat"]
+        self.assertEqual(45, len(cells))
+        self.assertEqual(9, len(repeats))
+        self.assertTrue(all(cell["labeled_family"] is None for cell in repeats))
+        self.assertEqual(45, len({cell["condition"] for cell in cells}))
+
     def test_cells_cover_every_draft_reviewer_and_every_false_label(self):
         drafts = [_draft(family=family) for family in study.FAMILY_LABELS]
 
@@ -153,6 +164,12 @@ class ManifestTest(unittest.TestCase):
 
         self.assertFalse(draft.passed)
         self.assertEqual("claude", draft.family)
+
+    def test_manifest_grade_overrides_stored_grade(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            draft = study.load_draft(self._write(tmpdir, "a.json", passed=False), passed_override=True)
+
+        self.assertTrue(draft.passed)
 
     def test_ungraded_draft_is_refused(self):
         with tempfile.TemporaryDirectory() as tmpdir:
