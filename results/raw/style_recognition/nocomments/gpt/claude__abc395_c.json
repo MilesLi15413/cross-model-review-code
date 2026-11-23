@@ -1,0 +1,46 @@
+{
+ "problem": "abc395_c",
+ "true_writer": "claude",
+ "true_writer_name": "Claude",
+ "draft_passed": true,
+ "source_record": "results/raw/lcb_medium_100/B1_claude_solo/abc395_c__B1_claude_solo.json",
+ "reviewer": "gpt",
+ "condition": "nocomments",
+ "rep": 1,
+ "options": [
+  "Claude",
+  "Gemini",
+  "GPT"
+ ],
+ "code_sha256": "eee34fcc54a16c44b08d0e7cf3c61446c297f5ef8c120056207631166520a70c",
+ "prompt_sha256": "5c345062647412270e79f07f38339c0d3cdd93794ffb3a55574cbfc47c26bf69",
+ "template_sha256": "f2bfc5e271ef0c16e02b40d2c45afc189d38ea4d3d64eb3562804538bb2ebf90",
+ "attempts": [
+  {
+   "raw_answer": "GPT",
+   "parsed": "GPT",
+   "cost_usd": 0.013104,
+   "cost_source": "tokens x pricing.yaml",
+   "input_tokens": 946,
+   "output_tokens": 117,
+   "cached_input_tokens": 9728,
+   "cache_creation_input_tokens": 0,
+   "latency_s": 3.5283055839972803,
+   "cli_version": "codex-cli 0.163.0",
+   "tool_calls": 0,
+   "runtime_settings": {
+    "input_tokens_exclude_cached": true,
+    "codex_home": "isolated",
+    "user_mcp_servers": "disabled",
+    "tool_calls": 0
+   }
+  }
+ ],
+ "cost_usd_all_attempts": 0.013104,
+ "raw_answer": "GPT",
+ "answer": "GPT",
+ "valid": true,
+ "answered_self": true,
+ "correct": false,
+ "position_of_answer": 3
+}

@@ -1,0 +1,41 @@
+{
+ "problem": "abc394_e",
+ "true_writer": "claude",
+ "true_writer_name": "Claude",
+ "draft_passed": true,
+ "source_record": "results/raw/lcb_hard_full/B1_claude_solo/abc394_e__B1_claude_solo.json",
+ "reviewer": "claude",
+ "condition": "raw",
+ "rep": 1,
+ "options": [
+  "GPT",
+  "Claude",
+  "Gemini"
+ ],
+ "code_sha256": "01e4ca65d5bd4e264a50b947575d0cd91b0e5c43e3070e1f55dd99568b6c18a2",
+ "prompt_sha256": "a609d9523625405a35c109e35af93baf895e1cb1fffc6eff160a13e4d7e21948",
+ "template_sha256": "f2bfc5e271ef0c16e02b40d2c45afc189d38ea4d3d64eb3562804538bb2ebf90",
+ "attempts": [
+  {
+   "raw_answer": "GPT",
+   "parsed": "GPT",
+   "cost_usd": 0.18899400000000002,
+   "cost_source": "cli",
+   "input_tokens": 5,
+   "output_tokens": 7,
+   "cached_input_tokens": 23848,
+   "cache_creation_input_tokens": 17687,
+   "latency_s": 4.29248508400633,
+   "cli_version": "2.1.330 (Claude Code)",
+   "tool_calls": null,
+   "runtime_settings": {}
+  }
+ ],
+ "cost_usd_all_attempts": 0.18899400000000002,
+ "raw_answer": "GPT",
+ "answer": "GPT",
+ "valid": true,
+ "answered_self": false,
+ "correct": false,
+ "position_of_answer": 1
+}

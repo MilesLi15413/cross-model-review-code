@@ -1,0 +1,41 @@
+{
+ "problem": "abc389_e",
+ "true_writer": "claude",
+ "true_writer_name": "Claude",
+ "draft_passed": true,
+ "source_record": "results/raw/lcb_hard_full/B1_claude_solo/abc389_e__B1_claude_solo.json",
+ "reviewer": "claude",
+ "condition": "nocomments",
+ "rep": 1,
+ "options": [
+  "Claude",
+  "Gemini",
+  "GPT"
+ ],
+ "code_sha256": "d9201051f640dd07076084b9781f1fc265279b4f28c67d23aee9c49ec3250910",
+ "prompt_sha256": "7b562dc262d9f579632d210c2af4c15f9517c2b4ab47dfd60f302bc6838c4d16",
+ "template_sha256": "f2bfc5e271ef0c16e02b40d2c45afc189d38ea4d3d64eb3562804538bb2ebf90",
+ "attempts": [
+  {
+   "raw_answer": "Gemini",
+   "parsed": "Gemini",
+   "cost_usd": 0.18248899999999998,
+   "cost_source": "cli",
+   "input_tokens": 5,
+   "output_tokens": 8,
+   "cached_input_tokens": 23848,
+   "cache_creation_input_tokens": 17034,
+   "latency_s": 4.054152916003659,
+   "cli_version": "2.1.330 (Claude Code)",
+   "tool_calls": null,
+   "runtime_settings": {}
+  }
+ ],
+ "cost_usd_all_attempts": 0.18248899999999998,
+ "raw_answer": "Gemini",
+ "answer": "Gemini",
+ "valid": true,
+ "answered_self": false,
+ "correct": false,
+ "position_of_answer": 2
+}

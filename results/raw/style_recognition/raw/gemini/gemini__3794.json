@@ -1,0 +1,82 @@
+{
+ "problem": "3794",
+ "true_writer": "gemini",
+ "true_writer_name": "Gemini",
+ "draft_passed": true,
+ "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/3794__B3_gemini_solo.json",
+ "reviewer": "gemini",
+ "condition": "raw",
+ "rep": 1,
+ "options": [
+  "GPT",
+  "Claude",
+  "Gemini"
+ ],
+ "code_sha256": "fc8b04b8e7fc84d4d8e83ccfc848a516d6fda78288003bf8a0a8c33be0c034e4",
+ "prompt_sha256": "285c15f65735cb60f68046e121c5fdac50f60866527a6c2b4e31c3a75135a5ad",
+ "template_sha256": "f2bfc5e271ef0c16e02b40d2c45afc189d38ea4d3d64eb3562804538bb2ebf90",
+ "attempts": [
+  {
+   "raw_answer": "Claude",
+   "parsed": "Claude",
+   "cost_usd": 0.027674400000000002,
+   "cost_source": "tokens x pricing.yaml",
+   "input_tokens": 4133,
+   "output_tokens": 1542,
+   "cached_input_tokens": 4522,
+   "cache_creation_input_tokens": 0,
+   "latency_s": 12.27611391699611,
+   "cli_version": "0.65.0",
+   "tool_calls": 0,
+   "runtime_settings": {
+    "thinking_level": "HIGH",
+    "settings": {
+     "tools": {
+      "core": []
+     },
+     "mcp": {
+      "allowed": [
+       "__no_mcp_servers__"
+      ]
+     },
+     "skills": {
+      "enabled": false
+     },
+     "hooksConfig": {
+      "enabled": false
+     },
+     "ide": {
+      "enabled": false
+     },
+     "modelConfigs": {
+      "customOverrides": [
+       {
+        "match": {
+         "model": "gemini-3.1-pro-preview"
+        },
+        "modelConfig": {
+         "generateContentConfig": {
+          "thinkingConfig": {
+           "thinkingLevel": "HIGH"
+          }
+         }
+        }
+       }
+      ]
+     }
+    },
+    "models_used": [
+     "gemini-3.1-pro-preview"
+    ],
+    "tool_calls": 0
+   }
+  }
+ ],
+ "cost_usd_all_attempts": 0.027674400000000002,
+ "raw_answer": "Claude",
+ "answer": "Claude",
+ "valid": true,
+ "answered_self": false,
+ "correct": false,
+ "position_of_answer": 2
+}

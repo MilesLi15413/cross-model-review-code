@@ -1,0 +1,4 @@
+condition,reviewer,pos1,pos2,pos3,p_uniform_position,answered_Claude,answered_GPT,answered_Gemini
+nocomments,Claude,24,21,15,0.3499377491111554,16,24,20
+nocomments,GPT-5.5,48,74,58,0.05688823834610155,33,131,16
+nocomments,Gemini,54,47,49,0.7710515858035664,62,44,44

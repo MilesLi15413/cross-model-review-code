@@ -1,0 +1,82 @@
+{
+ "problem": "abc398_f",
+ "true_writer": "gpt55",
+ "true_writer_name": "GPT",
+ "draft_passed": true,
+ "source_record": "results/raw/lcb_hard_full/B2_gpt55_solo/abc398_f__B2_gpt55_solo.json",
+ "reviewer": "gemini",
+ "condition": "raw",
+ "rep": 1,
+ "options": [
+  "Claude",
+  "GPT",
+  "Gemini"
+ ],
+ "code_sha256": "f12f8d59be99e8dcc8a9da71fbd9afeba675dd26240c2072c021acf819913968",
+ "prompt_sha256": "20ba2e3e8ed2596543ec49f4dfe553bca1ada880696e6bf1b4d468455d198009",
+ "template_sha256": "f2bfc5e271ef0c16e02b40d2c45afc189d38ea4d3d64eb3562804538bb2ebf90",
+ "attempts": [
+  {
+   "raw_answer": "GPT",
+   "parsed": "GPT",
+   "cost_usd": 0.031652,
+   "cost_source": "tokens x pricing.yaml",
+   "input_tokens": 8128,
+   "output_tokens": 1283,
+   "cached_input_tokens": 0,
+   "cache_creation_input_tokens": 0,
+   "latency_s": 12.704114334002952,
+   "cli_version": "0.65.0",
+   "tool_calls": 0,
+   "runtime_settings": {
+    "thinking_level": "HIGH",
+    "settings": {
+     "tools": {
+      "core": []
+     },
+     "mcp": {
+      "allowed": [
+       "__no_mcp_servers__"
+      ]
+     },
+     "skills": {
+      "enabled": false
+     },
+     "hooksConfig": {
+      "enabled": false
+     },
+     "ide": {
+      "enabled": false
+     },
+     "modelConfigs": {
+      "customOverrides": [
+       {
+        "match": {
+         "model": "gemini-3.1-pro-preview"
+        },
+        "modelConfig": {
+         "generateContentConfig": {
+          "thinkingConfig": {
+           "thinkingLevel": "HIGH"
+          }
+         }
+        }
+       }
+      ]
+     }
+    },
+    "models_used": [
+     "gemini-3.1-pro-preview"
+    ],
+    "tool_calls": 0
+   }
+  }
+ ],
+ "cost_usd_all_attempts": 0.031652,
+ "raw_answer": "GPT",
+ "answer": "GPT",
+ "valid": true,
+ "answered_self": false,
+ "correct": true,
+ "position_of_answer": 2
+}

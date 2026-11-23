@@ -1,0 +1,10 @@
+condition,reviewer,true_writer,answered_Claude,answered_GPT-5.5,answered_Gemini
+raw,Claude,Claude,14,44,2
+raw,Claude,GPT-5.5,25,31,4
+raw,Claude,Gemini,1,11,48
+raw,GPT-5.5,Claude,13,46,1
+raw,GPT-5.5,GPT-5.5,19,40,1
+raw,GPT-5.5,Gemini,5,49,6
+raw,Gemini,Claude,22,14,24
+raw,Gemini,GPT-5.5,34,14,12
+raw,Gemini,Gemini,33,21,6

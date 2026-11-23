@@ -1,0 +1,4 @@
+condition,reviewer,own_drafts,said_self_on_own,hit_rate,other_drafts,said_self_on_other,false_alarm_rate,p_fisher,p_holm
+raw,Claude,60,14,0.233,120,26,0.217,0.4700500348719582,1.0
+raw,GPT-5.5,60,40,0.667,120,95,0.792,0.9764882273483335,1.0
+raw,Gemini,60,6,0.1,120,36,0.3,0.9996006181838617,1.0
