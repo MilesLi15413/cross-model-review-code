@@ -322,7 +322,7 @@ The GPT total includes setup test calls.
   from the paper's 116 problems. With 3 reviewers × 4 labels (true, two false, none),
   that is 12 reviews per draft: about 4,200 calls for 116 problems × 3 writers. At this
   demo's rates that is roughly $530 for Gemini and GPT together (see
-  [AUTHORSHIP_LABEL_STUDY.md](AUTHORSHIP_LABEL_STUDY.md)). It should be estimated
+  the "Authorship-label study" section of [REGRESSION60_RUN.md](REGRESSION60_RUN.md)). It should be estimated
   precisely before running.
 - **Help requests:** the same scaling applies. Adding problems that deliberately need
   help would make the counts informative.

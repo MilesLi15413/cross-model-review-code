@@ -888,12 +888,188 @@ as graders and pass rates differ; report the two side by side.
 
 Regression-60 and BigCodeBench never name an author: every review there is "no label".
 Whether a reviewer treats code differently depending on who it is told wrote it is a
-separate study (design: `docs/AUTHORSHIP_LABEL_STUDY.md`).
+separate study. Its full design is below (merged here from the former
+`docs/AUTHORSHIP_LABEL_STUDY.md`, drafted 2026-10-17, updated 2026-11-04), followed by
+the demo and pilot results. Nothing in it changes the paper's results or the frozen
+runs under `results/raw/`.
+
+### Research question and hypotheses
+
+Does a reviewer behave differently depending on who it is told wrote the code? The
+paper's reviewer prompt (`harness/prompts/reviewer_lcb.txt`) contains no authorship
+information; this study adds one line naming an author and measures whether that line
+alone changes the review. Hypotheses, stated as directions to test, not expectations:
+
+- **H1, self-preference:** a reviewer is more lenient (leaves more unchanged, edits
+  less, breaks fewer passing drafts) when told the draft is its own.
+- **H2, deference:** a reviewer edits less when told the draft is by a model it treats
+  as stronger.
+- **H3, skepticism:** a reviewer edits more when told the draft is by a model it treats
+  as weaker.
+
+H2 and H3 predict opposite signs for the same contrast; the study estimates direction
+and size per reviewer and assumes neither.
+
+### Design
+
+**Models.** Three families act as both writers and reviewers, all at high effort with no
+tools (`experiments/configs/label_study.yaml`):
+
+| Family | Model | CLI | Label string |
+|---|---|---|---|
+| Claude | `claude-opus-4-7` | Claude Code | `Claude` |
+| GPT | `gpt-5.5` | Codex CLI | `GPT/Codex` |
+| Gemini | `gemini-3.1-pro-preview` | Gemini CLI | `Gemini` |
+
+**Drafts are reused, not regenerated.** Every label condition reviews identical code;
+only the reviewer calls are new. Drafts are each writer's solo drafts (`B1_claude_solo`,
+`B2_gpt55_solo`, `B3_gemini_solo`), already graded, listed in a manifest. Fully
+crossed: every draft is reviewed by all three reviewers under every label, so every
+comparison is on the same program.
 
 **Labels.** For each draft and reviewer, reviews identical except for one prompt line:
-*true* (real author), *false* × 2 (each model that did not write it; often one of them
-is the reviewer itself, i.e. "you wrote this"), and *no label*. The label template also
-asks for an `<issues>` list before the solution.
+
+| Label condition | Line shown to the reviewer |
+|---|---|
+| **True** | the real author: "This code was written by &lt;writer&gt;." |
+| **False → model A** | "This code was written by &lt;A&gt;.", A = one of the two models that did not write it |
+| **False → model B** | the same, naming the other model that did not write it |
+| **No label** | no line |
+| **No label, repeated** (pilot only) | identical to no label, run again to measure noise |
+
+With three models every draft has exactly two wrong authors, and each gets its own
+false-label review (no random choice). Often one wrong name is the reviewer itself.
+Example for Claude reviewing a GPT draft: true "GPT/Codex"; false "Gemini" (another
+model); false "Claude" (told it wrote the code itself); no label. Each record stores the
+model named (`labeled_family`) and whether it was the reviewer (`label_relation`:
+`self`, `other`, `none`).
+
+**Contrasts:**
+
+| Contrast | What it isolates |
+|---|---|
+| No label vs repeated no label | run-to-run noise floor a label effect must exceed |
+| False → self vs false → other, same draft | **self-preference (H1)**, both labels equally wrong; the cleanest test |
+| True vs no label | whether naming the real author changes the review |
+| True vs each false label | whether the stated author matters, code held fixed |
+| Labeled as a given model vs no label | H2/H3: how a reviewer treats a named model |
+
+**Prompt construction.** `reviewer_lcb.txt` is not modified. The template
+`harness/prompts/reviewer_lcb_label_study.txt` adds an `{author_label}` line before
+`SUBMITTED SOLUTION:` and asks for an `<issues>` list before the `<solution>`. The label
+is filled in before the draft, so text inside a draft cannot collide with a placeholder.
+Every record stores the SHA-256 of the full prompt and of the template.
+`tests/test_label_study.py` enforces: prompts for different labels differ only in the
+label line; true and false differ only in the model name; every draft and reviewer gets
+a true, a no-label, and one false label per wrong model, never a false label naming the
+real author; old single-false-label demo records are reused only for the model they
+named; manifest grades override stored grades; the repeat arm adds exactly one unlabeled
+repeat per draft and reviewer.
+
+**Known residual differences.** The no-label condition has no label line at all, so
+labeled vs no label also measures whether a line is present; the cleanest contrasts are
+between labeled conditions. An optional neutral label ("written by an AI model") would
+isolate this. The no-label condition uses the label template (it asks for `<issues>`),
+not the paper's exact reviewer prompt.
+
+**Self-identity.** Each CLI tells its model what it is (Claude Code: Claude; Codex: an
+OpenAI/Codex agent; Gemini CLI: Gemini). It is not verified that each reviewer
+identifies with its label string, in particular that GPT-5.5 reads "GPT/Codex" as
+itself.
+
+**Earlier demo version.** The first demo (2026-11-02) gave each draft only one false
+label, chosen with a fixed seed (`label_seed: 20261101`), which mixed "another model"
+with "you". Those 18 reviews are reused as the false-label review for the model they
+named (saved as `L_<writer>_by_<reviewer>_false`); the 18 missing ones were added
+2026-11-04 as `L_<writer>_by_<reviewer>_false_<model named>`.
+
+**Cell order** is shuffled across labels and reviewers, so rate limits or drift over
+time do not line up with one label.
+
+### Metrics and tests
+
+Each review is one of: **fixed** (draft failed, returned code passes), **changed, same
+outcome**, **unchanged** (returned code equals the draft after normalization), or
+**regression** (draft passed, returned code fails).
+
+- **Primary** (informative on every draft): unchanged rate, edit size (changed lines),
+  issues reported (items in `<issues>`).
+- **Secondary** (low power): fix rate on failing drafts, regression rate on passing
+  drafts. Invalid outputs are reported separately, never counted as regressions.
+- **Tests:** McNemar (exact) on the same drafts for binary outcomes, each false label
+  tested separately, never pooled; Wilcoxon signed-rank for edit size and issues. The
+  demo used Benjamini–Hochberg (`analysis/statistical_tests.py`); the pilot uses Holm
+  within each reviewer (`scripts/label_pilot_analysis.py`).
+
+### Files
+
+| Path | Purpose |
+|---|---|
+| `experiments/configs/label_study.yaml` | Reviewers, template, seed |
+| `experiments/configs/label_demo_drafts.yaml` | Demo draft manifest |
+| `experiments/configs/label_pilot_drafts.yaml`, `label_study_pilot*.yaml` | Pilot manifest and configs (GPT without tools; `_no_claude`, `_claude_only` split passes) |
+| `harness/prompts/reviewer_lcb_label_study.txt` | Labeled reviewer template |
+| `experiments/run_label_study.py` | Builds cells, reviewer-only calls with checkpoint/resume, `--repeat-none`, `--max-spend`, grading |
+| `analysis/label_study_metrics.py` | Per-cell tables and paired tests |
+| `scripts/label_pilot_analysis.py` | Pooled paired contrasts with Holm (pilot) |
+| `tests/test_label_study.py` | Prompt, label-assignment, override and repeat tests |
+| `results/raw/demo_labels/`, `results/raw/label_pilot/` | Demo and pilot records |
+| `results/processed/label_study_demo_*.csv`, `label_pilot_*.csv` | Tables |
+
+Tables: `_summary.csv` (reviewer × writer × label, false labels pooled),
+`_by_false_label.csv` (each false label separate), `_self_vs_other.csv` (by relation),
+`_paired_tests.csv` (McNemar of each label vs no label), `label_pilot_contrasts.csv`
+(pooled pilot contrasts). Records reuse the `TaskRecord` schema; the draft is copied
+into `writer_artifact` with writer cost 0, and `extra` holds `source_record`,
+`draft_sha256`, `writer_family`, `reviewer_family`, `label_arm`, `labeled_family`,
+`label_text`, `label_relation`, `draft_unchanged`, `diff_lines`, `issue_count`,
+`issues`.
+
+**Untouched:** `results/raw/lcb_hard_full/` and `lcb_medium_100/` are read-only inputs
+(the runner refuses a checkpoint inside them); `run_experiment.py`, `reviewer_lcb.txt`,
+`writer_lcb.txt`, `all_conditions.yaml` and the paper's processed tables are unchanged.
+
+### Scale and cost
+
+| Run | Drafts | Reviews | Cost |
+|---|---|---|---|
+| Demo (done) | 6 | 72 | ~$9 Gemini + GPT; Claude on Pro |
+| Pilot (done, with repeat) | 30 | 450 | Gemini $29.01, GPT-5.5 $7.41, Claude $43.10 API-equivalent |
+| Hard tier, 61 tasks × 3 writers | 183 | 2,196 (2,745 with repeat) | est. ~$280 Gemini + GPT at demo rates; Claude ~$0.29/review on credits |
+| Pooled 116 tasks × 3 writers | 348 | 4,176 | est. ~$530 Gemini + GPT |
+
+### Plan
+
+1. ~~Runner, prompts, analysis, tests.~~ Done.
+2. ~~Demo (6 drafts).~~ Done 2026-11-02; both false labels 2026-11-04.
+3. ~~Pilot with repeated no-label noise floor.~~ Done 2026-11-22 (results below).
+4. Style-recognition test: not run.
+5. Hard tier, then optionally medium for the pooled 116: not run; decision after the
+   pilot (see "Reading" below).
+
+### Side test (not run): can reviewers recognize the author?
+
+If a reviewer can tell the author from style, "no label" is not truly blind and a false
+label may be seen through. Design: forced choice "Which model wrote this solution:
+Claude, GPT or Gemini?", one word, no review; about 40 drafts per writer shown to each
+reviewer; report accuracy against 1-in-3 chance (binomial test) and the confusion matrix.
+If accuracy is well above chance, "no label" is read as implicitly labeled.
+
+### Limitations of the label study
+
+- **Power:** few drafts fail for the strongest writers, so fix rates rest on few cases;
+  hence unchanged rate, edit size and issues are primary.
+- **Environment drift:** CLI versions and possibly model serving changed since the
+  paper's runs, and Gemini is a preview model; only comparisons within this study are
+  valid.
+- **Same transfer boundary as the paper** (see [SCOPE.md](SCOPE.md)): fixed prompts,
+  high effort, one static rewrite-only review, no tools, single-file Python with hidden
+  tests.
+- **What a label effect would mean:** that the reviewer conditions on stated authorship
+  in this prompt format, not how labels act in real workflows, where authorship comes
+  through commit metadata or context.
+
+### Results
 
 **Demo (2026-11-01 to 11-04, before this run):** 6 drafts (one passing, one failing per
 writer, 3 problems) × 3 reviewers × 4 labels = 72 reviews, all valid.

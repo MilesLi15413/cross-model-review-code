@@ -19,10 +19,11 @@ Python tasks scored only by hidden tests.
 
 ## Follow-up Experiments
 
-- [docs/AUTHORSHIP_LABEL_STUDY.md](docs/AUTHORSHIP_LABEL_STUDY.md): planned study of
-  whether telling the reviewer who wrote the draft changes its review. Three models,
-  with a true label, a false label naming each wrong model, and no label. Demo run
-  only; see [docs/DEMO_SUMMARY.md](docs/DEMO_SUMMARY.md).
+- Authorship-label study: whether telling the reviewer who wrote the draft changes its
+  review. Three models, with a true label, a false label naming each wrong model, and
+  no label. Design, demo and pilot (450 reviews: no label effect beyond noise) are in
+  the "Authorship-label study" section of
+  [docs/REGRESSION60_RUN.md](docs/REGRESSION60_RUN.md).
 
 ## Repository Layout
 
