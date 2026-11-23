@@ -3,6 +3,7 @@
 **Started:** 2026-11-21. **Branch:** `regression-60` (from `limited-demo-run`).
 **Status:** complete (2026-11-21). All 540 reviews are valid and graded. Follow-ups
 (items 1–7a, incl. BigCodeBench) complete 2026-11-22 on branch `bigcodebench-check`.
+Authorship-label pilot (450 reviews) complete 2026-11-22.
 
 ## Summary of findings
 
@@ -26,6 +27,11 @@
    correcting (details: "Result of item 1").
 6. **The paper's GPT-5.5 costs are ~45% too high** (cached tokens counted twice); with
    corrected costs GPT-5.5 solo is the most cost-effective condition.
+7. **Authorship labels make no measurable difference** (pilot, 450 reviews). Telling a
+   reviewer the true author, a false author, "you wrote this", or nothing changes its
+   behavior no more than two identical runs differ; no self-preference (fixes when told
+   "you wrote this" vs "a third model wrote this": Claude 1 vs 1, GPT-5.5 1 vs 1, Gemini
+   3 vs 3). Rules out large label effects, not small ones (see "Authorship-label study").
 
 \* **Note on Claude's one LiveCodeBench break (3784, Claude reviewing Gemini's draft).**
 The review imports `sortedcontainers`, which the paper's grading environment does not
