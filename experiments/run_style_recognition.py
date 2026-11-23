@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from harness.core.cli_runner import CLIRunner, OutOfCreditsError, UsageLimitError
 from harness.core.parser import normalize_code_artifact
+from harness.core.tracker import CostTracker
 
 SEED = 2026
 OPTIONS = ["Claude", "GPT", "Gemini"]
@@ -34,7 +35,8 @@ INVENTORY = ROOT / "results/processed/regression60_draft_inventory.csv"
 OUT = ROOT / "results/raw/style_recognition"
 FROZEN = ["results/raw/lcb_hard_full", "results/raw/lcb_medium_100", "results/raw/regression60", "results/raw/label_pilot"]
 SPEND_MARGIN_USD = 0.5
-MAX_ATTEMPTS = 2
+MAX_ATTEMPTS = 3
+PRICING = CostTracker(str(ROOT / "experiments/configs/pricing.yaml"))
 
 
 def sha256(text):
@@ -193,13 +195,15 @@ def run_cell(cell, template, stop_on_limit):
             continue
         parsed = parse_answer(res.response_text)
         settings = res.runtime_settings or {}
-        rec["attempts"].append({"raw_answer": res.response_text[:2000], "parsed": parsed, "cost_usd": res.cost_usd or 0.0,
+        cost = res.cost_usd if res.cost_usd is not None else PRICING.compute_cost(
+            cfg["model"], res.input_tokens, res.output_tokens, res.cached_input_tokens, res.cache_creation_input_tokens)
+        rec["attempts"].append({"raw_answer": res.response_text[:2000], "parsed": parsed, "cost_usd": cost, "cost_source": "cli" if res.cost_usd is not None else "tokens x pricing.yaml",
                                 "input_tokens": res.input_tokens, "output_tokens": res.output_tokens,
                                 "cached_input_tokens": res.cached_input_tokens,
                                 "cache_creation_input_tokens": res.cache_creation_input_tokens,
                                 "latency_s": res.duration_s, "cli_version": res.cli_version,
                                 "tool_calls": settings.get("tool_calls"), "runtime_settings": settings})
-        rec["cost_usd_all_attempts"] += res.cost_usd or 0.0
+        rec["cost_usd_all_attempts"] += cost
         if parsed:
             break
     last = rec["attempts"][-1] if rec["attempts"] else {}
