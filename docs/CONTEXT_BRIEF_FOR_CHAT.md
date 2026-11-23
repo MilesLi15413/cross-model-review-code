@@ -171,6 +171,10 @@ GPT-5.5 40/80. Self-review is mostly a no-op for Claude (73% of own BCB drafts u
   correctness: O = 98/116; OA vs O +5.2 pp (11 vs 5, p = 0.21, not significant); OO vs O
   0 (8 vs 8). AO vs A unchanged (−8.6 pp, 3 vs 13, p = 0.02). Needs reinterpreting, not
   correcting.
+- Exact size of the fence effect: OA passes all 15 fenced tasks, OO passes 13. So 15
+  of OA's 21-task net gain (71%) and 13 of OO's 15-task net gain (87%) come from
+  tasks where GPT-5.5 solo had correct but fenced code. BigCodeBench has no fenced
+  output from any model (0 of 238 drafts, 0 of 714 reviews).
 - Side note: 5 of the 15 flipped GPT-5.5 drafts were written with tool use (Codex shell),
   although the paper describes a no-tool setup.
 

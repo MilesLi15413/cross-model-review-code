@@ -621,6 +621,13 @@ presented as the first. Three points make this matter:
 - *LiveCodeBench's own scorer would pass these programs*, since its pipeline extracts
   code from inside fences. 98/116 is the benchmark-standard pass rate.
 
+**How much of the gain is the fence, exactly:** OA passes all 15 fenced tasks and OO
+passes 13 of them. So 15 of OA's 21-task net gain over O (71%) and 13 of OO's 15-task
+net gain (87%) are tasks where GPT-5.5 solo had correct but fenced code.
+
+**BigCodeBench is unaffected:** none of its 238 drafts or 714 reviews, from any model,
+is fenced.
+
 A defensible alternative is to keep 83/116 and state explicitly that output formatting
 counts as failure, but then the paper must also explain why the reviewed conditions do
 not face the same test. Suggested wording for the coauthors: *"The GPT-5.5 solo pass
