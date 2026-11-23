@@ -1249,6 +1249,9 @@ What it shows:
   to half unchanged. Breaks: Claude 0, Gemini 0, GPT-5.5 1 across all labels.
 - **Noise floor:** between two identical no-label runs, the pass/fail outcome flipped on
   1 draft per reviewer and the unchanged status on 2–6.
+- **One pilot problem cannot be passed:** abc392_d fails for every model only on
+  decimal formatting (see "Limitations and caveats"), so all 45 of its reviews fail.
+  Of the 13 failing pilot drafts, 3 are this problem.
 
 **Reading:** with 20–30 paired drafts per reviewer, the pilot can rule out large label
 effects, not small ones. A full study aiming at small effects needs several times more
@@ -1332,6 +1335,20 @@ each account at a spending cap (`--max-spend`).
 
 ## Limitations and caveats
 
+- **abc392_d cannot be passed through ordinary output (grader strictness).** Every draft
+  of this problem, from all three models, fails only on decimal formatting: Claude and
+  GPT-5.5 print `0.076923076923077` where the expected output is `0.076923076923`;
+  Gemini prints `0.3333333333333333` where `0.333333333333333` is expected. The values
+  agree to 12+ digits, and the original AtCoder problem accepts small floating-point
+  error, but this grader compares the text exactly, and the expected answers do not even
+  use a consistent number of decimals. So abc392_d failed in all 6 of the paper's
+  conditions, in all 3 regression-60 drafts with no review ever fixing it, and in all 45
+  label-pilot reviews. It hits every model equally, so no comparison is biased, but it is
+  one guaranteed failure per condition and "failing fixed" is impossible on it. A
+  reviewer that left these drafts unchanged (GPT-5.5 reviewing its own draft, 0 issues
+  listed) was probably right about the logic. Not corrected here, to keep the paper's
+  grader. Found 2026-11-22 by grading the failing drafts GPT-5.5 left unchanged:
+  abc392_d (formatting), 3763 and arc191_c (real wrong answers).
 - **Drafts and reviews come from different CLI versions.** The Claude and GPT-5.5 drafts
   come from the paper's original runs on older CLI versions (Claude Code 2.1.50, Codex
   CLI 0.125.0-alpha.3). All reviews, and the Gemini drafts, use current versions.

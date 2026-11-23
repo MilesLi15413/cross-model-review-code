@@ -278,6 +278,8 @@ often "you wrote this"), *no label*; reviewers also list issues.
     (edits ~35–57 lines); Claude/Gemini leave a third to half unchanged. Breaks across
     all labels: Claude 0, Gemini 0, GPT-5.5 1.
   - Noise floor: identical no-label runs flipped pass/fail on 1 draft per reviewer.
+  - abc392_d (3 of the 13 failing pilot drafts) cannot be passed: every model's draft
+    fails only on decimal formatting under the exact-text grader (see section 5).
   - Reading: rules out large label effects, not small ones; a full study for small
     effects needs several times more drafts (~$280+). Lower priority than the
     review-breaks-code findings.
@@ -311,6 +313,20 @@ matters, and asking for minimal edits largely prevents it.
 
 ## 5. Caveats and limitations
 
+- **abc392_d cannot be passed through ordinary output (grader strictness).** Every draft
+  of this problem, from all three models, fails only on decimal formatting: Claude and
+  GPT-5.5 print `0.076923076923077` where the expected output is `0.076923076923`;
+  Gemini prints `0.3333333333333333` where `0.333333333333333` is expected. The values
+  agree to 12+ digits, and the original AtCoder problem accepts small floating-point
+  error, but this grader compares the text exactly, and the expected answers do not even
+  use a consistent number of decimals. So abc392_d failed in all 6 of the paper's
+  conditions, in all 3 regression-60 drafts with no review ever fixing it, and in all 45
+  label-pilot reviews. It hits every model equally, so no comparison is biased, but it is
+  one guaranteed failure per condition and "failing fixed" is impossible on it. A
+  reviewer that left these drafts unchanged (GPT-5.5 reviewing its own draft, 0 issues
+  listed) was probably right about the logic. Not corrected here, to keep the paper's
+  grader. Found 2026-11-22 by grading the failing drafts GPT-5.5 left unchanged:
+  abc392_d (formatting), 3763 and arc191_c (real wrong answers).
 - **Contamination:** LCB problems dated Jan–Apr 2025. Training cutoffs: Claude Opus 4.7
   Jan 2026, GPT-5.5 Dec 2025, Gemini 3.1 Pro Jan 2025. Claude/GPT may have seen the
   problems; Gemini almost certainly not. Evidence the effect is small (not proof):
