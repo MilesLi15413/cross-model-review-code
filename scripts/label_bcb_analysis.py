@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {"bigcodebench": ["results/raw/label_pilot_bcb"],
            "livecodebench": ["results/raw/label_pilot", "results/raw/label_pilot_lcb2", "results/raw/label_pilot_lcb2_claude"]}
 CONTRASTS = [("false_self", "false_other", False, "self_pref"), ("true", "none", None, "true_none"),
-             ("false_self", "none", False, "self_none"), ("false_other", "none", None, "other_none"),
+             ("false_self", "none", False, "self_none"), ("false_other", "none", False, "other_none"),
              ("true", "none", True, "true_own_none")]
 
 

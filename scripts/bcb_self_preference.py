@@ -51,7 +51,8 @@ def main():
         u = stats.mannwhitneyu([r["lines"] for r in own], [r["lines"] for r in oth])
         f_unch = stats.fisher_exact([[sum(r["unchanged"] for r in own), len(own) - sum(r["unchanged"] for r in own)],
                                      [sum(r["unchanged"] for r in oth), len(oth) - sum(r["unchanged"] for r in oth)]])[1]
-        for grp, sub in (("own drafts", own), ("other models' drafts", oth)):
+        groups = [("own drafts", own)] + [(f"{NAME[w]}'s drafts", [r for r in oth if r["writer"] == w]) for w in FAM if w != rv] + [("other models' drafts", oth)]
+        for grp, sub in groups:
             pas = [r for r in sub if r["before"]]
             fal = [r for r in sub if not r["before"]]
             own_rows.append({"reviewer": NAME[rv], "drafts": grp, "n": len(sub),
