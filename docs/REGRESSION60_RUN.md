@@ -3,7 +3,8 @@
 **Started:** 2026-11-21. **Branch:** `regression-60` (from `limited-demo-run`).
 **Status:** complete (2026-11-21). All 540 reviews are valid and graded. Follow-ups
 (items 1–7a, incl. BigCodeBench) complete 2026-11-22 on branch `bigcodebench-check`.
-Authorship-label pilot (450 reviews) complete 2026-11-22.
+Authorship-label pilot (450 reviews) complete 2026-11-22. BigCodeBench extension of the
+label study (720 reviews, 20 tasks) complete 2026-11-23 on branch `authorship-bigcodebench`.
 
 ## Summary of findings
 
@@ -32,6 +33,15 @@ Authorship-label pilot (450 reviews) complete 2026-11-22.
    behavior no more than two identical runs differ; no self-preference (fixes when told
    "you wrote this" vs "a third model wrote this": Claude 1 vs 1, GPT-5.5 1 vs 1, Gemini
    3 vs 3). Rules out large label effects, not small ones (see "Authorship-label study").
+   **The BigCodeBench extension agrees** (20 tasks, 720 reviews): no significant label effect
+   for any reviewer, alone or pooled with LiveCodeBench (30 tasks, enough to catch a label
+   that halves or doubles editing). Only hint: Gemini edits less when falsely told it wrote
+   the code (7.7 vs 10.5 lines, raw p = 0.02, Holm 0.41).
+8. **Reviewers go easy on their own code without being told.** On BigCodeBench (no label)
+   Claude leaves 73% of its own drafts unchanged vs 17% of others', Gemini 50% vs 11%,
+   GPT-5.5 14% vs 3% (all p < 0.002); Claude fixed 0 of its own 23 failing drafts vs 18 of
+   76 by others (p = 0.01). Drafts resembling the reviewer's own solution get fewer edits
+   (all three, p < 0.01). See "BigCodeBench extension" under the label study.
 
 \* **Note on Claude's one LiveCodeBench break (3784, Claude reviewing Gemini's draft).**
 The review imports `sortedcontainers`, which the paper's grading environment does not
@@ -1262,6 +1272,79 @@ review-breaks-code findings.
 Not yet run: the style-recognition test (can a reviewer tell the author without a
 label?), an optional neutral label ("written by an AI model"), and the full study
 (~$280 for the hard tier).
+
+### BigCodeBench extension (20 tasks, 2026-11-23)
+
+**Why.** The LiveCodeBench pilot (10 tasks) could only rule out large label effects. A
+power estimate from its run-to-run noise showed that about 20 tasks are needed to catch a
+label that halves a reviewer's editing (Claude, the noisiest reviewer, needs 21; Gemini
+15; GPT-5.5 7). This extension adds 20 BigCodeBench tasks, giving 30 tasks when pooled.
+
+**Design.** Branch `authorship-bigcodebench`.
+
+- *Tasks:* 20 of the 78 regression-60 BigCodeBench tasks with drafts from all three
+  writers, seeded with `random.Random(2026)`: 12 tasks with at least one failing draft, then
+  8 where every draft passes (the LiveCodeBench pilot's 6 + 4 split, doubled). Manifest:
+  `experiments/configs/label_pilot_bcb_drafts.yaml`. Drafts before review: Claude 16 pass /
+  4 fail, GPT-5.5 10 / 10, Gemini 10 / 10.
+- *Drafts:* the existing BigCodeBench drafts; nothing rewritten.
+- *Prompt:* `harness/prompts/reviewer_bcb_label_study.txt`, the LiveCodeBench label-study
+  prompt with only the first line changed (as `reviewer_bcb.txt` is to `reviewer_lcb.txt`).
+- *Arms:* true, none, and one false arm per wrong model (4 per draft). The repeated
+  no-label arm was dropped to fit the budget; the noise floor comes from LiveCodeBench, and
+  every test pairs the same draft under two prompts.
+- *Runner:* `experiments/run_label_study.py --benchmark bigcodebench` (new flag; also new
+  `--limit-per-reviewer` for cost pilots and `--grade-only`). Same models, efforts, CLIs and
+  isolation as every other run (GPT-5.5 via isolated CODEX_HOME, no tools; Gemini tools off).
+- *Grading:* every final program, unchanged ones included, with BigCodeBench's official
+  evaluator (Docker, graded twice), as in the BigCodeBench regression run: 720 scored,
+  0 flaky, 0 errors.
+- *Scale:* 3 reviewers × 60 drafts × 4 arms = 720 reviews, all valid on the first pass.
+
+**Results** (`results/processed/label_pilot_bcb_contrasts.csv`; pooled with LiveCodeBench:
+`label_pilot_combined_contrasts.csv`; script `scripts/label_bcb_analysis.py`; McNemar for
+binary outcomes, Wilcoxon for counts, Holm within reviewer over 5 contrasts × 4 measures).
+Lines edited, first vs second:
+
+| Reviewer | Self-preference (false self vs false other), BCB | same, BCB + LCB | True vs none, BCB | True vs none, BCB + LCB |
+|---|---|---|---|---|
+| Claude  | 17.0 vs 17.3 (n=40, Holm 1.0) | 14.8 vs 16.2 (n=60, 1.0) | 13.5 vs 13.7 (n=60, 1.0) | 11.4 vs 14.0 (n=90, 1.0) |
+| GPT-5.5 | 21.1 vs 21.8 (1.0) | 30.7 vs 33.7 (1.0) | 18.2 vs 17.9 (1.0) | 24.2 vs 23.5 (1.0) |
+| Gemini  | 7.7 vs 10.5 (raw p 0.02, Holm 0.41) | 14.0 vs 16.4 (raw 0.05, Holm 0.89) | 9.2 vs 8.6 (1.0) | 12.3 vs 12.9 (1.0) |
+
+No contrast is significant after correction for any reviewer or measure (left unchanged,
+passing after, issues listed also all Holm ≥ 0.41). Pass counts barely move (e.g. Claude
+38 vs 41 passing with the true author vs no line). Conclusion: if author labels matter, the
+effect is smaller than halving or doubling editing; the only hint, Gemini editing less when
+falsely told it wrote the code, points toward self-preference but may be chance.
+
+**Implicit self-preference on BigCodeBench (free; no label; 714 regression-60 BigCodeBench
+reviews; `scripts/bcb_self_preference.py`, `results/processed/bcb_self_preference_*.csv`).**
+
+| Reviewer | Own drafts unchanged | Others' unchanged | Own failing fixed | Others' failing fixed |
+|---|---|---|---|---|
+| Claude  | 58/80 (73%) | 27/158 (17%) | 0/23 (14 left untouched) | 18/76 (Fisher p = 0.01) |
+| Gemini  | 39/78 (50%) | 17/160 (11%) | 1/36 | 5/63 (p = 0.41) |
+| GPT-5.5 | 11/80 (14%) | 4/158 (3%)   | 3/40 | 2/59 (p = 0.39) |
+
+Unchanged own vs others: Fisher p < 10⁻¹⁰ for Claude and Gemini, 0.001 for GPT-5.5. Among
+other models' drafts, similarity to the reviewer's own draft for the same task predicts
+fewer edits for every reviewer (Spearman ρ with lines edited: Claude −0.36, GPT-5.5 −0.34,
+Gemini −0.54 on text; −0.22, −0.26, −0.62 with names and comments hidden; all p < 0.01),
+matching LiveCodeBench. Caveat: a reviewer's own draft is the solution it would write, so
+agreeing with it is not necessarily favouritism; the evidence is the consequence (own
+failing drafts left unfixed), not the cause.
+
+**Reading across the three tests.** Labels do not change behaviour (both benchmarks); the
+models cannot name their own code when asked (style-recognition test, branch
+`handwriting-recognition`); yet each goes easy on code that looks like its own and so
+misses its own bugs. The most likely explanation is that code written the way a model
+would write it looks correct to that model, not that the model recognises it.
+
+**Cost (API rates):** Claude $45.25 (usage credits), GPT-5.5 $9.32, Gemini $21.17; total
+$75.74 including a 15-review cost pilot. Per review: Claude $0.19, GPT-5.5 $0.04, Gemini
+$0.09 (higher than plain BigCodeBench reviews because the label prompt also asks for an
+issue list). Write-up as a Word document: `Authorship+BigCodeBench.docx` (Desktop).
 
 ## Cost: actual spend
 
