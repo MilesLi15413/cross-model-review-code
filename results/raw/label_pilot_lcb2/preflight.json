@@ -1,0 +1,75 @@
+{
+  "checked_at": "2026-11-24T02:30:59.748355+00:00",
+  "cli_versions": {
+    "codex": "codex-cli 0.163.0",
+    "gemini": "0.65.0"
+  },
+  "checks": [
+    {
+      "cli": "codex",
+      "model": "gpt-5.5",
+      "effort": "high",
+      "cli_version": "codex-cli 0.163.0",
+      "ok": true,
+      "response_text": "OK",
+      "checked_at": "2026-11-24T02:30:53.933914+00:00",
+      "runtime_settings": {
+        "input_tokens_exclude_cached": true,
+        "codex_home": "user_default",
+        "user_mcp_servers": "user_config",
+        "tool_calls": 0
+      }
+    },
+    {
+      "cli": "gemini",
+      "model": "gemini-3.1-pro-preview",
+      "effort": "high",
+      "cli_version": "0.65.0",
+      "ok": true,
+      "response_text": "OK",
+      "checked_at": "2026-11-24T02:30:59.748341+00:00",
+      "runtime_settings": {
+        "thinking_level": "HIGH",
+        "settings": {
+          "tools": {
+            "core": []
+          },
+          "mcp": {
+            "allowed": [
+              "__no_mcp_servers__"
+            ]
+          },
+          "skills": {
+            "enabled": false
+          },
+          "hooksConfig": {
+            "enabled": false
+          },
+          "ide": {
+            "enabled": false
+          },
+          "modelConfigs": {
+            "customOverrides": [
+              {
+                "match": {
+                  "model": "gemini-3.1-pro-preview"
+                },
+                "modelConfig": {
+                  "generateContentConfig": {
+                    "thinkingConfig": {
+                      "thinkingLevel": "HIGH"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "models_used": [
+          "gemini-3.1-pro-preview"
+        ],
+        "tool_calls": 0
+      }
+    }
+  ]
+}

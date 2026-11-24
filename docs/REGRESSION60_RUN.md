@@ -34,9 +34,10 @@ label study (720 reviews, 20 tasks) complete 2026-11-23 on branch `authorship-bi
    "you wrote this" vs "a third model wrote this": Claude 1 vs 1, GPT-5.5 1 vs 1, Gemini
    3 vs 3). Rules out large label effects, not small ones (see "Authorship-label study").
    **The BigCodeBench extension agrees** (20 tasks, 720 reviews): no significant label effect
-   for any reviewer, alone or pooled with LiveCodeBench (30 tasks, enough to catch a label
-   that halves or doubles editing). Only hint: Gemini edits less when falsely told it wrote
-   the code (7.7 vs 10.5 lines, raw p = 0.02, Holm 0.41).
+   for any reviewer. A LiveCodeBench extension (10 more problems, 360 reviews) brings
+   LiveCodeBench to 20 problems: again nothing. Pooled (40 problems, 1,530 reviews), all 60
+   tests come out at Holm p = 1.0; the test would catch a ~40% change in editing. Gemini's
+   BigCodeBench hint (7.7 vs 10.5 lines, raw p = 0.02) vanishes when pooled (p = 0.17).
 8. **Reviewers go easy on their own code without being told.** On BigCodeBench (no label)
    Claude leaves 73% of its own drafts unchanged vs 17% of others', Gemini 50% vs 11%,
    GPT-5.5 14% vs 3% (all p < 0.002); Claude fixed 0 of its own 23 failing drafts vs 18 of
@@ -1340,6 +1341,24 @@ models cannot name their own code when asked (style-recognition test, branch
 `handwriting-recognition`); yet each goes easy on code that looks like its own and so
 misses its own bugs. The most likely explanation is that code written the way a model
 would write it looks correct to that model, not that the model recognises it.
+
+**LiveCodeBench extension (10 more problems, 2026-11-23).** Manifest
+`experiments/configs/label_pilot_lcb2_drafts.yaml`; records `results/raw/label_pilot_lcb2/`
+(GPT-5.5, Gemini) and `results/raw/label_pilot_lcb2_claude/` (Claude). Problems: all 5
+remaining regression-60 problems with a failing draft (3762, abc394_g, abc396_c, arc194_b,
+arc195_e) plus 5 all-pass problems drawn with `random.Random(2026)` (3717, 3721, 3801,
+abc393_d, abc399_d); the 10 pilot problems and abc392_d excluded. Drafts before review:
+Claude 9/10 pass, GPT-5.5 6/10, Gemini 10/10. Same prompt, arms and grading as the pilot
+(unchanged drafts reuse the regression-60 regrade): 360 reviews, all valid, 0 grading
+errors. Cost: Claude $52.61, GPT-5.5 $7.36, Gemini $28.36 (Claude stopped once at a $45 cap
+at 103/120 and was resumed with the user's approval).
+
+Results (`results/processed/label_pilot_lcb20_contrasts.csv` for LiveCodeBench's 20
+problems; `label_pilot_combined_contrasts.csv` now pools 20 + 20): every contrast for every
+reviewer and measure has Holm p = 1.0, on LiveCodeBench alone and pooled. Self-preference
+lines edited (false self vs false other), pooled: Claude 15.8 vs 18.2, GPT-5.5 43.8 vs 45.7,
+Gemini 15.4 vs 16.3 (raw p 0.14, 0.22, 0.17): the direction is the same for all three but
+no gap is close to significant. Gemini's BigCodeBench-only hint does not replicate.
 
 **Cost (API rates):** Claude $45.25 (usage credits), GPT-5.5 $9.32, Gemini $21.17; total
 $75.74 including a 15-review cost pilot. Per review: Claude $0.19, GPT-5.5 $0.04, Gemini

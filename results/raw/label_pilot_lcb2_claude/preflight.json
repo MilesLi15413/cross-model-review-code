@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-11-24T02:31:19.611041+00:00",
+  "cli_versions": {
+    "claude": "2.1.331 (Claude Code)"
+  },
+  "checks": [
+    {
+      "cli": "claude",
+      "model": "claude-opus-4-7",
+      "effort": "high",
+      "cli_version": "2.1.331 (Claude Code)",
+      "ok": true,
+      "response_text": "OK",
+      "checked_at": "2026-11-24T02:31:19.611023+00:00",
+      "runtime_settings": null
+    }
+  ]
+}

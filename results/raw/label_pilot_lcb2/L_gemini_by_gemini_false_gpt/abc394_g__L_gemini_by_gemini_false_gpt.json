@@ -1,0 +1,118 @@
+{
+  "task_id": "abc394_g",
+  "condition": "L_gemini_by_gemini_false_gpt",
+  "benchmark": "livecodebench",
+  "writer_model": "gemini-3.1-pro-preview",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "gemini",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "0.65.0",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-24T03:02:46.428803+00:00",
+  "reviewer_finished_at": "2026-11-24T03:05:36.538630+00:00",
+  "writer_prompt_sha256": "29cc5f217bf110b51769bbea079e73c090c32282cf8a680acb900c8eba62e9d0",
+  "reviewer_prompt_sha256": "647e52f8246177f66b52e3b6c8d661007e5b4fa72091f55bdf326003032ec8c6",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 170.10993604100076,
+  "total_latency_s": 170.10993604100076,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 10693,
+  "reviewer_output_tokens": 25533,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.327782,
+  "total_cost_usd": 0.327782,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"3df8158c-6ae3-4771-a6f4-f037dbfe2d51\",\n  \"response\": \"<issues>none</issues>\\n<solution>\\nimport sys\\n\\ndef solve():\\n    input_data = sys.stdin.read().split()\\n    if not input_data:\\n        return\\n    \\n    H = int(input_data[0])\\n    W = int(input_data[1])\\n    V = H * W\\n    idx = 2\\n    \\n    # Read grid dimensions into a flat 1D list\\n    F = [int(x) for x in input_data[idx:idx+V]]\\n    idx += V\\n    Q = int(input_data[idx])\\n    idx += 1\\n    queries = input_data[idx:]\\n    \\n    edges = []\\n    # Build Horizontal edges\\n    for i in range(H):\\n        base = i * W\\n        for j in range(W - 1):\\n            u = base + j\\n            v = base + j + 1\\n            w = F[u] if F[u] < F[v] else F[v]\\n            edges.append((w, u, v))\\n            \\n    # Build Vertical edges\\n    for i in range(H - 1):\\n        base = i * W\\n        next_base = (i + 1) * W\\n        for j in range(W):\\n            u = base + j\\n            v = next_base + j\\n            w = F[u] if F[u] < F[v] else F[v]\\n            edges.append((w, u, v))\\n            \\n    # Sort edges in descending order of bottleneck weights\\n    edges.sort(reverse=True)\\n    \\n    # Kruskal's Reconstruction Tree Preparation\\n    parent = list(range(2 * V))\\n    def find(i):\\n        while i != parent[i]:\\n            parent[i] = parent[parent[i]]\\n            i = parent[i]\\n        return i\\n\\n    weights = [0] * (2 * V)\\n    left_child = [-1] * (2 * V)\\n    right_child = [-1] * (2 * V)\\n    \\n    num_nodes = V\\n    for w, u, v in edges:\\n        root_u = find(u)\\n        root_v = find(v)\\n        if root_u != root_v:\\n            weights[num_nodes] = w\\n            left_child[num_nodes] = root_u\\n            right_child[num_nodes] = root_v\\n            parent[root_u] = num_nodes\\n            parent[root_v] = num_nodes\\n            num_nodes += 1\\n            \\n    # Binary Lifting arrays for Fast LCA\\n    up = [[0] * num_nodes for _ in range(19)]\\n    depth = [0] * num_nodes\\n    \\n    up0 = up[0]\\n    # Reversely iterating correctly dictates topologically sorted parents initializing children\\n    for i in range(num_nodes - 1, -1, -1):\\n        lc = left_child[i]\\n        if lc != -1:\\n            up0[lc] = i\\n            depth[lc] = depth[i] + 1\\n        rc = right_child[i]\\n        if rc != -1:\\n            up0[rc] = i\\n            depth[rc] = depth[i] + 1\\n            \\n    up0[num_nodes - 1] = num_nodes - 1\\n    \\n    for j in range(1, 19):\\n        prev = up[j-1]\\n        curr = up[j]\\n        for i in range(num_nodes):\\n            curr[i] = prev[prev[i]]\\n            \\n    out = []\\n    q_idx = 0\\n    # Process Queries\\n    while q_idx < len(queries):\\n        A = int(queries[q_idx]) - 1\\n        B = int(queries[q_idx+1]) - 1\\n        Y = int(queries[q_idx+2])\\n        C = int(queries[q_idx+3]) - 1\\n        D = int(queries[q_idx+4]) - 1\\n        Z = int(queries[q_idx+5])\\n        q_idx += 6\\n        \\n        u = A * W + B\\n        v = C * W + D\\n        \\n        if u == v:\\n            ans = Y - Z if Y > Z else Z - Y\\n            out.append(str(ans))\\n            continue\\n            \\n        if depth[u] < depth[v]:\\n            u, v = v, u\\n            \\n        diff = depth[u] - depth[v]\\n        if diff > 0:\\n            bl = diff.bit_length()\\n            for j in range(bl):\\n                if (diff >> j) & 1:\\n                    u = up[j][u]\\n                    \\n        if u == v:\\n            lca = u\\n        else:\\n            for j in range(18, -1, -1):\\n                up_u = up[j][u]\\n                up_v = up[j][v]\\n                if up_u != up_v:\\n                    u = up_u\\n                    v = up_v\\n            lca = up[0][u]\\n            \\n        M = weights[lca]\\n        min_YZ = Y if Y < Z else Z\\n        \\n        # O(1) formula decision application\\n        if M >= min_YZ:\\n            ans = Y - Z if Y > Z else Z - Y\\n        else:\\n            ans = Y + Z - 2 * M\\n            \\n        out.append(str(ans))\\n        \\n    sys.stdout.write('\\\\n'.join(out) + '\\\\n')\\n\\nif __name__ == '__main__':\\n    solve()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 168743,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 10693,\n          \"prompt\": 10693,\n          \"candidates\": 1341,\n          \"total\": 36226,\n          \"cached\": 0,\n          \"thoughts\": 24192,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 168743,\n            \"tokens\": {\n              \"input\": 10693,\n              \"prompt\": 10693,\n              \"candidates\": 1341,\n              \"total\": 36226,\n              \"cached\": 0,\n              \"thoughts\": 24192,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    H = int(input_data[0])\n    W = int(input_data[1])\n    V = H * W\n    idx = 2\n    \n    # Read grid dimensions into a flat 1D list\n    F = [int(x) for x in input_data[idx:idx+V]]\n    idx += V\n    Q = int(input_data[idx])\n    idx += 1\n    queries = input_data[idx:]\n    \n    edges = []\n    # Build Horizontal edges\n    for i in range(H):\n        base = i * W\n        for j in range(W - 1):\n            u = base + j\n            v = base + j + 1\n            w = F[u] if F[u] < F[v] else F[v]\n            edges.append((w, u, v))\n            \n    # Build Vertical edges\n    for i in range(H - 1):\n        base = i * W\n        next_base = (i + 1) * W\n        for j in range(W):\n            u = base + j\n            v = next_base + j\n            w = F[u] if F[u] < F[v] else F[v]\n            edges.append((w, u, v))\n            \n    # Sort edges in descending order of bottleneck weights\n    edges.sort(reverse=True)\n    \n    # Kruskal's Reconstruction Tree Preparation\n    parent = list(range(2 * V))\n    def find(i):\n        while i != parent[i]:\n            parent[i] = parent[parent[i]]\n            i = parent[i]\n        return i\n\n    weights = [0] * (2 * V)\n    left_child = [-1] * (2 * V)\n    right_child = [-1] * (2 * V)\n    \n    num_nodes = V\n    for w, u, v in edges:\n        root_u = find(u)\n        root_v = find(v)\n        if root_u != root_v:\n            weights[num_nodes] = w\n            left_child[num_nodes] = root_u\n            right_child[num_nodes] = root_v\n            parent[root_u] = num_nodes\n            parent[root_v] = num_nodes\n            num_nodes += 1\n            \n    # Binary Lifting arrays for Fast LCA\n    up = [[0] * num_nodes for _ in range(19)]\n    depth = [0] * num_nodes\n    \n    up0 = up[0]\n    # Reversely iterating correctly dictates topologically sorted parents initializing children\n    for i in range(num_nodes - 1, -1, -1):\n        lc = left_child[i]\n        if lc != -1:\n            up0[lc] = i\n            depth[lc] = depth[i] + 1\n        rc = right_child[i]\n        if rc != -1:\n            up0[rc] = i\n            depth[rc] = depth[i] + 1\n            \n    up0[num_nodes - 1] = num_nodes - 1\n    \n    for j in range(1, 19):\n        prev = up[j-1]\n        curr = up[j]\n        for i in range(num_nodes):\n            curr[i] = prev[prev[i]]\n            \n    out = []\n    q_idx = 0\n    # Process Queries\n    while q_idx < len(queries):\n        A = int(queries[q_idx]) - 1\n        B = int(queries[q_idx+1]) - 1\n        Y = int(queries[q_idx+2])\n        C = int(queries[q_idx+3]) - 1\n        D = int(queries[q_idx+4]) - 1\n        Z = int(queries[q_idx+5])\n        q_idx += 6\n        \n        u = A * W + B\n        v = C * W + D\n        \n        if u == v:\n            ans = Y - Z if Y > Z else Z - Y\n            out.append(str(ans))\n            continue\n            \n        if depth[u] < depth[v]:\n            u, v = v, u\n            \n        diff = depth[u] - depth[v]\n        if diff > 0:\n            bl = diff.bit_length()\n            for j in range(bl):\n                if (diff >> j) & 1:\n                    u = up[j][u]\n                    \n        if u == v:\n            lca = u\n        else:\n            for j in range(18, -1, -1):\n                up_u = up[j][u]\n                up_v = up[j][v]\n                if up_u != up_v:\n                    u = up_u\n                    v = up_v\n            lca = up[0][u]\n            \n        M = weights[lca]\n        min_YZ = Y if Y < Z else Z\n        \n        # O(1) formula decision application\n        if M >= min_YZ:\n            ans = Y - Z if Y > Z else Z - Y\n        else:\n            ans = Y + Z - 2 * M\n            \n        out.append(str(ans))\n        \n    sys.stdout.write('\\n'.join(out) + '\\n')\n\nif __name__ == '__main__':\n    solve()",
+  "reviewer_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    H = int(input_data[0])\n    W = int(input_data[1])\n    V = H * W\n    idx = 2\n    \n    # Read grid dimensions into a flat 1D list\n    F = [int(x) for x in input_data[idx:idx+V]]\n    idx += V\n    Q = int(input_data[idx])\n    idx += 1\n    queries = input_data[idx:]\n    \n    edges = []\n    # Build Horizontal edges\n    for i in range(H):\n        base = i * W\n        for j in range(W - 1):\n            u = base + j\n            v = base + j + 1\n            w = F[u] if F[u] < F[v] else F[v]\n            edges.append((w, u, v))\n            \n    # Build Vertical edges\n    for i in range(H - 1):\n        base = i * W\n        next_base = (i + 1) * W\n        for j in range(W):\n            u = base + j\n            v = next_base + j\n            w = F[u] if F[u] < F[v] else F[v]\n            edges.append((w, u, v))\n            \n    # Sort edges in descending order of bottleneck weights\n    edges.sort(reverse=True)\n    \n    # Kruskal's Reconstruction Tree Preparation\n    parent = list(range(2 * V))\n    def find(i):\n        while i != parent[i]:\n            parent[i] = parent[parent[i]]\n            i = parent[i]\n        return i\n\n    weights = [0] * (2 * V)\n    left_child = [-1] * (2 * V)\n    right_child = [-1] * (2 * V)\n    \n    num_nodes = V\n    for w, u, v in edges:\n        root_u = find(u)\n        root_v = find(v)\n        if root_u != root_v:\n            weights[num_nodes] = w\n            left_child[num_nodes] = root_u\n            right_child[num_nodes] = root_v\n            parent[root_u] = num_nodes\n            parent[root_v] = num_nodes\n            num_nodes += 1\n            \n    # Binary Lifting arrays for Fast LCA\n    up = [[0] * num_nodes for _ in range(19)]\n    depth = [0] * num_nodes\n    \n    up0 = up[0]\n    # Reversely iterating correctly dictates topologically sorted parents initializing children\n    for i in range(num_nodes - 1, -1, -1):\n        lc = left_child[i]\n        if lc != -1:\n            up0[lc] = i\n            depth[lc] = depth[i] + 1\n        rc = right_child[i]\n        if rc != -1:\n            up0[rc] = i\n            depth[rc] = depth[i] + 1\n            \n    up0[num_nodes - 1] = num_nodes - 1\n    \n    for j in range(1, 19):\n        prev = up[j-1]\n        curr = up[j]\n        for i in range(num_nodes):\n            curr[i] = prev[prev[i]]\n            \n    out = []\n    q_idx = 0\n    # Process Queries\n    while q_idx < len(queries):\n        A = int(queries[q_idx]) - 1\n        B = int(queries[q_idx+1]) - 1\n        Y = int(queries[q_idx+2])\n        C = int(queries[q_idx+3]) - 1\n        D = int(queries[q_idx+4]) - 1\n        Z = int(queries[q_idx+5])\n        q_idx += 6\n        \n        u = A * W + B\n        v = C * W + D\n        \n        if u == v:\n            ans = Y - Z if Y > Z else Z - Y\n            out.append(str(ans))\n            continue\n            \n        if depth[u] < depth[v]:\n            u, v = v, u\n            \n        diff = depth[u] - depth[v]\n        if diff > 0:\n            bl = diff.bit_length()\n            for j in range(bl):\n                if (diff >> j) & 1:\n                    u = up[j][u]\n                    \n        if u == v:\n            lca = u\n        else:\n            for j in range(18, -1, -1):\n                up_u = up[j][u]\n                up_v = up[j][v]\n                if up_u != up_v:\n                    u = up_u\n                    v = up_v\n            lca = up[0][u]\n            \n        M = weights[lca]\n        min_YZ = Y if Y < Z else Z\n        \n        # O(1) formula decision application\n        if M >= min_YZ:\n            ans = Y - Z if Y > Z else Z - Y\n        else:\n            ans = Y + Z - 2 * M\n            \n        out.append(str(ans))\n        \n    sys.stdout.write('\\n'.join(out) + '\\n')\n\nif __name__ == '__main__':\n    solve()",
+  "final_artifact": "import sys\n\ndef solve():\n    input_data = sys.stdin.read().split()\n    if not input_data:\n        return\n    \n    H = int(input_data[0])\n    W = int(input_data[1])\n    V = H * W\n    idx = 2\n    \n    # Read grid dimensions into a flat 1D list\n    F = [int(x) for x in input_data[idx:idx+V]]\n    idx += V\n    Q = int(input_data[idx])\n    idx += 1\n    queries = input_data[idx:]\n    \n    edges = []\n    # Build Horizontal edges\n    for i in range(H):\n        base = i * W\n        for j in range(W - 1):\n            u = base + j\n            v = base + j + 1\n            w = F[u] if F[u] < F[v] else F[v]\n            edges.append((w, u, v))\n            \n    # Build Vertical edges\n    for i in range(H - 1):\n        base = i * W\n        next_base = (i + 1) * W\n        for j in range(W):\n            u = base + j\n            v = next_base + j\n            w = F[u] if F[u] < F[v] else F[v]\n            edges.append((w, u, v))\n            \n    # Sort edges in descending order of bottleneck weights\n    edges.sort(reverse=True)\n    \n    # Kruskal's Reconstruction Tree Preparation\n    parent = list(range(2 * V))\n    def find(i):\n        while i != parent[i]:\n            parent[i] = parent[parent[i]]\n            i = parent[i]\n        return i\n\n    weights = [0] * (2 * V)\n    left_child = [-1] * (2 * V)\n    right_child = [-1] * (2 * V)\n    \n    num_nodes = V\n    for w, u, v in edges:\n        root_u = find(u)\n        root_v = find(v)\n        if root_u != root_v:\n            weights[num_nodes] = w\n            left_child[num_nodes] = root_u\n            right_child[num_nodes] = root_v\n            parent[root_u] = num_nodes\n            parent[root_v] = num_nodes\n            num_nodes += 1\n            \n    # Binary Lifting arrays for Fast LCA\n    up = [[0] * num_nodes for _ in range(19)]\n    depth = [0] * num_nodes\n    \n    up0 = up[0]\n    # Reversely iterating correctly dictates topologically sorted parents initializing children\n    for i in range(num_nodes - 1, -1, -1):\n        lc = left_child[i]\n        if lc != -1:\n            up0[lc] = i\n            depth[lc] = depth[i] + 1\n        rc = right_child[i]\n        if rc != -1:\n            up0[rc] = i\n            depth[rc] = depth[i] + 1\n            \n    up0[num_nodes - 1] = num_nodes - 1\n    \n    for j in range(1, 19):\n        prev = up[j-1]\n        curr = up[j]\n        for i in range(num_nodes):\n            curr[i] = prev[prev[i]]\n            \n    out = []\n    q_idx = 0\n    # Process Queries\n    while q_idx < len(queries):\n        A = int(queries[q_idx]) - 1\n        B = int(queries[q_idx+1]) - 1\n        Y = int(queries[q_idx+2])\n        C = int(queries[q_idx+3]) - 1\n        D = int(queries[q_idx+4]) - 1\n        Z = int(queries[q_idx+5])\n        q_idx += 6\n        \n        u = A * W + B\n        v = C * W + D\n        \n        if u == v:\n            ans = Y - Z if Y > Z else Z - Y\n            out.append(str(ans))\n            continue\n            \n        if depth[u] < depth[v]:\n            u, v = v, u\n            \n        diff = depth[u] - depth[v]\n        if diff > 0:\n            bl = diff.bit_length()\n            for j in range(bl):\n                if (diff >> j) & 1:\n                    u = up[j][u]\n                    \n        if u == v:\n            lca = u\n        else:\n            for j in range(18, -1, -1):\n                up_u = up[j][u]\n                up_v = up[j][v]\n                if up_u != up_v:\n                    u = up_u\n                    v = up_v\n            lca = up[0][u]\n            \n        M = weights[lca]\n        min_YZ = Y if Y < Z else Z\n        \n        # O(1) formula decision application\n        if M >= min_YZ:\n            ans = Y - Z if Y > Z else Z - Y\n        else:\n            ans = Y + Z - 2 * M\n            \n        out.append(str(ans))\n        \n    sys.stdout.write('\\n'.join(out) + '\\n')\n\nif __name__ == '__main__':\n    solve()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/regression60_gemini_solo/B3_gemini_solo/abc394_g__B3_gemini_solo.json",
+    "draft_sha256": "5cf04d005dcbe45fbbaf986b3506c4f59d74a8cb273bcfe388bddcf036237aad",
+    "writer_family": "gemini",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "1cbefa3ba08bc5dfcf9e9018379317e9ed50f9db4584d32c4effe9cba0c01a4d",
+    "attempt_count": 1,
+    "final_artifact_sha256": "5cf04d005dcbe45fbbaf986b3506c4f59d74a8cb273bcfe388bddcf036237aad",
+    "draft_unchanged": true,
+    "diff_lines": 0,
+    "issues_status": "none_reported",
+    "issue_count": 0,
+    "issues": [],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    }
+  }
+}

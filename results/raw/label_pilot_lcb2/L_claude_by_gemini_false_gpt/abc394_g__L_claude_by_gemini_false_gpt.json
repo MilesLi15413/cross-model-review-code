@@ -1,0 +1,118 @@
+{
+  "task_id": "abc394_g",
+  "condition": "L_claude_by_gemini_false_gpt",
+  "benchmark": "livecodebench",
+  "writer_model": "claude-opus-4-7",
+  "reviewer_model": "gemini-3.1-pro-preview",
+  "writer_effort": "high",
+  "reviewer_effort": "high",
+  "writer_cli": "claude",
+  "reviewer_cli": "gemini",
+  "writer_cli_version": "2.1.50 (Claude Code)",
+  "reviewer_cli_version": "0.65.0",
+  "writer_started_at": "",
+  "writer_finished_at": "",
+  "reviewer_started_at": "2026-11-24T03:36:51.061358+00:00",
+  "reviewer_finished_at": "2026-11-24T03:39:21.723282+00:00",
+  "writer_prompt_sha256": "9b18a091759e2655c3e29466fac97e607f76614433dae4448f67d4e23d8a3232",
+  "reviewer_prompt_sha256": "3b91cbe1fad58030685d339c6dc433844640f348c866e98c1e055baa88f9da06",
+  "writer_latency_s": 0.0,
+  "reviewer_latency_s": 150.66194320800423,
+  "total_latency_s": 150.66194320800423,
+  "writer_input_tokens": 0,
+  "writer_output_tokens": 0,
+  "writer_cached_input_tokens": 0,
+  "writer_cache_creation_input_tokens": 0,
+  "reviewer_input_tokens": 10706,
+  "reviewer_output_tokens": 23790,
+  "reviewer_cached_input_tokens": 0,
+  "reviewer_cache_creation_input_tokens": 0,
+  "writer_cost_usd": 0.0,
+  "reviewer_cost_usd": 0.306892,
+  "total_cost_usd": 0.306892,
+  "writer_parse_method": "",
+  "reviewer_parse_method": "tag",
+  "writer_has_solution_tag": false,
+  "reviewer_has_solution_tag": true,
+  "evaluated_turn": "reviewer",
+  "evaluated_parse_method": "tag",
+  "evaluated_has_solution_tag": true,
+  "parse_failed": false,
+  "timed_out": false,
+  "cli_error": false,
+  "budget_exceeded": false,
+  "passed": true,
+  "writer_passed": true,
+  "writer_stdout": "",
+  "writer_stderr": "",
+  "reviewer_stdout": "{\n  \"session_id\": \"1c178ab1-d950-4143-aa60-b1ccbff6cd5e\",\n  \"response\": \"An analysis of the provided solution shows that it is logically sound, well-implemented, and optimal for the problem's constraints. \\n\\n### Method Explanation\\nThe problem asks for the minimum number of stair uses to travel between two specific floors in two specific buildings. You can cross between two adjacent buildings at any floor $X$ without using stairs, provided both buildings have a height of at least $X$. Therefore, the bottleneck crossing capacity between two adjacent buildings is exactly $\\\\min(F_{i, j}, F_{i', j'})$. \\n\\nTo minimize stair usage, we should maximize the highest floor we can use to travel between the starting building and the destination building without being blocked. This reduces to finding a path between the start and destination in the grid graph that maximizes the minimum edge capacity along the path (a Maximum Bottleneck Path).\\n1. **Maximum Spanning Tree (MST):** The code correctly constructs a Maximum Spanning Tree of the grid where the edge capacities are the minimum heights of the adjacent buildings. The unique path between any two nodes in an MST guarantees the maximum possible bottleneck capacity.\\n2. **Binary Lifting (LCA):** To quickly answer the $Q$ queries, the code sets up a standard binary lifting sparse table over the MST. This efficiently finds the bottleneck capacity $M$ on the path between any two buildings in $O(\\\\log N)$ time per query.\\n3. **Logic for Stairs Computation:** \\n    - If the bottleneck $M \\\\ge \\\\min(Y, Z)$, we can comfortably travel at level $\\\\min(Y, Z)$ (or higher up to $M$), which strictly requires only $|Y - Z|$ stair uses.\\n    - If the bottleneck $M < \\\\min(Y, Z)$, we are forced to descend to floor $M$ to cross the bottleneck. We'll take stairs down to $M$ from $Y$ and then stairs up from $M$ to $Z$. This takes $(Y - M) + (Z - M) = Y + Z - 2M$ stair uses.\\n4. **Complexity:** The time complexity is well within the usual limits. Sorting edges takes $O(N \\\\log N)$ and query resolution takes $O(Q \\\\log N)$, matching the required efficiency given $N \\\\le 250,000$ and $Q \\\\le 200,000$.\\n\\n<issues>none</issues>\\n\\n<solution>\\nimport sys\\nfrom array import array\\nfrom collections import deque\\n\\ndef solve():\\n    data = sys.stdin.buffer.read().split()\\n    if not data:\\n        return\\n    idx = 0\\n    H = int(data[idx]); idx += 1\\n    W = int(data[idx]); idx += 1\\n    N = H * W\\n    F = array('i', [0] * N)\\n    for i in range(H):\\n        for j in range(W):\\n            F[i*W + j] = int(data[idx]); idx += 1\\n\\n    edges = []\\n    for i in range(H):\\n        base = i * W\\n        for j in range(W):\\n            u = base + j\\n            fu = F[u]\\n            if j + 1 < W:\\n                v = u + 1\\n                w = fu if fu < F[v] else F[v]\\n                edges.append((w, u, v))\\n            if i + 1 < H:\\n                v = u + W\\n                w = fu if fu < F[v] else F[v]\\n                edges.append((w, u, v))\\n\\n    edges.sort(reverse=True)\\n\\n    uf = list(range(N))\\n    def find(x):\\n        while uf[x] != x:\\n            uf[x] = uf[uf[x]]\\n            x = uf[x]\\n        return x\\n\\n    tree_adj = [[] for _ in range(N)]\\n    for w, u, v in edges:\\n        ru = find(u); rv = find(v)\\n        if ru != rv:\\n            uf[ru] = rv\\n            tree_adj[u].append((v, w))\\n            tree_adj[v].append((u, w))\\n\\n    INF = 1 << 30\\n    depth = array('i', [0] * N)\\n    par0 = array('i', [-1] * N)\\n    mn0 = array('i', [INF] * N)\\n\\n    visited = bytearray(N)\\n    visited[0] = 1\\n    queue = deque([0])\\n    while queue:\\n        u = queue.popleft()\\n        for v, w in tree_adj[u]:\\n            if not visited[v]:\\n                visited[v] = 1\\n                depth[v] = depth[u] + 1\\n                par0[v] = u\\n                mn0[v] = w\\n                queue.append(v)\\n\\n    max_d = max(depth) if N > 0 else 0\\n    LOG = max(1, max_d.bit_length())\\n\\n    par_tab = [par0]\\n    mn_tab = [mn0]\\n    for k in range(1, LOG):\\n        prev_par = par_tab[k-1]\\n        prev_mn = mn_tab[k-1]\\n        new_par = array('i', prev_par)\\n        new_mn = array('i', prev_mn)\\n        for v in range(N):\\n            p = prev_par[v]\\n            if p != -1:\\n                new_par[v] = prev_par[p]\\n                m2 = prev_mn[p]\\n                if m2 < new_mn[v]:\\n                    new_mn[v] = m2\\n        par_tab.append(new_par)\\n        mn_tab.append(new_mn)\\n\\n    def path_min(u, v):\\n        result = INF\\n        if depth[u] < depth[v]:\\n            u, v = v, u\\n        diff = depth[u] - depth[v]\\n        k = 0\\n        while diff:\\n            if diff & 1:\\n                m = mn_tab[k][u]\\n                if m < result: result = m\\n                u = par_tab[k][u]\\n            diff >>= 1\\n            k += 1\\n        if u == v:\\n            return result\\n        for k in range(LOG - 1, -1, -1):\\n            pu = par_tab[k][u]\\n            pv = par_tab[k][v]\\n            if pu != pv:\\n                m = mn_tab[k][u]\\n                if m < result: result = m\\n                m = mn_tab[k][v]\\n                if m < result: result = m\\n                u = pu\\n                v = pv\\n        m = mn_tab[0][u]\\n        if m < result: result = m\\n        m = mn_tab[0][v]\\n        if m < result: result = m\\n        return result\\n\\n    Q = int(data[idx]); idx += 1\\n    out = []\\n    for _ in range(Q):\\n        A = int(data[idx]) - 1; idx += 1\\n        B = int(data[idx]) - 1; idx += 1\\n        Y = int(data[idx]); idx += 1\\n        C = int(data[idx]) - 1; idx += 1\\n        D = int(data[idx]) - 1; idx += 1\\n        Z = int(data[idx]); idx += 1\\n        u = A * W + B\\n        v = C * W + D\\n        if u == v:\\n            out.append(str(abs(Y - Z)))\\n        else:\\n            M = path_min(u, v)\\n            mYZ = Y if Y < Z else Z\\n            if M >= mYZ:\\n                out.append(str(abs(Y - Z)))\\n            else:\\n                out.append(str(Y + Z - 2 * M))\\n    sys.stdout.write('\\\\n'.join(out))\\n    sys.stdout.write('\\\\n')\\n\\nsolve()\\n</solution>\",\n  \"stats\": {\n    \"models\": {\n      \"gemini-3.1-pro-preview\": {\n        \"api\": {\n          \"totalRequests\": 1,\n          \"totalErrors\": 0,\n          \"totalLatencyMs\": 149648,\n          \"errorsByType\": {}\n        },\n        \"tokens\": {\n          \"input\": 10706,\n          \"prompt\": 10706,\n          \"candidates\": 1859,\n          \"total\": 34496,\n          \"cached\": 0,\n          \"thoughts\": 21931,\n          \"tool\": 0\n        },\n        \"roles\": {\n          \"main\": {\n            \"totalRequests\": 1,\n            \"totalErrors\": 0,\n            \"totalLatencyMs\": 149648,\n            \"tokens\": {\n              \"input\": 10706,\n              \"prompt\": 10706,\n              \"candidates\": 1859,\n              \"total\": 34496,\n              \"cached\": 0,\n              \"thoughts\": 21931,\n              \"tool\": 0\n            }\n          }\n        }\n      }\n    },\n    \"tools\": {\n      \"totalCalls\": 0,\n      \"totalSuccess\": 0,\n      \"totalFail\": 0,\n      \"totalDurationMs\": 0,\n      \"totalDecisions\": {\n        \"accept\": 0,\n        \"reject\": 0,\n        \"modify\": 0,\n        \"auto_accept\": 0\n      },\n      \"byName\": {}\n    },\n    \"files\": {\n      \"totalLinesAdded\": 0,\n      \"totalLinesRemoved\": 0\n    }\n  }\n}",
+  "reviewer_stderr": "Ripgrep is not available. Falling back to GrepTool.\n",
+  "writer_artifact": "import sys\nfrom array import array\nfrom collections import deque\n\ndef solve():\n    data = sys.stdin.buffer.read().split()\n    idx = 0\n    H = int(data[idx]); idx += 1\n    W = int(data[idx]); idx += 1\n    N = H * W\n    F = array('i', [0] * N)\n    for i in range(H):\n        for j in range(W):\n            F[i*W + j] = int(data[idx]); idx += 1\n\n    edges = []\n    for i in range(H):\n        base = i * W\n        for j in range(W):\n            u = base + j\n            fu = F[u]\n            if j + 1 < W:\n                v = u + 1\n                w = fu if fu < F[v] else F[v]\n                edges.append((w, u, v))\n            if i + 1 < H:\n                v = u + W\n                w = fu if fu < F[v] else F[v]\n                edges.append((w, u, v))\n\n    edges.sort(reverse=True)\n\n    uf = list(range(N))\n    def find(x):\n        while uf[x] != x:\n            uf[x] = uf[uf[x]]\n            x = uf[x]\n        return x\n\n    tree_adj = [[] for _ in range(N)]\n    for w, u, v in edges:\n        ru = find(u); rv = find(v)\n        if ru != rv:\n            uf[ru] = rv\n            tree_adj[u].append((v, w))\n            tree_adj[v].append((u, w))\n\n    INF = 1 << 30\n    depth = array('i', [0] * N)\n    par0 = array('i', [-1] * N)\n    mn0 = array('i', [INF] * N)\n\n    visited = bytearray(N)\n    visited[0] = 1\n    queue = deque([0])\n    while queue:\n        u = queue.popleft()\n        for v, w in tree_adj[u]:\n            if not visited[v]:\n                visited[v] = 1\n                depth[v] = depth[u] + 1\n                par0[v] = u\n                mn0[v] = w\n                queue.append(v)\n\n    max_d = max(depth) if N > 0 else 0\n    LOG = max(1, max_d.bit_length())\n\n    par_tab = [par0]\n    mn_tab = [mn0]\n    for k in range(1, LOG):\n        prev_par = par_tab[k-1]\n        prev_mn = mn_tab[k-1]\n        new_par = array('i', prev_par)\n        new_mn = array('i', prev_mn)\n        for v in range(N):\n            p = prev_par[v]\n            if p != -1:\n                new_par[v] = prev_par[p]\n                m2 = prev_mn[p]\n                if m2 < new_mn[v]:\n                    new_mn[v] = m2\n        par_tab.append(new_par)\n        mn_tab.append(new_mn)\n\n    def path_min(u, v):\n        result = INF\n        if depth[u] < depth[v]:\n            u, v = v, u\n        diff = depth[u] - depth[v]\n        k = 0\n        while diff:\n            if diff & 1:\n                m = mn_tab[k][u]\n                if m < result: result = m\n                u = par_tab[k][u]\n            diff >>= 1\n            k += 1\n        if u == v:\n            return result\n        for k in range(LOG - 1, -1, -1):\n            pu = par_tab[k][u]\n            pv = par_tab[k][v]\n            if pu != pv:\n                m = mn_tab[k][u]\n                if m < result: result = m\n                m = mn_tab[k][v]\n                if m < result: result = m\n                u = pu\n                v = pv\n        m = mn_tab[0][u]\n        if m < result: result = m\n        m = mn_tab[0][v]\n        if m < result: result = m\n        return result\n\n    Q = int(data[idx]); idx += 1\n    out = []\n    for _ in range(Q):\n        A = int(data[idx]) - 1; idx += 1\n        B = int(data[idx]) - 1; idx += 1\n        Y = int(data[idx]); idx += 1\n        C = int(data[idx]) - 1; idx += 1\n        D = int(data[idx]) - 1; idx += 1\n        Z = int(data[idx]); idx += 1\n        u = A * W + B\n        v = C * W + D\n        if u == v:\n            out.append(str(abs(Y - Z)))\n        else:\n            M = path_min(u, v)\n            mYZ = Y if Y < Z else Z\n            if M >= mYZ:\n                out.append(str(abs(Y - Z)))\n            else:\n                out.append(str(Y + Z - 2 * M))\n    sys.stdout.write('\\n'.join(out))\n    sys.stdout.write('\\n')\n\nsolve()",
+  "reviewer_artifact": "import sys\nfrom array import array\nfrom collections import deque\n\ndef solve():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    idx = 0\n    H = int(data[idx]); idx += 1\n    W = int(data[idx]); idx += 1\n    N = H * W\n    F = array('i', [0] * N)\n    for i in range(H):\n        for j in range(W):\n            F[i*W + j] = int(data[idx]); idx += 1\n\n    edges = []\n    for i in range(H):\n        base = i * W\n        for j in range(W):\n            u = base + j\n            fu = F[u]\n            if j + 1 < W:\n                v = u + 1\n                w = fu if fu < F[v] else F[v]\n                edges.append((w, u, v))\n            if i + 1 < H:\n                v = u + W\n                w = fu if fu < F[v] else F[v]\n                edges.append((w, u, v))\n\n    edges.sort(reverse=True)\n\n    uf = list(range(N))\n    def find(x):\n        while uf[x] != x:\n            uf[x] = uf[uf[x]]\n            x = uf[x]\n        return x\n\n    tree_adj = [[] for _ in range(N)]\n    for w, u, v in edges:\n        ru = find(u); rv = find(v)\n        if ru != rv:\n            uf[ru] = rv\n            tree_adj[u].append((v, w))\n            tree_adj[v].append((u, w))\n\n    INF = 1 << 30\n    depth = array('i', [0] * N)\n    par0 = array('i', [-1] * N)\n    mn0 = array('i', [INF] * N)\n\n    visited = bytearray(N)\n    visited[0] = 1\n    queue = deque([0])\n    while queue:\n        u = queue.popleft()\n        for v, w in tree_adj[u]:\n            if not visited[v]:\n                visited[v] = 1\n                depth[v] = depth[u] + 1\n                par0[v] = u\n                mn0[v] = w\n                queue.append(v)\n\n    max_d = max(depth) if N > 0 else 0\n    LOG = max(1, max_d.bit_length())\n\n    par_tab = [par0]\n    mn_tab = [mn0]\n    for k in range(1, LOG):\n        prev_par = par_tab[k-1]\n        prev_mn = mn_tab[k-1]\n        new_par = array('i', prev_par)\n        new_mn = array('i', prev_mn)\n        for v in range(N):\n            p = prev_par[v]\n            if p != -1:\n                new_par[v] = prev_par[p]\n                m2 = prev_mn[p]\n                if m2 < new_mn[v]:\n                    new_mn[v] = m2\n        par_tab.append(new_par)\n        mn_tab.append(new_mn)\n\n    def path_min(u, v):\n        result = INF\n        if depth[u] < depth[v]:\n            u, v = v, u\n        diff = depth[u] - depth[v]\n        k = 0\n        while diff:\n            if diff & 1:\n                m = mn_tab[k][u]\n                if m < result: result = m\n                u = par_tab[k][u]\n            diff >>= 1\n            k += 1\n        if u == v:\n            return result\n        for k in range(LOG - 1, -1, -1):\n            pu = par_tab[k][u]\n            pv = par_tab[k][v]\n            if pu != pv:\n                m = mn_tab[k][u]\n                if m < result: result = m\n                m = mn_tab[k][v]\n                if m < result: result = m\n                u = pu\n                v = pv\n        m = mn_tab[0][u]\n        if m < result: result = m\n        m = mn_tab[0][v]\n        if m < result: result = m\n        return result\n\n    Q = int(data[idx]); idx += 1\n    out = []\n    for _ in range(Q):\n        A = int(data[idx]) - 1; idx += 1\n        B = int(data[idx]) - 1; idx += 1\n        Y = int(data[idx]); idx += 1\n        C = int(data[idx]) - 1; idx += 1\n        D = int(data[idx]) - 1; idx += 1\n        Z = int(data[idx]); idx += 1\n        u = A * W + B\n        v = C * W + D\n        if u == v:\n            out.append(str(abs(Y - Z)))\n        else:\n            M = path_min(u, v)\n            mYZ = Y if Y < Z else Z\n            if M >= mYZ:\n                out.append(str(abs(Y - Z)))\n            else:\n                out.append(str(Y + Z - 2 * M))\n    sys.stdout.write('\\n'.join(out))\n    sys.stdout.write('\\n')\n\nsolve()",
+  "final_artifact": "import sys\nfrom array import array\nfrom collections import deque\n\ndef solve():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    idx = 0\n    H = int(data[idx]); idx += 1\n    W = int(data[idx]); idx += 1\n    N = H * W\n    F = array('i', [0] * N)\n    for i in range(H):\n        for j in range(W):\n            F[i*W + j] = int(data[idx]); idx += 1\n\n    edges = []\n    for i in range(H):\n        base = i * W\n        for j in range(W):\n            u = base + j\n            fu = F[u]\n            if j + 1 < W:\n                v = u + 1\n                w = fu if fu < F[v] else F[v]\n                edges.append((w, u, v))\n            if i + 1 < H:\n                v = u + W\n                w = fu if fu < F[v] else F[v]\n                edges.append((w, u, v))\n\n    edges.sort(reverse=True)\n\n    uf = list(range(N))\n    def find(x):\n        while uf[x] != x:\n            uf[x] = uf[uf[x]]\n            x = uf[x]\n        return x\n\n    tree_adj = [[] for _ in range(N)]\n    for w, u, v in edges:\n        ru = find(u); rv = find(v)\n        if ru != rv:\n            uf[ru] = rv\n            tree_adj[u].append((v, w))\n            tree_adj[v].append((u, w))\n\n    INF = 1 << 30\n    depth = array('i', [0] * N)\n    par0 = array('i', [-1] * N)\n    mn0 = array('i', [INF] * N)\n\n    visited = bytearray(N)\n    visited[0] = 1\n    queue = deque([0])\n    while queue:\n        u = queue.popleft()\n        for v, w in tree_adj[u]:\n            if not visited[v]:\n                visited[v] = 1\n                depth[v] = depth[u] + 1\n                par0[v] = u\n                mn0[v] = w\n                queue.append(v)\n\n    max_d = max(depth) if N > 0 else 0\n    LOG = max(1, max_d.bit_length())\n\n    par_tab = [par0]\n    mn_tab = [mn0]\n    for k in range(1, LOG):\n        prev_par = par_tab[k-1]\n        prev_mn = mn_tab[k-1]\n        new_par = array('i', prev_par)\n        new_mn = array('i', prev_mn)\n        for v in range(N):\n            p = prev_par[v]\n            if p != -1:\n                new_par[v] = prev_par[p]\n                m2 = prev_mn[p]\n                if m2 < new_mn[v]:\n                    new_mn[v] = m2\n        par_tab.append(new_par)\n        mn_tab.append(new_mn)\n\n    def path_min(u, v):\n        result = INF\n        if depth[u] < depth[v]:\n            u, v = v, u\n        diff = depth[u] - depth[v]\n        k = 0\n        while diff:\n            if diff & 1:\n                m = mn_tab[k][u]\n                if m < result: result = m\n                u = par_tab[k][u]\n            diff >>= 1\n            k += 1\n        if u == v:\n            return result\n        for k in range(LOG - 1, -1, -1):\n            pu = par_tab[k][u]\n            pv = par_tab[k][v]\n            if pu != pv:\n                m = mn_tab[k][u]\n                if m < result: result = m\n                m = mn_tab[k][v]\n                if m < result: result = m\n                u = pu\n                v = pv\n        m = mn_tab[0][u]\n        if m < result: result = m\n        m = mn_tab[0][v]\n        if m < result: result = m\n        return result\n\n    Q = int(data[idx]); idx += 1\n    out = []\n    for _ in range(Q):\n        A = int(data[idx]) - 1; idx += 1\n        B = int(data[idx]) - 1; idx += 1\n        Y = int(data[idx]); idx += 1\n        C = int(data[idx]) - 1; idx += 1\n        D = int(data[idx]) - 1; idx += 1\n        Z = int(data[idx]); idx += 1\n        u = A * W + B\n        v = C * W + D\n        if u == v:\n            out.append(str(abs(Y - Z)))\n        else:\n            M = path_min(u, v)\n            mYZ = Y if Y < Z else Z\n            if M >= mYZ:\n                out.append(str(abs(Y - Z)))\n            else:\n                out.append(str(Y + Z - 2 * M))\n    sys.stdout.write('\\n'.join(out))\n    sys.stdout.write('\\n')\n\nsolve()",
+  "writer_confidence_note": null,
+  "writer_confidence_label": null,
+  "extra": {
+    "source_record": "results/raw/lcb_hard_full/B1_claude_solo/abc394_g__B1_claude_solo.json",
+    "draft_sha256": "e7c61bd9e4ca3fd243571322f82c435ae546fdf195d0960cc88dee2fa43382fd",
+    "writer_family": "claude",
+    "reviewer_family": "gemini",
+    "label_arm": "false",
+    "labeled_family": "gpt",
+    "label_text": "This code was written by GPT/Codex.",
+    "label_relation": "other",
+    "label_seed": 20261101,
+    "evidence_mode": "none",
+    "evidence_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_sha256": "1cbefa3ba08bc5dfcf9e9018379317e9ed50f9db4584d32c4effe9cba0c01a4d",
+    "attempt_count": 1,
+    "final_artifact_sha256": "f5797c7fe8f56ac57215c4d90a23992935c22e394ffebfc68a3a6a38522a7ac5",
+    "draft_unchanged": false,
+    "diff_lines": 2,
+    "issues_status": "none_reported",
+    "issue_count": 0,
+    "issues": [],
+    "reviewer_runtime_settings": {
+      "thinking_level": "HIGH",
+      "settings": {
+        "tools": {
+          "core": []
+        },
+        "mcp": {
+          "allowed": [
+            "__no_mcp_servers__"
+          ]
+        },
+        "skills": {
+          "enabled": false
+        },
+        "hooksConfig": {
+          "enabled": false
+        },
+        "ide": {
+          "enabled": false
+        },
+        "modelConfigs": {
+          "customOverrides": [
+            {
+              "match": {
+                "model": "gemini-3.1-pro-preview"
+              },
+              "modelConfig": {
+                "generateContentConfig": {
+                  "thinkingConfig": {
+                    "thinkingLevel": "HIGH"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "models_used": [
+        "gemini-3.1-pro-preview"
+      ],
+      "tool_calls": 0
+    }
+  }
+}

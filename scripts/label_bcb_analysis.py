@@ -8,7 +8,8 @@ from pathlib import Path
 from scipy.stats import binomtest, wilcoxon
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = {"bigcodebench": "results/raw/label_pilot_bcb", "livecodebench": "results/raw/label_pilot"}
+SOURCES = {"bigcodebench": ["results/raw/label_pilot_bcb"],
+           "livecodebench": ["results/raw/label_pilot", "results/raw/label_pilot_lcb2", "results/raw/label_pilot_lcb2_claude"]}
 CONTRASTS = [("false_self", "false_other", False, "self_pref"), ("true", "none", None, "true_none"),
              ("false_self", "none", False, "self_none"), ("false_other", "none", None, "other_none"),
              ("true", "none", True, "true_own_none")]
@@ -17,7 +18,7 @@ CONTRASTS = [("false_self", "false_other", False, "self_pref"), ("true", "none",
 def load(benchmarks):
     recs = defaultdict(dict)
     for bench in benchmarks:
-        for f in glob.glob(str(ROOT / SOURCES[bench] / "L_*/*.json")):
+        for f in [f for d in SOURCES[bench] for f in glob.glob(str(ROOT / d / "L_*/*.json"))]:
             r = json.loads(Path(f).read_text())
             e = r["extra"]
             if r.get("passed") is None:
@@ -87,4 +88,5 @@ def analyse(benchmarks, outname):
 
 if __name__ == "__main__":
     analyse(["bigcodebench"], "label_pilot_bcb_contrasts.csv")
+    analyse(["livecodebench"], "label_pilot_lcb20_contrasts.csv")
     analyse(["bigcodebench", "livecodebench"], "label_pilot_combined_contrasts.csv")
